@@ -1,9 +1,10 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 
+
 function LoginButton() {
   const history = useHistory();
-  const showLogInPage = () => history.push("../Secondscreen/SecondScreen");
+  const showLogInPage = () => history.push("../Thirdscreen/LogInPage");
   return (
     <div>
       <button

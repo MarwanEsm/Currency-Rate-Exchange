@@ -13,7 +13,7 @@ export default function App() {
           <Route path="/" component={LandingScreen}>
             <LandingScreen />
           </Route>
-          <Route path="/secondscreen" component={SecondScreen}>
+          <Route path='./Secondscreen/SecondScreen' component={SecondScreen}>
             <Users />
           </Route>
           <Route path="/">
