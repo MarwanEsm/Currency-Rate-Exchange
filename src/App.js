@@ -1,7 +1,7 @@
 import "./App.css";
 import React from "react";
 import LandingScreen from "./Firstscreen/LandingScreen";
-import SecondScreen from "./Secondscreen/SecondScreen";
+import CurrenciesListScreen from "./CurrenciesListscreen/CurrenciesListScreen";
 import LogInScreen from "./LogInscreen/LogInScreen";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,8 +16,8 @@ export default function App() {
           </Route>
           <Route path="/LogInScreen">
             <LogInScreen />
-            <Route path="/SecondScreen">
-              <SecondScreen />
+            <Route path="/CurrenciesListScreen">
+              <CurrenciesListScreen />
             </Route>
           </Route>
         </Switch>

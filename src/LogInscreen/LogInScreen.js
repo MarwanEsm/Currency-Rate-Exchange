@@ -1,9 +1,15 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { useHistory } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function LogInScreen() {
+    const history = useHistory();
+    const displayCurrenciesList = (event) => {
+      event.preventDefault();
+      history.push("/CurrenciesListscreen/CurrenciesListScreen");
+    };
   return (
     <Form>
       <Form.Group controlId="formBasicEmail">
@@ -34,12 +40,16 @@ function LogInScreen() {
           Agree to terms and conditions
         </Form.Label>
       </Form.Group>
-      <Button variant="warning" type="submit" style={buttonStyle}>
+      <Button variant="warning" type="submit" style={buttonStyle} onClick={displayCurrenciesList}>
         Sign in
       </Button>
     </Form>
   );
 }
+
+
+
+
 
 const inputlStyle = {
   width: "70%",
@@ -49,12 +59,12 @@ const inputlStyle = {
 const labelStyle = {
   fontSize: 20,
   fontFamily: "Courier New",
-  marginTop: "3%",
+  marginTop: "5%",
   fontWeight: "bold",
 };
 
 const textStyle = {
-  marginTop: 15,
+  marginTop: '3%',
   textDecoration: "underline",
   fontSize: 12,
 };
