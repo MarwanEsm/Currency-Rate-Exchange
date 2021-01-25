@@ -10,14 +10,11 @@ export default function App() {
     <Router>
       <div className="App">
         <Switch>
-          <Route path="/" component={LandingScreen}>
+          <Route exact path="/" >
             <LandingScreen />
           </Route>
-          <Route path='./Secondscreen/SecondScreen' component={SecondScreen}>
-            <Users />
-          </Route>
-          <Route path="/">
-            <Home />
+          <Route exact path="/SecondScreen" >
+            <SecondScreen />
           </Route>
         </Switch>
       </div>
@@ -25,17 +22,17 @@ export default function App() {
   );
 }
 
-function Home() {
-  return <h2>Home</h2>;
-}
+// function Home() {
+//   return <h2>Home</h2>;
+// }
 
-function About() {
-  return <h2>About</h2>;
-}
+// function About() {
+//   return <h2>About</h2>;
+// }
 
-function Users() {
-  return <h2>Users</h2>;
-}
+// function User() {
+//   return <h2>Users</h2>;
+// }
 
 // export default class App extends Component {
 //   render() {

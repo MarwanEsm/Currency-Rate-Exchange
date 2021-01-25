@@ -4,21 +4,13 @@ import DollarAndEuroPrice from "./Dollar and Euro price";
 import Icon from "./Icon";
 import LoginButton from "./LoginButton";
 
-
-const Wrapper = ({ children }) => (
-  <div>
-    <div>{children}</div>
-  </div>
-);
 function LandingScreen() {
   return (
     <div>
-      <Wrapper>
-        <DateAndTime />
-        <Icon />
-        <DollarAndEuroPrice />
-        <LoginButton />
-      </Wrapper>
+      <DateAndTime />
+      <Icon />
+      <DollarAndEuroPrice />
+      <LoginButton />
     </div>
   );
 }
