@@ -9,7 +9,7 @@ function Icon() {
         <img
           src={Currency}
           width="40%"
-          alt="Responsive image"
+          alt="Responsive"
           className="img-thumbnail"
           style ={imageStyle}
         />
