@@ -38,6 +38,7 @@ function ShowCurrentDate() {
   const currentDate = date + "-" + month + "-" + year;
 
   return (
+   
     <div>
       <h2 style={h2Style}>{currentDate.toLocaleString()}</h2>
     </div>
