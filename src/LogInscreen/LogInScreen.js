@@ -42,11 +42,8 @@ function LogInScreen() {
 }
 
 const inputlStyle = {
-  marginLeft: "10%",
-  marginRight: "5%",
-  width: "80%",
-  display: "flex",
-  justifyContent: "center",
+  width: "70%",
+  marginLeft: "15%",
 };
 
 const labelStyle = {
@@ -64,14 +61,14 @@ const textStyle = {
 
 const groupStyle = {
   display: "flex",
-  justifyConten: "space-around",
-  marginLeft: "25%",
-  marginTop: 15,
+  justifyContent: "center",
+  width: "70%",
+  marginLeft: "15%",
   textDecoration: "underline",
-  fontSize: 13,
+  fontSize: 12,
 };
 
 const buttonStyle = {
-    marginTop:40,
-}
+  marginTop: 40,
+};
 export default LogInScreen;
