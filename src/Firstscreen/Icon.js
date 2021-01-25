@@ -1,5 +1,5 @@
 import React from "react";
-import Currency from "./Currency.png";
+import Currency from "../Photos/Currency.png";
 
 
 

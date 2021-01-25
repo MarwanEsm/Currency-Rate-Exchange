@@ -1,8 +1,8 @@
 import "./App.css";
-import React, { Component } from "react";
+import React from "react";
 import LandingScreen from "./Firstscreen/LandingScreen";
 import SecondScreen from "./Secondscreen/SecondScreen";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function App() {
