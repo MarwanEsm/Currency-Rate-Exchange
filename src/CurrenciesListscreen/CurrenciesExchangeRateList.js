@@ -1,22 +1,16 @@
-import React, { useContext } from "react";
-import { CurrenciesExchangeRateContext } from "../Components/CurrenciesContext";
+// import React from "react";
+// import CurrenciesList from "./CurrenciesList";
+// import CurrenciesContextProvider from "../Components/CurrenciesContext";
 
-const CurrenciesExchangeRateList = () => {
-  const currenciesExchangeRateList = useContext(CurrenciesExchangeRateContext);
-  return (
-    <div>
-      <ul>
-        {currenciesExchangeRateList &&
-          currenciesExchangeRateList.map((currenciesExchangeRate) => {
-            return (
-              <li key={currenciesExchangeRate.id}>
-                {currenciesExchangeRate.rates}
-              </li>
-            );
-          })}
-      </ul>
-    </div>
-  );
-};
+// function CurrenciesExchangeRateList () {
+  
+//   return (
+//     <CurrenciesContextProvider>
+//       <CurrenciesList value={exchangeRate} />
+//     </CurrenciesContextProvider>
+//   );
+    
+  
+// };
 
-export default CurrenciesExchangeRateList;
+// export default CurrenciesExchangeRateList;

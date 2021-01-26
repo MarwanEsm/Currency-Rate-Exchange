@@ -3,6 +3,7 @@ import React from "react";
 import LandingScreen from "./Firstscreen/LandingScreen";
 import LogInScreen from "./LogInscreen/LogInScreen";
 import CurrenciesListScreen from "./CurrenciesListscreen/CurrenciesListScreen";
+import CurrenciesExchangeRateList from './CurrenciesListscreen/CurrenciesExchangeRateList'
 import RegistrationScreen from "./RegistrationScreen/RegistrationScreen";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,10 +19,10 @@ export default function App() {
           <Route path="/LogInScreen">
             <LogInScreen />
           </Route>
-          <Route exact path="/CurrenciesListScreen">
+          <Route path="/CurrenciesListScreen">
             <CurrenciesListScreen />
           </Route>
-          <Route exact path="/CurrenciesListScreen/:currency">
+          <Route path="/CurrenciesListScreen/:currency">
             
           </Route>
           <Route path="/RegistrationScreen">

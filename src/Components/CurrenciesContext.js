@@ -18,7 +18,6 @@ export const CurrenciesContextProvider = ({ children }) => {
   const fetchData = async () => {
     const response = await fetch("https://api.coinbase.com/v2/currencies");
     const data = await response.json();
-    console.log(data)
     setCurrencies(data.data);
   };
 
