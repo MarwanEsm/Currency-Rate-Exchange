@@ -31,12 +31,12 @@ function RegistrationScreen() {
 
         <Form.Row>
           <Form.Group as={Col} controlId="formGridCity">
-            <Form.Label>City</Form.Label>
+            <Form.Label>Country</Form.Label>
             <Form.Control />
           </Form.Group>
 
           <Form.Group as={Col} controlId="formGridState">
-            <Form.Label>State</Form.Label>
+            <Form.Label>City</Form.Label>
             <Form.Control></Form.Control>
           </Form.Group>
 
