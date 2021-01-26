@@ -47,13 +47,18 @@ function RegistrationScreen() {
         </Form.Row>
 
         <Form.Group id="formGridCheckbox">
-          <Form.Check type="checkbox" label="Check me out" />
+          <Form.Check type="checkbox" label="Agree to Terms and Conidtions" />
         </Form.Group>
 
         <Button variant="primary" type="submit">
-          Submit
+          Register
         </Button>
-      </Form>
+          </Form>
+          <br />
+          
+      <a href="/LogInscreen/LogInScreen" style={aStyle}>
+        Back to Log in
+      </a>
     </div>
   );
 }
@@ -63,6 +68,13 @@ const divStyle = {
   marginRight: "5%",
   marginTop: "10%",
   marginBottom: "15%",
+};
+
+const aStyle = {
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontSize: 13,
+  paddingTop: 30,
+  
 };
 
 export default RegistrationScreen;
