@@ -3,6 +3,7 @@ import DateAndTime from "./DateAndTime";
 import DollarAndEuroPrice from "./Dollar and Euro price";
 import Icon from "./Icon";
 import LoginButton from "./LoginButton";
+import RegistrationLink from './RegistrationLink';
 
 function LandingScreen() {
   return (
@@ -11,6 +12,7 @@ function LandingScreen() {
       <Icon />
       <DollarAndEuroPrice />
       <LoginButton />
+      <RegistrationLink/>
     </div>
   );
 }

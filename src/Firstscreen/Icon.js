@@ -44,4 +44,4 @@ const imageStyle = {
 
 
 
-export default Icon
+export default Icon;

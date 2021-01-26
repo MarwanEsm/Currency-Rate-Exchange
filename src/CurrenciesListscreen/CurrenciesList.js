@@ -20,14 +20,14 @@ const CurrenciesList = () => {
 const selectStyle = {
   marginTop: "7%",
   width: "50%",
-  border: 'bold',
+  border: "bold",
 };
 
 const h2Style = {
   fontFamily: "Apple Color Emoji ",
   fontSize: 20,
   fontWeight: "bold",
-  marginTop :'10%',
+  marginTop: "10%",
 };
 
 export default CurrenciesList;
