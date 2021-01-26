@@ -3,7 +3,7 @@ import { CurrenciesContext } from "../Components/CurrenciesContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const CurrenciesList = () => {
-  const currencies = useContext(CurrenciesContext);
+  const {currencies} = useContext(CurrenciesContext);
   return (
     <div>
       <h2 style={h2Style}>Please choose a currency</h2>

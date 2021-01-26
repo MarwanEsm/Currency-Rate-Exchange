@@ -4,11 +4,9 @@ import CurrenciesContextProvider from "../Components/CurrenciesContext";
 
 function CurrenciesListScreen() {
   return (
-    <div>
-      <CurrenciesContextProvider>
-        <CurrenciesList />
-      </CurrenciesContextProvider>
-    </div>
+    <CurrenciesContextProvider>
+      <CurrenciesList />
+    </CurrenciesContextProvider>
   );
 }
 

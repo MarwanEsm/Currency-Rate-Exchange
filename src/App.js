@@ -18,8 +18,11 @@ export default function App() {
           <Route path="/LogInScreen">
             <LogInScreen />
           </Route>
-          <Route path="/CurrenciesListScreen">
+          <Route exact path="/CurrenciesListScreen">
             <CurrenciesListScreen />
+          </Route>
+          <Route exact path="/CurrenciesListScreen/:currency">
+            
           </Route>
           <Route path="/RegistrationScreen">
             <RegistrationScreen />
