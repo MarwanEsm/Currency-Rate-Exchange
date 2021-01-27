@@ -1,5 +1,6 @@
 import React from "react";
 import CurrenciesList from "./CurrenciesList";
+import CurrenciesExchangeRateList from "./CurrenciesExchangeRateList";
 import CurrenciesContextProvider from "../Components/CurrenciesContext";
 
 function CurrenciesListScreen() {
@@ -7,6 +8,7 @@ function CurrenciesListScreen() {
     <div>
       <CurrenciesContextProvider>
         <CurrenciesList />
+        <CurrenciesExchangeRateList />
       </CurrenciesContextProvider>
       <br />
       <a href="/" style={aStyle}>

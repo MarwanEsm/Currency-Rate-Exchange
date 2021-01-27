@@ -4,27 +4,33 @@ import { useHistory } from "react-router-dom";
 
 
 function CurrenciesList() {
+  const { currencies } = useContext(CurrenciesContext);
   const history = useHistory();
   const displayExchangeRate = () => {
-  history.push("/");
-  };
-  const { currencies } = useContext(CurrenciesContext);
-  return (
+    history.push("/CurrenciesListScreen/:currency");
+  }
+return (
     <div>
       <h2 style={h2Style}>Please choose a currency</h2>
       <select
         className="browser-default custom-select"
         style={selectStyle}
-        onChange={displayExchangeRate}
       >
         {currencies &&
           currencies.map((currency) => {
-            return <option key={currency.id}>{currency.id}</option>;
+            return (
+              <option key={currency.id} onChange={displayExchangeRate}>
+                {currency.id}
+              </option>
+            );
           })}
       </select>
     </div>
   );
 }
+
+
+
 
 const selectStyle = {
   marginTop: "7%",

@@ -3,9 +3,11 @@ import React, { createContext, useState, useEffect } from "react";
 
 const intiContext = {
   currencies: [],
+  exchangeRate:[],
 };
 
 export const CurrenciesContext = createContext(intiContext);
+export const ExchangeRateContext = createContext(intiContext);
 
 export const CurrenciesContextProvider = ({ children }) => {
   const [currencies, setCurrencies] = useState();
