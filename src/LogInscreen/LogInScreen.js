@@ -86,7 +86,9 @@ const groupStyle = {
 };
 
 const buttonStyle = {
-  marginTop: 40,
+  marginTop: 35,
+  fontFamily: "Helvetica",
+  fontWeight: "bold",
 };
 
 const aStyle = {

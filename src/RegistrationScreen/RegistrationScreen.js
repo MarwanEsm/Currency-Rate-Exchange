@@ -46,16 +46,19 @@ function RegistrationScreen() {
           </Form.Group>
         </Form.Row>
 
-        <Form.Group id="formGridCheckbox">
-          <Form.Check type="checkbox" label="Agree to Terms and Conidtions" />
+        <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
+          <Form.Check type="checkbox" />
+          <Form.Label data-ng-init="resp()">
+            Agree to terms and conditions
+          </Form.Label>
         </Form.Group>
 
-        <Button variant="primary" type="submit">
+        <Button variant="warning" type="submit" style={buttonStyle}>
           Register
         </Button>
-          </Form>
-          <br />
-          
+      </Form>
+      <br />
+
       <a href="/LogInscreen/LogInScreen" style={aStyle}>
         Back to Log in
       </a>
@@ -77,6 +80,21 @@ const aStyle = {
   paddingTop: 10,
   paddingBottom: 20,
   color: "#ff8000",
+};
+const buttonStyle = {
+  marginTop: 35,
+  fontFamily: "Helvetica",
+  fontWeight: "bold",
+  fontSize:15,
+};
+
+const groupStyle = {
+  display: "flex",
+  justifyContent: "center",
+  width: "70%",
+  marginLeft: "15%",
+  textDecoration: "underline",
+  fontSize: 12,
 };
 
 export default RegistrationScreen;

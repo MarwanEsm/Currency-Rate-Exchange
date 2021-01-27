@@ -8,6 +8,7 @@ function CurrenciesListScreen() {
       <CurrenciesContextProvider>
         <CurrenciesList />
       </CurrenciesContextProvider>
+      <br/>
       <a href="/" style={aStyle}>
         Log out
       </a>
@@ -19,8 +20,8 @@ const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 15,
   textDecoration: "underline",
-  paddingTop: 10,
-  paddingBottom: 20,
+  marginTop: 10,
+  margingBottom: 20,
   color: "#ff8000",
 };
 export default CurrenciesListScreen;
