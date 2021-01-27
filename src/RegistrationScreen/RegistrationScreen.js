@@ -49,7 +49,7 @@ function RegistrationScreen() {
         <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
           <Form.Check type="checkbox" />
           <a
-            href="/TermsAndConditions/ConditionsReg"
+            href="/TermsAndConditions/Screen"
             style={a1Style}
             data-ng-init="resp()"
           >

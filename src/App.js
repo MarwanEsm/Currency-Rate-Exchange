@@ -5,7 +5,7 @@ import LogInScreen from "./LogInscreen/LogInScreen";
 import CurrenciesListScreen from "./CurrenciesListscreen/CurrenciesListScreen";
 // import CurrenciesExchangeRateList from './CurrenciesListscreen/CurrenciesExchangeRateList'
 import RegistrationScreen from "./RegistrationScreen/RegistrationScreen";
-import TermsAndConditionsScreen from "./TermsAndConditions/TermsAndConditionsScreen";
+import Screen from "./TermsAndConditions/Screen";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 
@@ -27,10 +27,9 @@ export default function App() {
           <Route path="/RegistrationScreen">
             <RegistrationScreen />
           </Route>
-          <Route path="/TermsAndConditionsScreen">
-            <TermsAndConditionsScreen />
+          <Route exact path="/Screen">
+            <Screen />
           </Route>
-      
         </Switch>
       </div>
     </Router>
