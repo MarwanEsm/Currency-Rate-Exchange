@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
 import { useHistory } from "react-router-dom";
 
-function Screen() {
+function Whatever() {
   const history = useHistory();
   const goBacktoRegScreen = (event) => {
     event.preventDefault();
@@ -39,4 +39,4 @@ const buttonStyle = {
   fontWeight: "bold",
 };
 
-export default Screen;
+export default Whatever;

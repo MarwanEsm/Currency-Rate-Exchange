@@ -3,7 +3,6 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useHistory } from "react-router-dom";
 
-
 function LogInScreen() {
   const history = useHistory();
   const displayCurrenciesList = (event) => {
@@ -34,16 +33,6 @@ function LogInScreen() {
             data-ng-init="resp()"
             style={inputlStyle}
           />
-        </Form.Group>
-        <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
-          <Form.Check type="checkbox" />
-          <a
-            href="/#"
-            style={a1Style}
-            data-ng-init="resp()"
-          >
-            Agree to terms and conditions
-          </a>
         </Form.Group>
         <Button
           variant="warning"
@@ -80,17 +69,8 @@ const textStyle = {
   fontSize: 12,
 };
 
-const groupStyle = {
-  display: "flex",
-  justifyContent: "center",
-  width: "70%",
-  marginLeft: "15%",
-  textDecoration: "underline",
-  fontSize: 12,
-};
-
 const buttonStyle = {
-  marginTop: 35,
+  marginTop: 30,
   fontFamily: "Helvetica",
   fontWeight: "bold",
 };
@@ -98,14 +78,10 @@ const buttonStyle = {
 const a2Style = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 15,
-  textDecoration:'underline',
+  textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 20,
   color: "#ff8000",
 };
-
-const a1Style = {
-  color :'black',
-}
 
 export default LogInScreen;

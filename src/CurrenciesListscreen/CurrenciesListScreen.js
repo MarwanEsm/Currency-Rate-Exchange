@@ -8,7 +8,7 @@ function CurrenciesListScreen() {
       <CurrenciesContextProvider>
         <CurrenciesList />
       </CurrenciesContextProvider>
-      <br/>
+      <br />
       <a href="/" style={aStyle}>
         Log out
       </a>

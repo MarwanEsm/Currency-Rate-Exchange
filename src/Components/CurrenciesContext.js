@@ -30,7 +30,7 @@ export const CurrenciesContextProvider = ({ children }) => {
   };
 
   return (
-    <CurrenciesContext.Provider value={{currencies, exchangeRate, fetchExchangeRate}}>
+    <CurrenciesContext.Provider value={{ currencies, exchangeRate, fetchExchangeRate }}>
       {children}
     </CurrenciesContext.Provider>
   );

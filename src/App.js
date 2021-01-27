@@ -3,11 +3,9 @@ import React from "react";
 import LandingScreen from "./Firstscreen/LandingScreen";
 import LogInScreen from "./LogInscreen/LogInScreen";
 import CurrenciesListScreen from "./CurrenciesListscreen/CurrenciesListScreen";
-// import CurrenciesExchangeRateList from './CurrenciesListscreen/CurrenciesExchangeRateList'
 import RegistrationScreen from "./RegistrationScreen/RegistrationScreen";
-import Screen from "./TermsAndConditions/Screen";
+import Whatever from "./TermsAndConditions/Whatever";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
 
 export default function App() {
   return (
@@ -27,8 +25,8 @@ export default function App() {
           <Route path="/RegistrationScreen">
             <RegistrationScreen />
           </Route>
-          <Route exact path="/Screen">
-            <Screen />
+          <Route path="/Whatever">
+            <Whatever />
           </Route>
         </Switch>
       </div>

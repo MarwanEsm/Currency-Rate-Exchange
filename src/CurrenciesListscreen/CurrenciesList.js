@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 function CurrenciesList() {
   const history = useHistory();
   const displayExchangeRate = () => {
-  history.push("/CurrenciesListScreen/:currency");
+  history.push("/");
   };
   const { currencies } = useContext(CurrenciesContext);
   return (
