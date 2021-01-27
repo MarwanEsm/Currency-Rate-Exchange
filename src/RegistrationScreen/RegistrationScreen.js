@@ -72,9 +72,11 @@ const divStyle = {
 
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 13,
-  paddingTop: 30,
-  
+  fontSize: 15,
+  textDecoration: "underline",
+  paddingTop: 10,
+  paddingBottom: 20,
+  color: "#ff8000",
 };
 
 export default RegistrationScreen;
