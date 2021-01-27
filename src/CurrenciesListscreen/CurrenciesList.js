@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import { useHistory } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 
 function CurrenciesList() {
   const history = useHistory();

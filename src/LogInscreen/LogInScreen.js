@@ -2,7 +2,7 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useHistory } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 
 function LogInScreen() {
   const history = useHistory();
@@ -37,9 +37,13 @@ function LogInScreen() {
         </Form.Group>
         <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
           <Form.Check type="checkbox" />
-          <Form.Label data-ng-init="resp()">
+          <a
+            href="/#"
+            style={a1Style}
+            data-ng-init="resp()"
+          >
             Agree to terms and conditions
-          </Form.Label>
+          </a>
         </Form.Group>
         <Button
           variant="warning"
@@ -50,8 +54,8 @@ function LogInScreen() {
           Sign in
         </Button>
       </Form>
-      <br/>
-      <a href="/" style={aStyle}>
+      <br />
+      <a href="/" style={a2Style}>
         Back
       </a>
     </div>
@@ -91,7 +95,7 @@ const buttonStyle = {
   fontWeight: "bold",
 };
 
-const aStyle = {
+const a2Style = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 15,
   textDecoration:'underline',
@@ -99,5 +103,9 @@ const aStyle = {
   paddingBottom: 20,
   color: "#ff8000",
 };
+
+const a1Style = {
+  color :'black',
+}
 
 export default LogInScreen;

@@ -48,9 +48,13 @@ function RegistrationScreen() {
 
         <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
           <Form.Check type="checkbox" />
-          <Form.Label data-ng-init="resp()">
+          <a
+            href="/TermsAndConditions/ConditionsReg"
+            style={a1Style}
+            data-ng-init="resp()"
+          >
             Agree to terms and conditions
-          </Form.Label>
+          </a>
         </Form.Group>
 
         <Button variant="warning" type="submit" style={buttonStyle}>
@@ -97,4 +101,7 @@ const groupStyle = {
   fontSize: 12,
 };
 
+const a1Style = {
+  color: "black",
+};
 export default RegistrationScreen;
