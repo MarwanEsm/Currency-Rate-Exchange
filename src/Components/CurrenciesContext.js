@@ -23,11 +23,12 @@ export const CurrenciesContextProvider = ({ children }) => {
     setCurrencies(data.data);
   };
 
-  const fetchExchangeRate = async ({currency}) => {
+  const fetchExchangeRate = async (id) => {
     const response = await fetch(
-      `https://api.coinbase.com/v2/currencies?currency=${currency}`
+      `https://api.coinbase.com/v2/exchange-rates?currency=${id}`
     );
     const data = await response.json();
+    console.log(data)
     setExchangeRate(data.data);
   };
 

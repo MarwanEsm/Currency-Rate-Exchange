@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 
+
 function RegistrationScreen() {
   return (
     <div style={divStyle}>
@@ -49,7 +50,7 @@ function RegistrationScreen() {
         <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
           <Form.Check type="checkbox" />
           <a
-            href="/TermsAndConditions/Screen"
+            href="/TermsAndConditions/TandConditions"
             style={a1Style}
             data-ng-init="resp()"
           >

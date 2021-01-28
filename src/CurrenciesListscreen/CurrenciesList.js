@@ -1,25 +1,30 @@
 import React, { useContext } from "react";
-import { CurrenciesContext } from "../Components/CurrenciesContext";
 import { useHistory } from "react-router-dom";
+import {CurrenciesContext,} from "../Components/CurrenciesContext";
+import ExchangeRateList from "./ExchangeRateList";
 
 
 function CurrenciesList() {
   const { currencies } = useContext(CurrenciesContext);
-  const history = useHistory();
-  const displayExchangeRate = () => {
-    history.push("/CurrenciesListScreen/:currency");
-  }
-return (
+   let history = useHistory();
+
+  function handleChange(e) {
+     console.log(e.target.value)
+     history.push(`/CurrenciesList/${e.target.value}`);
+   }
+
+  return (
     <div>
       <h2 style={h2Style}>Please choose a currency</h2>
       <select
+        onChange={handleChange}
         className="browser-default custom-select"
         style={selectStyle}
       >
         {currencies &&
           currencies.map((currency) => {
             return (
-              <option key={currency.id} onChange={displayExchangeRate}>
+              <option key={currency.id} value={currency.id}>
                 {currency.id}
               </option>
             );
@@ -28,9 +33,6 @@ return (
     </div>
   );
 }
-
-
-
 
 const selectStyle = {
   marginTop: "7%",
