@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import {CurrenciesContext,} from "../Components/CurrenciesContext";
-import ExchangeRateList from "./ExchangeRateList";
+
 
 
 function CurrenciesList() {
   const { currencies } = useContext(CurrenciesContext);
-   let history = useHistory();
+   const history = useHistory();
 
   function handleChange(e) {
      console.log(e.target.value)
