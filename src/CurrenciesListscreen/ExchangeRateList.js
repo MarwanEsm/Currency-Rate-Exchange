@@ -11,16 +11,26 @@ function ExchangeRateList() {
   }, []);
 
   return (
-    <div>
+    <div style = {divStyle}>
       {exchangeRates &&
         Object.keys(exchangeRates.rates).map((key, i) => (
           <p key={i}>
-            <span>{key}</span>
-            <span>{exchangeRates.rates[key]}</span>
+            <span style={spanStyle}>{key}</span>
+            <span style={spanStyle}>{exchangeRates.rates[key]}</span>
           </p>
         ))}
     </div>
   );
 }
 
+const spanStyle = {
+  fontSize: 15,
+  fontFamily: "DejaVu Sans Mono, monospace",
+};
+
+
+const divStyle = {
+  marginTop: "5%",
+  marginBottom: "5%",
+};
 export default ExchangeRateList;
