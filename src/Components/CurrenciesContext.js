@@ -3,15 +3,15 @@ import React, { createContext, useState, useEffect } from "react";
 
 const intiContext = {
   currencies: [],
-  exchangeRate:[],
+  exchangeRates:[],
 };
 
 export const CurrenciesContext = createContext(intiContext);
-export const ExchangeRateContext = createContext(intiContext);
+export const ExchangeRatesContext = createContext(intiContext);
 
 export const CurrenciesContextProvider = ({ children }) => {
   const [currencies, setCurrencies] = useState();
-  const [exchangeRate, setExchangeRate] = useState();
+  const [exchangeRates, setExchangeRates] = useState();
 
   useEffect(() => {
     fetchData();
@@ -21,6 +21,7 @@ export const CurrenciesContextProvider = ({ children }) => {
     const response = await fetch("https://api.coinbase.com/v2/currencies");
     const data = await response.json();
     setCurrencies(data.data);
+    console.log(data.data)
   };
 
   const fetchExchangeRate = async (id) => {
@@ -28,12 +29,12 @@ export const CurrenciesContextProvider = ({ children }) => {
       `https://api.coinbase.com/v2/exchange-rates?currency=${id}`
     );
     const data = await response.json();
-    console.log(data)
-    setExchangeRate(data.data);
+    setExchangeRates(data.data);
+    console.log(data.data);
   };
 
   return (
-    <CurrenciesContext.Provider value={{ currencies, exchangeRate, fetchExchangeRate }}>
+    <CurrenciesContext.Provider value={{ currencies, exchangeRates, fetchExchangeRate }}>
       {children}
     </CurrenciesContext.Provider>
   );

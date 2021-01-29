@@ -3,19 +3,22 @@ import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 
 function ExchangeRateList() {
-  const { fetchExchangeRate, exchangeRate } = useContext(CurrenciesContext);
+  const { fetchExchangeRate, exchangeRates } = useContext(CurrenciesContext);
+  console.log(exchangeRates);
   const { currency } = useParams();
-
   useEffect(() => {
-    console.log(currency);
     fetchExchangeRate(currency);
   }, []);
 
   return (
     <div>
-      <ul>
-        <li>{currency}</li>
-      </ul>
+      {exchangeRates &&
+        Object.keys(exchangeRates.rates).map((key, i) => (
+          <p key={i}>
+            <span>{key}</span>
+            <span>{exchangeRates.rates[key]}</span>
+          </p>
+        ))}
     </div>
   );
 }

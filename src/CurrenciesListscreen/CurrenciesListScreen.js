@@ -4,9 +4,8 @@ import CurrenciesList from "./CurrenciesList";
 function CurrenciesListScreen() {
   return (
     <div>
-     
-        <CurrenciesList />
-    
+      <CurrenciesList />
+
       <br />
       <a href="/" style={aStyle}>
         Log out
