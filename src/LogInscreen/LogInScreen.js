@@ -7,7 +7,7 @@ function LogInScreen() {
   const history = useHistory();
   const displayCurrenciesList = (event) => {
     event.preventDefault();
-    history.push("/CurrenciesListscreen/CurrenciesListScreen");
+    history.push("/CurrenciesListScreen");
   };
   return (
     <div>

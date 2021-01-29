@@ -5,7 +5,7 @@ function LoginButton() {
   const history = useHistory();
   const showLogInPage = (event) => {
     event.preventDefault();
-    history.push("/Loginscreen/LogInScreen");
+    history.push("/LogInScreen");
   }
   return (
     <div>

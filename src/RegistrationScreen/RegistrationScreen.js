@@ -50,7 +50,7 @@ function RegistrationScreen() {
         <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
           <Form.Check type="checkbox" />
           <a
-            href="/TermsAndConditions/TandConditions"
+            href="/TandConditions"
             style={a1Style}
             data-ng-init="resp()"
           >
@@ -64,7 +64,7 @@ function RegistrationScreen() {
       </Form>
       <br />
 
-      <a href="/LogInscreen/LogInScreen" style={aStyle}>
+      <a href="/LogInScreen" style={aStyle}>
         Back to Log in
       </a>
     </div>

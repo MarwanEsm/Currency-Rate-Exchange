@@ -7,7 +7,7 @@ function TaCScreen() {
   const history = useHistory();
   const goBacktoRegScreen = (event) => {
     event.preventDefault();
-    history.push("/RegistrationsScreen/RegistrationsScreen");
+    history.push("/RegistrationScreen");
   };
   return (
     <div>
