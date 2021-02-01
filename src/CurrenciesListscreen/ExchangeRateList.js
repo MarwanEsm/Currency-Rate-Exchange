@@ -11,11 +11,11 @@ function ExchangeRateList() {
   }, []);
 
   return (
-    <div style = {divStyle}>
+    <div style={divStyle}>
       {exchangeRates &&
         Object.keys(exchangeRates.rates).map((key, i) => (
           <p key={i}>
-            <span style={spanStyle}>{key}</span>
+            <span style={spanStyle}>{key} &nbsp;</span>
             <span style={spanStyle}>{exchangeRates.rates[key]}</span>
           </p>
         ))}
@@ -26,6 +26,7 @@ function ExchangeRateList() {
 const spanStyle = {
   fontSize: 15,
   fontFamily: "DejaVu Sans Mono, monospace",
+  wordSpacing : '3 em', 
 };
 
 
