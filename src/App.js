@@ -26,7 +26,7 @@ export default function App() {
               <CurrenciesListScreen />
             </Route>
             <Route path="/CurrenciesList/:currency">
-              <ExchangeRateList />
+              <ExchangeRateList />  
             </Route>
             <Route exact path="/RegistrationScreen">
               <RegistrationScreen />
