@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import CurrenciesList from "./CurrenciesList";
-import Bootsrap from "react-bootstrap";
+
 
 function CurrenciesListScreen() {
   return (
