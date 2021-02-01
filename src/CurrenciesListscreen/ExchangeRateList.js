@@ -41,7 +41,7 @@ function ExchangeRateList() {
 
   return (
     <div style={divStyle}>
-      <Form>
+      <Form >
         <Form.Row>
           <Form.Group as={Col} style={groupStyle}>
             <Form.Label style={labelStyle}>Seacrh Curreny</Form.Label>
@@ -63,12 +63,13 @@ function ExchangeRateList() {
                 style={spanStyle}
               >
                 {key} &nbsp;
-              </span>
+              </span>{" "}
+            
               <span
                 className="badge badge-pill badge-warning"
                 style={spanStyle}
               >
-                {exchangeRates.rates[key]}
+                {parseFloat(exchangeRates.rates[key]).toFixed(8)}
               </span>
             </p>
           ))}
@@ -86,13 +87,14 @@ function ExchangeRateList() {
 // }
 
 const spanStyle = {
-  fontSize: 13,
+  fontSize: 15,
   fontFamily: "DejaVu Sans Mono, monospace",
   wordSpacing: "5 em",
+  margin:20,
 };
 
 const labelStyle = {
-  fontSize: 14,
+  fontSize: 16,
   fontFamily: "DejaVu Sans Mono, monospace",
   wordSpacing: "5 em",
   fontWeight: "bold",
@@ -105,10 +107,11 @@ const divStyle = {
 const groupStyle = {
   display: "flex",
   justifyContent: "center",
-  width: "70%",
+  width: "60%",
   marginLeft: "15%",
   marginRight: "15%",
   fontSize: 12,
 };
+
 
 export default ExchangeRateList;
