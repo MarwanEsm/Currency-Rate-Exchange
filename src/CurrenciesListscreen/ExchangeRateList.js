@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import CurrenciesList from "./CurrenciesList";
 import Convert from "./Converter";
-import Form from "react-bootstrap/Form";
-import Col from "react-bootstrap/Col";
+
 
 function ExchangeRateList() {
   const { fetchExchangeRate, exchangeRates } = useContext(CurrenciesContext);
@@ -23,7 +22,10 @@ function ExchangeRateList() {
 
   const filteredRates = () => {
     const result = Object.keys(exchangeRates.rates).filter((rate) => {
-      return exchangeRates.currency !== rate && rate.includes(searchedCurrency);
+      return (
+        exchangeRates.currency !== rate &&
+        rate.includes(searchedCurrency.toUpperCase())
+      );
     });
 
     return result;
@@ -41,7 +43,7 @@ function ExchangeRateList() {
         placeholder="Type here"
         value={searchedCurrency}
         onChange={handleSearch}
-        class="form-control"
+        className="form-control"
         style={inputStyle}
       />
 
@@ -67,6 +69,8 @@ function ExchangeRateList() {
           ))}
         <Convert />
       </div>
+      <br />
+      <br />
     </div>
   );
 }
@@ -97,7 +101,7 @@ const h2Style = {
   fontFamily: "Apple Color Emoji ",
   fontSize: 20,
   fontWeight: "bold",
-  marginTop: "10%",
+  marginTop: "9%",
 };
 
 const inputStyle = {

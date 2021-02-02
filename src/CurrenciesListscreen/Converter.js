@@ -1,46 +1,56 @@
-import React from "react";
-import Form from "react-bootstrap/Form";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 
 function Convert() {
+  const [inputValue, setInputValue] = useState('');
+  const updateInputValue = (event) => {
+    const inValue = event.target.value;
+    setInputValue(inValue);
+  };
+
+  const [outputValue, setOutputValue] = useState('');
+
+  const convert = (event) => {
+    const outputValue = inputValue;
+    const outValue = event.target.value;
+      setOutputValue(outValue);
+      console.log(outputValue);
+
+    // return (
+    //   <div>
+    //     <h2>hi</h2>
+    //   </div>
+    // );
+  };
+
   return (
     <div style={divStyle}>
       <div>
         <div class="input-group">
           <input
-            type="text"
-            class="form-control"
-            aria-label="Amount (to the nearest dollar)"
+            type="number"
+            className="form-control"
+            value={inputValue}
+            onChange={updateInputValue}
           />
-          <div class="input-group-append">
-            <span class="input-group-text">
-              {"enter the currency which was selected "}
-            </span>
-            <span class="input-group-text">0.00</span>
-          </div>
         </div>
       </div>
       <div>
-        <Button variant="warning" type="convert" style={buttonStyle}>
+        <Button
+          variant="warning"
+          type="convert"
+          value={outputValue}
+          style={buttonStyle}
+          onClick={convert}
+        >
           Convert
         </Button>
       </div>
       <br />
-      <div>
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            aria-label="Amount (to the nearest dollar)"
-          />
-          <div class="input-group-append">
-            <span class="input-group-text">
-              {"enter the currency which was selected "}
-            </span>
-            <span class="input-group-text">0.00</span>
-          </div>
-        </div>
-      </div>
+      {/* <div>
+        <div className="input-group">
+          <input type="text" className="form-control" value={outputValue} />
+        </div> */}
     </div>
   );
 }
