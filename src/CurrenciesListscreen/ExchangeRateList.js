@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
-import Convert from './Converter';
+import Convert from "./Converter";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 
@@ -13,43 +13,32 @@ function ExchangeRateList() {
     fetchExchangeRate(currency);
   }, []);
 
+  const [searchedCurrency, setSearchedCurrency] = useState("");
 
-// const [searchedCurrency, setSearchedCurrency] = useState("");
-//   const [searchedResults, setSearchedResults] = useState([]);
-//   const displaySearchedCurrency = (event) => {
-//     setSearchedCurrency = event.target.value;
-//   };
-//   useEffect(() => {
-//     const results = exchangeRates.key.filter((exchangeRate) =>
-//       exchangeRate.includes(searchedCurrency)
-//     );
-//   });
-//   setSearchedResults(results);
-//   [searchedCurrency];
+  const handleSearch = (event) => {
+    const searchValue = event.target.value;
+    setSearchedCurrency(searchValue);
+  };
 
-//   return (
-//     <div>
-//       {searchedResults.map((searchedResult) => (
-//         <p key={i}>
-//           <span>{key} &nbsp;</span>
-//           <span>{searchedResult.rates[key]}</span>
-//         </p>
-//       ))}
-//       );
-//     </div>
-//   );
-// }
+  const filteredRates = () => {
+    const result = Object.keys(exchangeRates.rates).filter((rate) => {
+      return exchangeRates.currency !== rate && rate.includes(searchedCurrency);
+    });
+
+    return result;
+  };
 
   return (
     <div style={divStyle}>
-      <Form >
+      <Form>
         <Form.Row>
           <Form.Group as={Col} style={groupStyle}>
             <Form.Label style={labelStyle}>Seacrh Curreny</Form.Label>
             <Form.Control
               type="text"
               placeholder="Type here"
-              /* onChange={this.props.displaySearchedCurrency}*/
+              value={searchedCurrency}
+              onChange={handleSearch}
             />
           </Form.Group>
         </Form.Row>
@@ -57,7 +46,7 @@ function ExchangeRateList() {
 
       <div>
         {exchangeRates &&
-          Object.keys(exchangeRates.rates).map((key, i) => (
+          filteredRates().map((key, i) => (
             <p key={i}>
               <span
                 className="badge badge-pill badge-primary"
@@ -65,7 +54,6 @@ function ExchangeRateList() {
               >
                 {key} &nbsp;
               </span>{" "}
-            
               <span
                 className="badge badge-pill badge-warning"
                 style={spanStyle}
@@ -74,25 +62,17 @@ function ExchangeRateList() {
               </span>
             </p>
           ))}
-        <Convert/>
+        <Convert />
       </div>
     </div>
   );
 }
 
-// function displaySearchedCurrency() {
-//   useEffect(() => {
-//     if (value === exchangeRates.key && (key = { i })) {
-//       return (<div>{exchangeRates.rates[key]}</div>);
-//     }
-//   });
-// }
-
 const spanStyle = {
   fontSize: 15,
   fontFamily: "DejaVu Sans Mono, monospace",
   wordSpacing: "5 em",
-  margin:20,
+  margin: 20,
 };
 
 const labelStyle = {
@@ -114,6 +94,5 @@ const groupStyle = {
   marginRight: "15%",
   fontSize: 12,
 };
-
 
 export default ExchangeRateList;
