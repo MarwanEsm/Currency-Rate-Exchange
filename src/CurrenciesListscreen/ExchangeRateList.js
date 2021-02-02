@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
+import Convert from './Converter';
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 
@@ -73,6 +74,7 @@ function ExchangeRateList() {
               </span>
             </p>
           ))}
+        <Convert/>
       </div>
     </div>
   );
