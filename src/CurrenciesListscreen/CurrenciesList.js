@@ -1,17 +1,17 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import {CurrenciesContext} from "../Components/CurrenciesContext";
-
-
+import { CurrenciesContext } from "../Components/CurrenciesContext";
+import ExchangeRateList from "./ExchangeRateList";
 
 function CurrenciesList() {
   const { currencies } = useContext(CurrenciesContext);
-   const history = useHistory();
+  const history = useHistory();
 
   function handleChange(e) {
-     console.log(e.target.value)
-     history.push(`/CurrenciesList/${e.target.value}`);
-   }
+    history.push(`/CurrenciesList/${e.target.value}`); 
+    e.preventDefault();
+    
+  }
 
   return (
     <div>
@@ -24,12 +24,14 @@ function CurrenciesList() {
         {currencies &&
           currencies.map((currency) => {
             return (
-              <option key={currency.id} value={currency.id}>
-                {currency.id}
-              </option>
+              (
+                <option key={currency.id} value={currency.id}>
+                  {currency.id}
+                </option>
+              ) 
             );
           })}
-      </select>
+      </select> 
     </div>
   );
 }

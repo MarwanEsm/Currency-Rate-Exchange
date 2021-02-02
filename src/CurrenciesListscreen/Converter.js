@@ -1,26 +1,25 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 
-function Convert() {
-  const [inputValue, setInputValue] = useState('');
+function Converter() {
+  const [inputValue, setInputValue] = useState("");
   const updateInputValue = (event) => {
     const inValue = event.target.value;
     setInputValue(inValue);
   };
 
-  const [outputValue, setOutputValue] = useState('');
+  const [outputValue, setOutputValue] = useState("");
 
   const convert = (event) => {
     const outputValue = inputValue;
     const outValue = event.target.value;
       setOutputValue(outValue);
-      console.log(outputValue);
-
-    // return (
-    //   <div>
-    //     <h2>hi</h2>
-    //   </div>
-    // );
+      
+    return (
+      <div className="input-group">
+        <input type="text" className="form-control" value={outValue} />
+      </div>
+    );
   };
 
   return (
@@ -39,18 +38,13 @@ function Convert() {
         <Button
           variant="warning"
           type="convert"
-          value={outputValue}
           style={buttonStyle}
-          onClick={convert}
+          onClick={convert }
         >
           Convert
         </Button>
       </div>
       <br />
-      {/* <div>
-        <div className="input-group">
-          <input type="text" className="form-control" value={outputValue} />
-        </div> */}
     </div>
   );
 }
@@ -68,4 +62,4 @@ const buttonStyle = {
   fontWeight: "bold",
 };
 
-export default Convert;
+export default Converter;

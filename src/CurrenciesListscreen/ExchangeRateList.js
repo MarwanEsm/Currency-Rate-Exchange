@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
-import CurrenciesList from "./CurrenciesList";
 import Convert from "./Converter";
+
 
 
 function ExchangeRateList() {
@@ -33,10 +33,6 @@ function ExchangeRateList() {
 
   return (
     <div>
-      <div>
-        <CurrenciesList />
-      </div>
-
       <h2 style={h2Style}>Search currency</h2>
       <input
         type="text"
@@ -83,19 +79,7 @@ const spanStyle = {
 };
 
 
-const divStyle = {
-  marginTop: "10%",
-  marginBottom: "10%",
-};
 
-const groupStyle = {
-  display: "flex",
-  justifyContent: "center",
-  width: "60%",
-  marginLeft: "15%",
-  marginRight: "15%",
-  fontSize: 12,
-};
 
 const h2Style = {
   fontFamily: "Apple Color Emoji ",

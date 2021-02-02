@@ -1,5 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import CurrenciesList from "./CurrenciesList";
+import ExchangeRateList from './ExchangeRateList';
+
 
 
 function CurrenciesListScreen() {
