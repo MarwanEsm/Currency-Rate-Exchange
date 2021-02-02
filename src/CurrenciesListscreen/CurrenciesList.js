@@ -35,8 +35,8 @@ function CurrenciesList() {
 }
 
 const selectStyle = {
-  marginTop: "7%",
-  width: "50%",
+  marginTop: "3%",
+  width: "30%",
   border: "bold",
 };
 

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
+import CurrenciesList from "./CurrenciesList";
 import Convert from "./Converter";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -29,21 +30,23 @@ function ExchangeRateList() {
   };
 
   return (
-    <div style={divStyle}>
-      <Form>
-        <Form.Row>
-          <Form.Group as={Col} style={groupStyle}>
-            <Form.Label style={labelStyle}>Seacrh Curreny</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Type here"
-              value={searchedCurrency}
-              onChange={handleSearch}
-            />
-          </Form.Group>
-        </Form.Row>
-      </Form>
+    <div>
+      <div>
+        <CurrenciesList />
+      </div>
 
+      <h2 style={h2Style}>Search currency</h2>
+      <input
+        type="text"
+        placeholder="Type here"
+        value={searchedCurrency}
+        onChange={handleSearch}
+        class="form-control"
+        style={inputStyle}
+      />
+
+      <br />
+      <br />
       <div>
         {exchangeRates &&
           filteredRates().map((key, i) => (
@@ -75,12 +78,7 @@ const spanStyle = {
   margin: 20,
 };
 
-const labelStyle = {
-  fontSize: 16,
-  fontFamily: "DejaVu Sans Mono, monospace",
-  wordSpacing: "5 em",
-  fontWeight: "bold",
-};
+
 const divStyle = {
   marginTop: "10%",
   marginBottom: "10%",
@@ -93,6 +91,20 @@ const groupStyle = {
   marginLeft: "15%",
   marginRight: "15%",
   fontSize: 12,
+};
+
+const h2Style = {
+  fontFamily: "Apple Color Emoji ",
+  fontSize: 20,
+  fontWeight: "bold",
+  marginTop: "10%",
+};
+
+const inputStyle = {
+  marginTop: "4%",
+  marginLeft: "35%",
+  width: "30%",
+  border: "bold",
 };
 
 export default ExchangeRateList;
