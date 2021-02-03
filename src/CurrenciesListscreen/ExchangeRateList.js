@@ -29,12 +29,20 @@ function ExchangeRateList() {
     return result;
   };
 
+  
+  
+  // const displayInSearchBar = (event) => {
+  //   {( [event.target.value]: event.target.key )}
+    
+  // };
+
   return (
     <div>
       <h2 style={h2Style}>Selected currency </h2>
       <h3 style={h3Style}>{currency} </h3>
       <h2 style={h2Style}>Search currency</h2>
       <input
+        id="search"
         type="text"
         placeholder="Type here"
         value={searchedCurrency}
@@ -53,6 +61,7 @@ function ExchangeRateList() {
                 <span
                   className="badge badge-pill badge-primary"
                   style={spanStyle}
+                  // onClick={displayInSearchBar}
                 >
                   {key} &nbsp;
                 </span>{" "}
@@ -98,7 +107,7 @@ const h3Style = {
   fontFamily: "Apple Color Emoji ",
   fontSize: 20,
   fontWeight: "bold",
-  color: '#ff8000',
+  color: "#ff8000",
   marginTop: "3%",
 };
 

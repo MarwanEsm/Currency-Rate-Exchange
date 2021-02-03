@@ -49,6 +49,7 @@ function Converter({ searchedCurrency }) {
             type="number"
             className="form-control"
             value={parseFloat(toCurrency).toFixed(6)}
+           
           />
         </div>
       </div>
