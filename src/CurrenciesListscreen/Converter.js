@@ -2,19 +2,20 @@ import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 
-function Converter() {
+function Converter({ searchedCurrency }) {
   const { exchangeRates, currencies } = useContext(CurrenciesContext);
+
   const [fromCurrency, setFromCurrency] = useState("");
   const updateInputValue = (event) => {
     const inValue = event.target.value;
     setFromCurrency(inValue);
   };
 
-  const [toCurrency, setToCurrency] = useState("");
+  const [toCurrency, setToCurrency] = useState();
   const convert = () => {
-    const selectedRate = Object.keys(exchangeRates.rates)[0];
-    const toCurrency = fromCurrency * selectedRate;
-    setToCurrency(selectedRate);
+    const selectedRate = exchangeRates.rates[searchedCurrency];
+    const resultValue = fromCurrency * selectedRate;
+    setToCurrency(resultValue);
     console.log(selectedRate);
 
     // return (
@@ -36,11 +37,7 @@ function Converter() {
           />
         </div>
       </div>
-      <div>
-        <div className="input-group">
-          <input type="number" className="form-control" onChange ={convert} value={toCurrency} />
-        </div>
-      </div>
+
       <div>
         <Button
           variant="warning"
@@ -50,6 +47,17 @@ function Converter() {
         >
           Convert
         </Button>
+      </div>
+      <br />
+      <div>
+        <div className="input-group">
+          <input
+            type="number"
+            className="form-control"
+            // onChange={convert}
+            value={toCurrency}
+          />
+        </div>
       </div>
       <br />
     </div>
