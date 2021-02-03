@@ -1,37 +1,44 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
+import { CurrenciesContext } from "../Components/CurrenciesContext";
 
 function Converter() {
-  const [inputValue, setInputValue] = useState("");
+  const { exchangeRates, currencies } = useContext(CurrenciesContext);
+  const [fromCurrency, setFromCurrency] = useState("");
   const updateInputValue = (event) => {
     const inValue = event.target.value;
-    setInputValue(inValue);
+    setFromCurrency(inValue);
   };
 
-  const [outputValue, setOutputValue] = useState("");
+  const [toCurrency, setToCurrency] = useState("");
+  const convert = () => {
+    const selectedRate = Object.keys(exchangeRates.rates)[0];
+    const toCurrency = fromCurrency * selectedRate;
+    setToCurrency(selectedRate);
+    console.log(selectedRate);
 
-  const convert = (event) => {
-    const outputValue = inputValue;
-    const outValue = event.target.value;
-      setOutputValue(outValue);
-      
-    return (
-      <div className="input-group">
-        <input type="text" className="form-control" value={outValue} />
-      </div>
-    );
+    // return (
+    //   <div className="input-group">
+    //     <input type="text" className="form-control" value={toCurrency} />
+    //   </div>
+    // );
   };
 
   return (
     <div style={divStyle}>
       <div>
-        <div class="input-group">
+        <div className="input-group">
           <input
             type="number"
             className="form-control"
-            value={inputValue}
+            value={fromCurrency}
             onChange={updateInputValue}
           />
+        </div>
+      </div>
+      <div>
+        <div className="input-group">
+          <input type="number" className="form-control" onChange ={convert} value={toCurrency} />
         </div>
       </div>
       <div>
@@ -39,7 +46,7 @@ function Converter() {
           variant="warning"
           type="convert"
           style={buttonStyle}
-          onClick={convert }
+          onClick={convert}
         >
           Convert
         </Button>

@@ -3,10 +3,10 @@ import { useHistory } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import ExchangeRateList from "./ExchangeRateList";
 
-function CurrenciesList() {
+function CurrenciesList(props) {
   const { currencies } = useContext(CurrenciesContext);
+  // const { currency } = props;
   const history = useHistory();
-
   function handleChange(e) {
     history.push(`/CurrenciesList/${e.target.value}`); 
     e.preventDefault();
@@ -20,18 +20,21 @@ function CurrenciesList() {
         onChange={handleChange}
         className="browser-default custom-select"
         style={selectStyle}
+        
       >
         {currencies &&
           currencies.map((currency) => {
             return (
-              (
-                <option key={currency.id} value={currency.id}>
-                  {currency.id}
-                </option>
-              ) 
+              <option
+                key={currency.id}
+                value={currency.id}
+                // currency={currency}
+              >
+                {currency.id}
+              </option>
             );
           })}
-      </select> 
+      </select>
     </div>
   );
 }
