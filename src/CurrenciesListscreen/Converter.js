@@ -17,12 +17,6 @@ function Converter({ searchedCurrency }) {
     const resultValue = fromCurrency * selectedRate;
     setToCurrency(resultValue);
     console.log(selectedRate);
-
-    // return (
-    //   <div className="input-group">
-    //     <input type="text" className="form-control" value={toCurrency} />
-    //   </div>
-    // );
   };
 
   return (

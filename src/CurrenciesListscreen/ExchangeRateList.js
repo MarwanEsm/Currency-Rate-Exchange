@@ -47,22 +47,22 @@ function ExchangeRateList() {
         {exchangeRates &&
           filteredRates().map((key, i) => (
             <div key={i}>
-              <p>
-                <span
-                  className="badge badge-pill badge-primary"
-                  style={spanStyle}
-                >
-                  {key} &nbsp;
-                </span>{" "}
-                <span
-                  className="badge badge-pill badge-warning"
-                  style={spanStyle}
-                >
-                  {parseFloat(exchangeRates.rates[key]).toFixed(8)}
-                </span>
+                 <p>
+              <span
+                className="badge badge-pill badge-primary"
+                style={spanStyle}
+              >
+                {key} &nbsp;
+              </span>{" "}
+              <span
+                className="badge badge-pill badge-warning"
+                style={spanStyle}
+              >
+                {parseFloat(exchangeRates.rates[key]).toFixed(8)}
+              </span>
               </p>
-              {/* <button onClick={}></button> */}
             </div>
+         
           ))}
         <Convert searchedCurrency={searchedCurrency} />
       </div>
