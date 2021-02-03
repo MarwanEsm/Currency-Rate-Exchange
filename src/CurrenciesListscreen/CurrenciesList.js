@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
-import ExchangeRateList from "./ExchangeRateList";
 
-function CurrenciesList(props) {
+
+function CurrenciesList() {
   const { currencies } = useContext(CurrenciesContext);
-  // const { currency } = props;
   const history = useHistory();
   function handleChange(e) {
     history.push(`/CurrenciesList/${e.target.value}`); 
@@ -28,7 +27,6 @@ function CurrenciesList(props) {
               <option
                 key={currency.id}
                 value={currency.id}
-                // currency={currency}
               >
                 {currency.id}
               </option>

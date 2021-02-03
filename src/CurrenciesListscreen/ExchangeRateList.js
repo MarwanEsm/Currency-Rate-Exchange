@@ -31,6 +31,8 @@ function ExchangeRateList() {
 
   return (
     <div>
+      <h2 style={h2Style}>Selected currency </h2>
+      <h3 style={h3Style}>{currency} </h3>
       <h2 style={h2Style}>Search currency</h2>
       <input
         type="text"
@@ -47,22 +49,21 @@ function ExchangeRateList() {
         {exchangeRates &&
           filteredRates().map((key, i) => (
             <div key={i}>
-                 <p>
-              <span
-                className="badge badge-pill badge-primary"
-                style={spanStyle}
-              >
-                {key} &nbsp;
-              </span>{" "}
-              <span
-                className="badge badge-pill badge-warning"
-                style={spanStyle}
-              >
-                {parseFloat(exchangeRates.rates[key]).toFixed(8)}
-              </span>
+              <p>
+                <span
+                  className="badge badge-pill badge-primary"
+                  style={spanStyle}
+                >
+                  {key} &nbsp;
+                </span>{" "}
+                <span
+                  className="badge badge-pill badge-warning"
+                  style={spanStyle}
+                >
+                  {parseFloat(exchangeRates.rates[key]).toFixed(8)}
+                </span>
               </p>
             </div>
-         
           ))}
         <Convert searchedCurrency={searchedCurrency} />
       </div>
@@ -91,6 +92,14 @@ const inputStyle = {
   marginLeft: "35%",
   width: "30%",
   border: "bold",
+};
+
+const h3Style = {
+  fontFamily: "Apple Color Emoji ",
+  fontSize: 20,
+  fontWeight: "bold",
+  color: '#ff8000',
+  marginTop: "3%",
 };
 
 export default ExchangeRateList;
