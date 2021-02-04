@@ -18,14 +18,8 @@ function ExchangeRateList() {
     setSearchedCurrency(searchValue);
   };
 
-  const [selectedCurrency, setSelectedCurrency] = useState(searchedCurrency);
   const displayInSearchBar = (event) => {
-    // const selectedCurrency = event.target.value;
-    // was trying to use replace function 
-    setSelectedCurrency({
-      [event.target.value]: event.target.value,
-    });
-    console.log(selectedCurrency);
+    setSearchedCurrency(event.target.value);
   };
 
   const filteredRates = () => {
@@ -64,7 +58,7 @@ function ExchangeRateList() {
                 <button
                   className="badge badge-pill badge-primary"
                   style={spanStyle}
-                  value = {key}
+                  value={key}
                   onClick={displayInSearchBar}
                 >
                   {key} &nbsp;
