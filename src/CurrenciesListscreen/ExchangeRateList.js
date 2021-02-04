@@ -20,7 +20,8 @@ function ExchangeRateList() {
 
   const [selectedCurrency, setSelectedCurrency] = useState(searchedCurrency);
   const displayInSearchBar = (event) => {
-    const selectedCurrency = event.target.value;
+    // const selectedCurrency = event.target.value;
+    // was trying to use replace function 
     setSelectedCurrency({
       [event.target.value]: event.target.value,
     });
