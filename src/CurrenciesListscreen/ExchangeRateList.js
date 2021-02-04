@@ -20,8 +20,9 @@ function ExchangeRateList() {
 
   const [selectedCurrency, setSelectedCurrency] = useState(searchedCurrency);
   const displayInSearchBar = (event) => {
+    const selectedCurrency = event.target.value;
     setSelectedCurrency({
-      [event.target.searchedCurrency]: event.target.selectedCurrency,
+      [event.target.value]: event.target.value,
     });
     console.log(selectedCurrency);
   };
@@ -59,14 +60,14 @@ function ExchangeRateList() {
           filteredRates().map((key, i) => (
             <div key={i}>
               <p>
-                <span
+                <button
                   className="badge badge-pill badge-primary"
                   style={spanStyle}
-                  selectedCurrency={i}
+                  // value = {key}
                   onClick={displayInSearchBar}
                 >
                   {key} &nbsp;
-                </span>{" "}
+                </button>{" "}
                 <span
                   className="badge badge-pill badge-warning"
                   style={spanStyle}
