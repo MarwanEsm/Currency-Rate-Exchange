@@ -43,6 +43,7 @@ function Converter({ searchedCurrency }) {
         </Button>
       </div>
       <br />
+      
       <div>
         <div className="input-group">
           <input
@@ -67,6 +68,7 @@ const divStyle = {
 
 const buttonStyle = {
   marginTop: 30,
+  marginBottom: 10,
   fontFamily: "Helvetica",
   fontWeight: "bold",
 };
