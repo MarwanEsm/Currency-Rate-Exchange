@@ -64,7 +64,7 @@ function ExchangeRateList() {
                 <button
                   className="badge badge-pill badge-primary"
                   style={spanStyle}
-                  // value = {key}
+                  value = {key}
                   onClick={displayInSearchBar}
                 >
                   {key} &nbsp;
