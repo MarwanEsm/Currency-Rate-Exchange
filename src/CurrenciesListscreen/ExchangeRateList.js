@@ -18,6 +18,14 @@ function ExchangeRateList() {
     setSearchedCurrency(searchValue);
   };
 
+  const [selectedCurrency, setSelectedCurrency] = useState(searchedCurrency);
+  const displayInSearchBar = (event) => {
+    setSelectedCurrency({
+      [event.target.searchedCurrency]: event.target.selectedCurrency,
+    });
+    console.log(selectedCurrency);
+  };
+
   const filteredRates = () => {
     const result = Object.keys(exchangeRates.rates).filter((rate) => {
       return (
@@ -28,13 +36,6 @@ function ExchangeRateList() {
 
     return result;
   };
-
-  
-  
-  // const displayInSearchBar = (event) => {
-  //   {( [event.target.value]: event.target.key )}
-    
-  // };
 
   return (
     <div>
@@ -61,7 +62,8 @@ function ExchangeRateList() {
                 <span
                   className="badge badge-pill badge-primary"
                   style={spanStyle}
-                  // onClick={displayInSearchBar}
+                  selectedCurrency={i}
+                  onClick={displayInSearchBar}
                 >
                   {key} &nbsp;
                 </span>{" "}
