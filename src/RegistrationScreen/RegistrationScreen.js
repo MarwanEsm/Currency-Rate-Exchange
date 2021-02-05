@@ -6,64 +6,72 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
 function RegistrationScreen() {
+  const submitDetails = () => {};
   return (
-    <div style={divStyle}>
-      <Form>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" />
+    <div>
+      <div style={divStyle}>
+        <Form>
+          <Form.Row>
+            <Form.Group as={Col} controlId="formGridEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" placeholder="Enter email" />
+            </Form.Group>
+
+            <Form.Group as={Col} controlId="formGridPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" placeholder="Password" />
+            </Form.Group>
+          </Form.Row>
+
+          <Form.Group controlId="formGridAddress1">
+            <Form.Label>Address</Form.Label>
+            <Form.Control placeholder="1234 Main St" />
           </Form.Group>
 
-          <Form.Group as={Col} controlId="formGridPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-          </Form.Group>
-        </Form.Row>
-
-        <Form.Group controlId="formGridAddress1">
-          <Form.Label>Address</Form.Label>
-          <Form.Control placeholder="1234 Main St" />
-        </Form.Group>
-
-        <Form.Group controlId="formGridAddress2">
-          <Form.Label>Address 2</Form.Label>
-          <Form.Control placeholder="Apartment, studio, or floor" />
-        </Form.Group>
-
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridCity">
-            <Form.Label>Country</Form.Label>
-            <Form.Control />
+          <Form.Group controlId="formGridAddress2">
+            <Form.Label>Address 2</Form.Label>
+            <Form.Control placeholder="Apartment, studio, or floor" />
           </Form.Group>
 
-          <Form.Group as={Col} controlId="formGridState">
-            <Form.Label>City</Form.Label>
-            <Form.Control></Form.Control>
-          </Form.Group>
+          <Form.Row>
+            <Form.Group as={Col} controlId="formGridCity">
+              <Form.Label>Country</Form.Label>
+              <Form.Control />
+            </Form.Group>
 
-          <Form.Group as={Col} controlId="formGridZip">
-            <Form.Label>Zip</Form.Label>
-            <Form.Control />
-          </Form.Group>
-        </Form.Row>
+            <Form.Group as={Col} controlId="formGridState">
+              <Form.Label>City</Form.Label>
+              <Form.Control></Form.Control>
+            </Form.Group>
 
-        <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
-          <Form.Check type="checkbox" />
-          <Terms />
-        </Form.Group>
+            <Form.Group as={Col} controlId="formGridZip">
+              <Form.Label>Zip</Form.Label>
+              <Form.Control />
+            </Form.Group>
+          </Form.Row>
+          <div >
+            <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
+              <Form.Check type="checkbox" />
+              <Terms />
+            </Form.Group>
+          </div>
 
-        <Button variant="warning" type="submit" style={buttonStyle}>
-          Register
-        </Button>
-      </Form>
-      <br />
+          <Button
+            variant="warning"
+            type="submit"
+            style={buttonStyle}
+            onClick={submitDetails}
+          >
+            Register
+          </Button>
+        </Form>
+        <br />
 
-      <a href="/LogInScreen" style={aStyle}>
-        Back to Log in
-      </a>
+        <a href="/LogInScreen" style={aStyle}>
+          Back to Log in
+        </a>
+      </div>
     </div>
   );
 }
@@ -74,10 +82,13 @@ function Terms() {
     setIsOpen(!isOpen);
   };
   return (
-    <Popup trigger={<a>Agree to terms and conditions</a>} position="center-top">
+    <Popup
+      trigger={<a style={a1Style}>Agree to terms and conditions</a>}
+      position="center-top"
+    >
       <div>
-        <p style={pStyle}>TERMS OF SERVICE</p>
-        <h3>
+        <p style={pStyle}>Terms Of Service</p>
+        <h3 style={h3Style}>
           Make sure you're enjoying your life and enjoy using this App either :)
         </h3>
         <Button
@@ -96,7 +107,7 @@ function Terms() {
 const pStyle = {
   marginTop: "20%",
   fontWeight: "bold",
-  fontSize: 20,
+  fontSize: 13,
 };
 
 const divStyle = {
@@ -132,5 +143,14 @@ const groupStyle = {
 
 const a1Style = {
   color: "black",
+   cursor: 'pointer',
 };
+
+const h3Style = {
+  fontSize : 15,
+}
+
+
+
+
 export default RegistrationScreen;
