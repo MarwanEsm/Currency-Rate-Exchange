@@ -14,7 +14,7 @@ const initContext = {
 
 export const AuthContext = createContext(initContext)
 export const AuthContextProvider = ({ children }) => {
-    let history = useHistory()
+    const history = useHistory()
     const db = firebase.firestore();
     const [user, setUser] = useState(initContext.user)
 
