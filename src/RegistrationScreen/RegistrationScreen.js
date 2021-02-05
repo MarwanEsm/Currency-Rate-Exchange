@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 function RegistrationScreen() {
@@ -49,13 +52,7 @@ function RegistrationScreen() {
 
         <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
           <Form.Check type="checkbox" />
-          <a
-            href="/TandConditions"
-            style={a1Style}
-            data-ng-init="resp()"
-          >
-            Agree to terms and conditions
-          </a>
+          <Terms />
         </Form.Group>
 
         <Button variant="warning" type="submit" style={buttonStyle}>
@@ -71,6 +68,37 @@ function RegistrationScreen() {
   );
 }
 
+function Terms() {
+  const [isOpen, setIsOpen] = useState(false);
+  const goBacktoRegScreen = () => {
+    setIsOpen(!isOpen);
+  };
+  return (
+    <Popup trigger={<a>Agree to terms and conditions</a>} position="center-top">
+      <div>
+        <p style={pStyle}>TERMS OF SERVICE</p>
+        <h3>
+          Make sure you're enjoying your life and enjoy using this App either :)
+        </h3>
+        <Button
+          variant="warning"
+          type="submit"
+          style={buttonStyle}
+          onClick={goBacktoRegScreen}
+        >
+          Accept
+        </Button>
+      </div>
+    </Popup>
+  );
+}
+
+const pStyle = {
+  marginTop: "20%",
+  fontWeight: "bold",
+  fontSize: 20,
+};
+
 const divStyle = {
   marginLeft: "5%",
   marginRight: "5%",
@@ -80,7 +108,7 @@ const divStyle = {
 
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 15,
+  fontSize: 13,
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 20,
@@ -90,7 +118,7 @@ const buttonStyle = {
   marginTop: 35,
   fontFamily: "Helvetica",
   fontWeight: "bold",
-  fontSize:15,
+  fontSize: 15,
 };
 
 const groupStyle = {

@@ -31,9 +31,9 @@ export default function App() {
             <Route exact path="/RegistrationScreen">
               <RegistrationScreen />
             </Route>
-            <Route exact path="/TandConditions">
+            {/* <Route exact path="/TandConditions">
               <TaCScreen />
-            </Route>
+            </Route> */}
           </Switch>
         </CurrenciesContextProvider>
       </div>

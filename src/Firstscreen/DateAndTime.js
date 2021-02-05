@@ -48,7 +48,7 @@ function ShowCurrentDate() {
 const h1Style = {
   fontFamily: "Fantasy ",
   fontSize: '1rem',
-  paddingTop: 20,
+  paddingTop: 50,
 };
 
 const h2Style = {

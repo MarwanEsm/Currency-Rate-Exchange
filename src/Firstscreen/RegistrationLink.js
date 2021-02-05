@@ -1,6 +1,7 @@
 import React from "react";
 
 
+
 function RegistrationLink() {
   
   return (
@@ -21,7 +22,7 @@ const h3Style = {
 
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 15,
+  fontSize: 12,
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 20,
