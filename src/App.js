@@ -5,10 +5,10 @@ import LogInScreen from "./LogInscreen/LogInScreen";
 import CurrenciesListScreen from "./CurrenciesListscreen/CurrenciesListScreen";
 import ExchangeRateList from "./CurrenciesListscreen/ExchangeRateList";
 import RegistrationScreen from "./RegistrationScreen/RegistrationScreen";
-// import TaCScreen from "./TermsAndConditions/TandConditions";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 // import CurrenciesList from "./CurrenciesListscreen/CurrenciesList";
 import CurrenciesContextProvider from "./Components/CurrenciesContext";
+import ResetPassword from "./LogInscreen/ResetPassword";
 
 export default function App() {
   return (
@@ -31,9 +31,9 @@ export default function App() {
             <Route exact path="/RegistrationScreen">
               <RegistrationScreen />
             </Route>
-            {/* <Route exact path="/TandConditions">
-              <TaCScreen />
-            </Route> */}
+            <Route path="/ResetPassword">
+              <ResetPassword/>
+            </Route>
           </Switch>
         </CurrenciesContextProvider>
       </div>

@@ -34,6 +34,10 @@ function LogInScreen() {
             style={inputlStyle}
           />
         </Form.Group>
+        <br />
+        <div>
+          <a href='/Resetpassword' style={a2Style}>Forgot Password ?</a>
+        </div>
         <Button
           variant="warning"
           type="submit"
@@ -82,6 +86,7 @@ const a2Style = {
   paddingTop: 10,
   paddingBottom: 20,
   color: "#ff8000",
+  cursor:'pointer',
 };
 
 export default LogInScreen;
