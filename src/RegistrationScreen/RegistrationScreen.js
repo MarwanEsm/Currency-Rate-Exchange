@@ -7,56 +7,58 @@ import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function RegistrationScreen() {
-  const submitDetails = () => {};
+  const changeInput = () => {};
+  const register = () => {};
   return (
     <div>
       <div style={divStyle}>
         <Form>
           <Form.Row>
-            <Form.Group as={Col} controlId="formGridPassword">
+            <Form.Group as={Col} controlId="formGridfName">
               <Form.Label>First Name</Form.Label>
-              <Form.Control type="email" placeholder="Enter first name" />
+              <Form.Control type="text" onChange={changeInput} />
             </Form.Group>
 
-            <Form.Group as={Col} controlId="formGridPassword">
+            <Form.Group as={Col} controlId="formGridlName">
               <Form.Label>Last Name</Form.Label>
-              <Form.Control type="password" placeholder="Enter last name" />
+              <Form.Control type="text" onChange={changeInput} />
             </Form.Group>
           </Form.Row>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridEmail">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter email" />
+              <Form.Control type="email" />
             </Form.Group>
           </Form.Row>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control type="password" onChange={changeInput} />
             </Form.Group>
 
-            <Form.Group as={Col} controlId="formGridPassword">
+            <Form.Group as={Col} controlId="formGridConfirmPassword">
               <Form.Label>Confirm Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control type="password" onChange={changeInput} />
             </Form.Group>
           </Form.Row>
 
           <Form.Row>
             <Form.Group as={Col} controlId="formGridCity">
               <Form.Label>Country</Form.Label>
-              <Form.Control />
+              <Form.Control type="text" onChange={changeInput} />
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridState">
               <Form.Label>City</Form.Label>
-              <Form.Control></Form.Control>
+              <Form.Control type="text" onChange={changeInput} />
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridZip">
               <Form.Label>Zip</Form.Label>
-              <Form.Control />
+              <Form.Control type="text" onChange={changeInput} />
             </Form.Group>
           </Form.Row>
+          
           <div>
             <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
               <Form.Check type="checkbox" />
@@ -68,7 +70,7 @@ function RegistrationScreen() {
             variant="warning"
             type="submit"
             style={buttonStyle}
-            onClick={submitDetails}
+            onClick={register}
           >
             Register
           </Button>
@@ -133,7 +135,7 @@ const aStyle = {
   color: "#ff8000",
 };
 const buttonStyle = {
-  marginTop: 35,
+  marginTop: 20,
   fontFamily: "Helvetica",
   fontWeight: "bold",
   fontSize: 15,
