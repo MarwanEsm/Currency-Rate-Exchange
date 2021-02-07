@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { AuthContext } from "../Firebase/FireBaseAuth";
 
 function RegistrationScreen() {
+  const { register } = useContext(AuthContext);
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
@@ -16,15 +18,29 @@ function RegistrationScreen() {
     country: "",
     city: "",
     zip: "",
+    checked: false,
   });
 
   const changeInput = (event) => {
     const value = event.target.value;
+
     setState({
-      ...state, [event.target.name]: value}
-    );
+      ...state,
+      [event.target.name]: value,
+      [event.target.defaultChecked]: true,
+    });
   };
-  const register = () => {};
+
+  const isInvalid =
+    state.firstName === "" ||
+    state.lastName === "" ||
+    state.password === "" ||
+    state.passwordConfirmation !== state.password ||
+    state.country === "" ||
+    state.city === "" ||
+    state.zip === "" ||
+    state.checked == false;
+
   return (
     <div>
       <div style={divStyle}>
@@ -34,7 +50,7 @@ function RegistrationScreen() {
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="text"
-                name = 'firstName'
+                name="firstName"
                 value={state.firstName}
                 onChange={changeInput}
               />
@@ -44,7 +60,7 @@ function RegistrationScreen() {
               <Form.Label>Last Name</Form.Label>
               <Form.Control
                 type="text"
-                name='lastName'
+                name="lastName"
                 value={state.lastName}
                 onChange={changeInput}
               />
@@ -55,7 +71,7 @@ function RegistrationScreen() {
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
-                name='email'
+                name="email"
                 value={state.email}
                 onChange={changeInput}
               />
@@ -66,7 +82,7 @@ function RegistrationScreen() {
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
-                name='password'
+                name="password"
                 value={state.password}
                 onChange={changeInput}
               />
@@ -76,7 +92,7 @@ function RegistrationScreen() {
               <Form.Label>Confirm Password</Form.Label>
               <Form.Control
                 type="password"
-                name='passwordConfirmation'
+                name="passwordConfirmation"
                 value={state.passwordConfirmation}
                 onChange={changeInput}
               />
@@ -88,7 +104,7 @@ function RegistrationScreen() {
               <Form.Label>Country</Form.Label>
               <Form.Control
                 type="text"
-                name='country'
+                name="country"
                 value={state.country}
                 onChange={changeInput}
               />
@@ -98,7 +114,7 @@ function RegistrationScreen() {
               <Form.Label>City</Form.Label>
               <Form.Control
                 type="text"
-                name='city'
+                name="city"
                 value={state.city}
                 onChange={changeInput}
               />
@@ -108,7 +124,7 @@ function RegistrationScreen() {
               <Form.Label>Zip</Form.Label>
               <Form.Control
                 type="text"
-                name='zip'
+                name="zip"
                 value={state.zip}
                 onChange={changeInput}
               />
@@ -117,7 +133,11 @@ function RegistrationScreen() {
 
           <div>
             <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
-              <Form.Check type="checkbox" />
+              <Form.Check
+                onChange={changeInput}
+                defaultChecked={state.checked}
+                type="checkbox"
+              />
               <Terms />
             </Form.Group>
           </div>
@@ -127,6 +147,7 @@ function RegistrationScreen() {
             type="submit"
             style={buttonStyle}
             onClick={register}
+            disabled={isInvalid}
           >
             Register
           </Button>
