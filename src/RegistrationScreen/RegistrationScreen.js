@@ -7,7 +7,23 @@ import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function RegistrationScreen() {
-  const changeInput = () => {};
+  const [state, setState] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+    country: "",
+    city: "",
+    zip: "",
+  });
+
+  const changeInput = (event) => {
+    const value = event.target.value;
+    setState({
+      ...state, [event.target.name]: value}
+    );
+  };
   const register = () => {};
   return (
     <div>
@@ -16,49 +32,89 @@ function RegistrationScreen() {
           <Form.Row>
             <Form.Group as={Col} controlId="formGridfName">
               <Form.Label>First Name</Form.Label>
-              <Form.Control type="text" onChange={changeInput} />
+              <Form.Control
+                type="text"
+                name = 'firstName'
+                value={state.firstName}
+                onChange={changeInput}
+              />
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridlName">
               <Form.Label>Last Name</Form.Label>
-              <Form.Control type="text" onChange={changeInput} />
+              <Form.Control
+                type="text"
+                name='lastName'
+                value={state.lastName}
+                onChange={changeInput}
+              />
             </Form.Group>
           </Form.Row>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridEmail">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" />
+              <Form.Control
+                type="email"
+                name='email'
+                value={state.email}
+                onChange={changeInput}
+              />
             </Form.Group>
           </Form.Row>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" onChange={changeInput} />
+              <Form.Control
+                type="password"
+                name='password'
+                value={state.password}
+                onChange={changeInput}
+              />
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridConfirmPassword">
               <Form.Label>Confirm Password</Form.Label>
-              <Form.Control type="password" onChange={changeInput} />
+              <Form.Control
+                type="password"
+                name='passwordConfirmation'
+                value={state.passwordConfirmation}
+                onChange={changeInput}
+              />
             </Form.Group>
           </Form.Row>
 
           <Form.Row>
             <Form.Group as={Col} controlId="formGridCity">
               <Form.Label>Country</Form.Label>
-              <Form.Control type="text" onChange={changeInput} />
+              <Form.Control
+                type="text"
+                name='country'
+                value={state.country}
+                onChange={changeInput}
+              />
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridState">
               <Form.Label>City</Form.Label>
-              <Form.Control type="text" onChange={changeInput} />
+              <Form.Control
+                type="text"
+                name='city'
+                value={state.city}
+                onChange={changeInput}
+              />
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridZip">
               <Form.Label>Zip</Form.Label>
-              <Form.Control type="text" onChange={changeInput} />
+              <Form.Control
+                type="text"
+                name='zip'
+                value={state.zip}
+                onChange={changeInput}
+              />
             </Form.Group>
           </Form.Row>
-          
+
           <div>
             <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
               <Form.Check type="checkbox" />
