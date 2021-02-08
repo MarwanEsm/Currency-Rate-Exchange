@@ -1,6 +1,8 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import firebase from "./FirebaseConfig";
+// import firebase from "./FirebaseConfig";
+import firebase from "firebase/app";
+import "firebase/firestore";
 
 const initContext = {
   user: null,
@@ -14,10 +16,9 @@ const initContext = {
 
 export const AuthContext = createContext(initContext);
 export const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  let history = useHistory();
+  const history = useHistory();
   const db = firebase.firestore();
+  const [user, setUser] = useState(initContext.user);
 
   const register = ({ email, password, name }) => {
     firebase
@@ -26,10 +27,7 @@ export const AuthContextProvider = ({ children }) => {
       .then((userCredential) => {
         var user = userCredential.user;
         console.log("user", user);
-
-        setUser(user);
-        setIsAuthenticated(true);
-        db.collection("user").doc(user.uid).set({ name });
+        db.collection("user").doc(user.uid).set({ name: name });
       })
 
       .catch((error) => {
@@ -46,7 +44,6 @@ export const AuthContextProvider = ({ children }) => {
       .then((userCredential) => {
         const user = userCredential.user;
         setUser(user);
-        setIsAuthenticated(true);
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -56,7 +53,7 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, register }}>
       {children}
     </AuthContext.Provider>
   );

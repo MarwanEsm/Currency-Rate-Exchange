@@ -6,6 +6,7 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "../Firebase/FireBaseAuth";
+// import { Redirect } from 'react-router-dom';
 
 function RegistrationScreen() {
   const { register } = useContext(AuthContext);
@@ -48,7 +49,7 @@ function RegistrationScreen() {
   return (
     <div>
       <div style={divStyle}>
-        <Form>
+        <Form onSubmit={register}>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridfName">
               <Form.Label>First Name</Form.Label>
@@ -150,7 +151,7 @@ function RegistrationScreen() {
             variant="warning"
             type="submit"
             style={buttonStyle}
-            onClick={register}
+            // onClick={register}
             disabled={isInvalid}
           >
             Register

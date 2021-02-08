@@ -1,6 +1,6 @@
 import React from "react";
 import CurrenciesList from "./CurrenciesList";
-import ExchangeRateList from './ExchangeRateList';
+
 
 
 
