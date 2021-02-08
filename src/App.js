@@ -6,7 +6,6 @@ import CurrenciesListScreen from "./CurrenciesListscreen/CurrenciesListScreen";
 import ExchangeRateList from "./CurrenciesListscreen/ExchangeRateList";
 import RegistrationScreen from "./RegistrationScreen/RegistrationScreen";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-// import CurrenciesList from "./CurrenciesListscreen/CurrenciesList";
 import CurrenciesContextProvider from "./Components/CurrenciesContext";
 import ResetPassword from "./LogInscreen/ResetPassword";
 import AuthContextProvider from "./Firebase/FireBaseAuth";
@@ -18,7 +17,7 @@ export default function App() {
         <AuthContextProvider>
           <CurrenciesContextProvider>
             <Switch>
-              <Route exact path="/">
+              <Route exact path="/LandingScreen">
                 <LandingScreen />
               </Route>
               <Route path="/LogInScreen">

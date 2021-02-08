@@ -169,8 +169,8 @@ function RegistrationScreen() {
 function Terms() {
   const [isOpen, setIsOpen] = useState();
   const goBacktoRegScreen = (event) => {
-    setIsOpen(!isOpen );
-    event.preventDefault()
+    setIsOpen(!isOpen);
+    event.preventDefault();
   };
   return (
     <Popup

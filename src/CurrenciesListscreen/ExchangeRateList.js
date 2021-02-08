@@ -74,7 +74,12 @@ function ExchangeRateList() {
           ))}
         <Convert searchedCurrency={searchedCurrency} />
       </div>
-      <br />
+
+      <div>
+        <a href="/LandingScreen" style={aStyle}>
+          Logout
+        </a>
+      </div>
       <br />
     </div>
   );
@@ -107,6 +112,14 @@ const h3Style = {
   fontWeight: "bold",
   color: "#ff8000",
   marginTop: "3%",
+};
+
+const aStyle = {
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontSize: 12,
+  textDecoration: "underline",
+  color: "#ff8000",
+  marginBottom: "10%",
 };
 
 export default ExchangeRateList;
