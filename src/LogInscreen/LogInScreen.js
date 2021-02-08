@@ -1,11 +1,13 @@
-import React from "react";
+import React, {useContext} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useHistory } from "react-router-dom";
+import { AuthContext} from '../Firebase/FireBaseAuth';
 
 function LogInScreen() {
+  // const { login } = useContext (AuthContext)
   const history = useHistory();
-  const displayCurrenciesList = (event) => {
+  const signInAndDisplayCurrenciesList = (event) => {
     event.preventDefault();
     history.push("/CurrenciesListScreen");
   };
@@ -36,13 +38,15 @@ function LogInScreen() {
         </Form.Group>
         <br />
         <div>
-          <a href='/Resetpassword' style={a2Style}>Forgot Password ?</a>
+          <a href="/Resetpassword" style={a2Style}>
+            Forgot Password ?
+          </a>
         </div>
         <Button
           variant="warning"
           type="submit"
           style={buttonStyle}
-          onClick={displayCurrenciesList}
+          onClick={signInAndDisplayCurrenciesList}
         >
           Sign in
         </Button>

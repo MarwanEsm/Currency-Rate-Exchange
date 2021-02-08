@@ -31,6 +31,10 @@ function RegistrationScreen() {
     });
   };
 
+  const makeItChecked = () => {
+    setState({ checked: true });
+  };
+
   const isInvalid =
     state.firstName === "" ||
     state.lastName === "" ||
@@ -134,7 +138,7 @@ function RegistrationScreen() {
           <div>
             <Form.Group controlId="formBasicCheckbox" style={groupStyle}>
               <Form.Check
-                onChange={changeInput}
+                onClick={makeItChecked}
                 defaultChecked={state.checked}
                 type="checkbox"
               />
@@ -163,9 +167,10 @@ function RegistrationScreen() {
 }
 
 function Terms() {
-  const [isOpen, setIsOpen] = useState(false);
-  const goBacktoRegScreen = () => {
-    setIsOpen(!isOpen);
+  const [isOpen, setIsOpen] = useState();
+  const goBacktoRegScreen = (event) => {
+    setIsOpen(!isOpen );
+    event.preventDefault()
   };
   return (
     <Popup
