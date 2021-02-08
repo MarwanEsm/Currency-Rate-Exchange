@@ -39,7 +39,7 @@ function ResetPassword() {
           Reset Password
         </Button>
         <div>
-          <a href="/LandingScreen" style={aStyle}>
+          <a href="/" style={aStyle}>
             Home
           </a>
         </div>
@@ -65,7 +65,7 @@ const divStyle = {
 
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 12,
+  fontSize: 13,
   textDecoration: "underline",
   color: "#ff8000",
 };

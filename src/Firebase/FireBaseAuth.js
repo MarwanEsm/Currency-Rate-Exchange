@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import firebase from "./FirebaseConfig";
 // import firebase from "firebase/app";
@@ -16,7 +16,7 @@ const initContext = {
 
 export const AuthContext = createContext(initContext);
 export const AuthContextProvider = ({ children }) => {
-  const history = useHistory();
+  // const history = useHistory();
   const db = firebase.firestore();
   const [user, setUser] = useState(initContext.user);
 

@@ -8,12 +8,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 
 function RegistrationScreen() {
-  const [isOpen, setIsOpen] = useState({ isOpen: false });
-  const goBacktoRegScreen = (event) => {
-    setIsOpen(!isOpen);
+  const [isOpen, setIsOpen] = useState({ isOpen: true });
+
+  const closePopup = (event) => {
+    setIsOpen({ isOpen: false });
     event.preventDefault();
   };
+  
   const { register } = useContext(AuthContext);
+
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
@@ -52,7 +55,7 @@ function RegistrationScreen() {
   return (
     <div>
       <div style={divStyle}>
-        <Form onSubmit={register}>
+        <Form>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridfName">
               <Form.Label>First Name</Form.Label>
@@ -146,7 +149,7 @@ function RegistrationScreen() {
                 defaultChecked={state.checked}
                 type="checkbox"
               />
-              <Terms goBacktoRegScreen={goBacktoRegScreen} />
+              <Terms closePopup={closePopup} />
             </Form.Group>
           </div>
 
@@ -154,7 +157,7 @@ function RegistrationScreen() {
             variant="warning"
             type="submit"
             style={buttonStyle}
-            // onClick={register}
+            onClick={register}
             disabled={isInvalid}
           >
             Register
@@ -170,7 +173,7 @@ function RegistrationScreen() {
   );
 }
 
-function Terms({ goBacktoRegScreen }) {
+function Terms({ closePopup }) {
   return (
     <Popup
       trigger={<a style={a1Style}>Agree to terms and conditions</a>}
@@ -185,7 +188,7 @@ function Terms({ goBacktoRegScreen }) {
           variant="warning"
           type="submit"
           style={buttonStyle}
-          onClick={goBacktoRegScreen}
+          onClick={closePopup}
         >
           Accept
         </Button>

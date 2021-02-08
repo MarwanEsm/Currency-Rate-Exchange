@@ -8,36 +8,34 @@ import RegistrationScreen from "./RegistrationScreen/RegistrationScreen";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import CurrenciesContextProvider from "./Components/CurrenciesContext";
 import ResetPassword from "./LogInscreen/ResetPassword";
-import AuthContextProvider from "./Firebase/FireBaseAuth";
+
 
 export default function App() {
   return (
     <Router>
       <div className="App">
-        <AuthContextProvider>
-          <CurrenciesContextProvider>
-            <Switch>
-              <Route exact path="/LandingScreen">
-                <LandingScreen />
-              </Route>
-              <Route path="/LogInScreen">
-                <LogInScreen />
-              </Route>
-              <Route exact path="/CurrenciesListScreen">
-                <CurrenciesListScreen />
-              </Route>
-              <Route path="/CurrenciesList/:currency">
-                <ExchangeRateList />
-              </Route>
-              <Route exact path="/RegistrationScreen">
-                <RegistrationScreen />
-              </Route>
-              <Route path="/ResetPassword">
-                <ResetPassword />
-              </Route>
-            </Switch>
-          </CurrenciesContextProvider>
-        </AuthContextProvider>
+        <CurrenciesContextProvider>
+          <Switch>
+            <Route exact path="/">
+              <LandingScreen />
+            </Route>
+            <Route path="/LogInScreen">
+              <LogInScreen />
+            </Route>
+            <Route exact path="/CurrenciesListScreen">
+              <CurrenciesListScreen />
+            </Route>
+            <Route path="/CurrenciesList/:currency">
+              <ExchangeRateList />
+            </Route>
+            <Route exact path="/RegistrationScreen">
+              <RegistrationScreen />
+            </Route>
+            <Route path="/ResetPassword">
+              <ResetPassword />
+            </Route>
+          </Switch>
+        </CurrenciesContextProvider>
       </div>
     </Router>
   );

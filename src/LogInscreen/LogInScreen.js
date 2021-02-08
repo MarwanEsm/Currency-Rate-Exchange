@@ -2,11 +2,11 @@ import React, {useContext} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useHistory } from "react-router-dom";
-// import { AuthContext } from '../Firebase/FireBaseAuth';
+import { AuthContext } from '../Firebase/FireBaseAuth';
 
 
 function LogInScreen() {
-  // const { login } = useContext (AuthContext)
+  const { login } = useContext (AuthContext)
   const history = useHistory();
   const signInAndDisplayCurrenciesList = (event) => {
     event.preventDefault();

@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 
 function Converter({ searchedCurrency }) {
-  const { exchangeRates, currencies } = useContext(CurrenciesContext);
+  const { exchangeRates } = useContext(CurrenciesContext);
 
   const [fromCurrency, setFromCurrency] = useState("");
   const updateInputValue = (event) => {
