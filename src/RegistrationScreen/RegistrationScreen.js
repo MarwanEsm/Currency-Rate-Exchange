@@ -6,9 +6,13 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "../Firebase/FireBaseAuth";
-// import { Redirect } from 'react-router-dom';
 
 function RegistrationScreen() {
+  const [isOpen, setIsOpen] = useState({ isOpen: false });
+  const goBacktoRegScreen = (event) => {
+    setIsOpen(!isOpen);
+    event.preventDefault();
+  };
   const { register } = useContext(AuthContext);
   const [state, setState] = useState({
     firstName: "",
@@ -28,12 +32,11 @@ function RegistrationScreen() {
     setState({
       ...state,
       [event.target.name]: value,
-      [event.target.defaultChecked]: true,
     });
   };
 
   const makeItChecked = () => {
-    setState({ checked: true });
+    setState({ ...state, checked: !state.checked });
   };
 
   const isInvalid =
@@ -143,7 +146,7 @@ function RegistrationScreen() {
                 defaultChecked={state.checked}
                 type="checkbox"
               />
-              <Terms />
+              <Terms goBacktoRegScreen={goBacktoRegScreen} />
             </Form.Group>
           </div>
 
@@ -167,12 +170,7 @@ function RegistrationScreen() {
   );
 }
 
-function Terms() {
-  const [isOpen, setIsOpen] = useState();
-  const goBacktoRegScreen = (event) => {
-    setIsOpen(!isOpen);
-    event.preventDefault();
-  };
+function Terms({ goBacktoRegScreen }) {
   return (
     <Popup
       trigger={<a style={a1Style}>Agree to terms and conditions</a>}

@@ -1,8 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-// import firebase from "./FirebaseConfig";
-import firebase from "firebase/app";
-import "firebase/firestore";
+import firebase from "./FirebaseConfig";
+// import firebase from "firebase/app";
+
 
 const initContext = {
   user: null,
