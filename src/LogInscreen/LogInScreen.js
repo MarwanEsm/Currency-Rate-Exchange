@@ -6,7 +6,7 @@ import { AuthContext } from '../Firebase/FireBaseAuth';
 
 
 function LogInScreen() {
-  const { login } = useContext (AuthContext)
+  // const { login } = useContext (AuthContext)
   const history = useHistory();
   const signInAndDisplayCurrenciesList = (event) => {
     event.preventDefault();

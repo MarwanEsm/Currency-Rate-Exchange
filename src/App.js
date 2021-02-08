@@ -8,6 +8,7 @@ import RegistrationScreen from "./RegistrationScreen/RegistrationScreen";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import CurrenciesContextProvider from "./Components/CurrenciesContext";
 import ResetPassword from "./LogInscreen/ResetPassword";
+import Chat from './ChatForum/ChatScreen';
 
 
 export default function App() {
@@ -33,6 +34,9 @@ export default function App() {
             </Route>
             <Route path="/ResetPassword">
               <ResetPassword />
+            </Route>
+            <Route exact path='/ChatScreen'>
+              <Chat/>
             </Route>
           </Switch>
         </CurrenciesContextProvider>
