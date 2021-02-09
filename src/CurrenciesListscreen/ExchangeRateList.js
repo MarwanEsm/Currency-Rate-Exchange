@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import Convert from "./Converter";
 
+
+
 function ExchangeRateList() {
   const { fetchExchangeRate, exchangeRates } = useContext(CurrenciesContext);
   const { currency } = useParams();

@@ -1,17 +1,48 @@
-import React, {useContext} from "react";
+import React, { useContext, useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { useHistory } from "react-router-dom";
-import { AuthContext } from '../Firebase/FireBaseAuth';
-
+import { AuthContext } from "../Firebase/FireBaseAuth";
+import { Redirect } from "react-router-dom";
 
 function LogInScreen() {
-  // const { login } = useContext (AuthContext)
-  const history = useHistory();
-  const signInAndDisplayCurrenciesList = (event) => {
-    event.preventDefault();
-    history.push("/CurrenciesListScreen");
+  const [state, setState] = useState({
+    email: "",
+    password: "",
+  });
+  const handelChange = (e) => {
+    const value = e.target.value;
+    setState({ ...state, [e.target.name]: value });
   };
+  // const [isAuthenticated, setIsAuthenticated] = useState();
+  // const signIn = (event) => {
+  //   if ({ user: isAuthenticated } ) {
+  //     event.preventDefault();
+  //     login();
+
+  //   } else {
+  //     alert('Please register')
+  //   }
+  // }
+
+  // const [isAuthint, setLogedIn] = useState(false);
+  const { login, user } = useContext(AuthContext);
+  const signIn = (event) => {
+    if ( state.email === "" || state.password === "") {
+      return <Redirect to="/LoginScreen" />;
+    } else if ({ user: user }){
+      login();
+      event.preverntDefault()
+     
+    }
+  };
+
+  // const { user } = useContext(AuthContext);
+  // if (user) {
+  //   return <Redirect to="/CurrenciesList" />;
+  // } else {
+  //   alert("Please sign up");
+  // }
+
   return (
     <div>
       <Form>
@@ -21,7 +52,10 @@ function LogInScreen() {
             type="email"
             placeholder="Enter email"
             data-ng-init="resp()"
+            name="email"
             style={inputlStyle}
+            onChange={handelChange}
+            value={state.email}
           />
           <Form.Text style={textStyle}>
             We'll never share your email with anyone else.
@@ -34,7 +68,10 @@ function LogInScreen() {
             type="password"
             placeholder="Password"
             data-ng-init="resp()"
+            name="password"
             style={inputlStyle}
+            onChange={handelChange}
+            value={state.password}
           />
         </Form.Group>
         <br />
@@ -47,7 +84,7 @@ function LogInScreen() {
           variant="warning"
           type="submit"
           style={buttonStyle}
-          onClick={signInAndDisplayCurrenciesList}
+          onClick={signIn}
         >
           Sign in
         </Button>
@@ -91,7 +128,7 @@ const a2Style = {
   paddingTop: 10,
   paddingBottom: 20,
   color: "#ff8000",
-  cursor:'pointer',
+  cursor: "pointer",
 };
 
 export default LogInScreen;

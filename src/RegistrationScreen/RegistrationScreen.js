@@ -14,7 +14,7 @@ function RegistrationScreen() {
     setOpen(false);
     event.preventDefault();
   };
-  
+
   const { register } = useContext(AuthContext);
 
   const [state, setState] = useState({
@@ -42,7 +42,7 @@ function RegistrationScreen() {
     setState({ ...state, checked: !state.checked });
   };
   const handleRegister = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     register(state);
   };
 
@@ -185,22 +185,20 @@ function RegistrationScreen() {
 
 function Terms({ closePopup }) {
   return (
-    
-      <div>
-        <p style={pStyle}>Terms Of Service</p>
-        <h3 style={h3Style}>
-          Make sure you're enjoying your life and enjoy using this App either :)
-        </h3>
-        <Button
-          variant="warning"
-          type="submit"
-          style={buttonStyle}
-          onClick={closePopup}
-        >
-          Accept
-        </Button>
-      </div>
-  
+    <div>
+      <p style={pStyle}>Terms Of Service</p>
+      <h3 style={h3Style}>
+        Make sure you're enjoying your life and enjoy using this App either :)
+      </h3>
+      <Button
+        variant="warning"
+        type="submit"
+        style={buttonStyle}
+        onClick={closePopup}
+      >
+        Accept
+      </Button>
+    </div>
   );
 }
 

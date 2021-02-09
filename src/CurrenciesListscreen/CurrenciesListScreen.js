@@ -1,9 +1,6 @@
 import React from "react";
 import CurrenciesList from "./CurrenciesList";
 
-
-
-
 function CurrenciesListScreen() {
   return (
     <div>
