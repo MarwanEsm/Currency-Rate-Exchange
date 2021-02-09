@@ -8,10 +8,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 
 function RegistrationScreen() {
-  const [isOpen, setIsOpen] = useState({ isOpen: true });
+  const [open, setOpen] = useState(false);
 
   const closePopup = (event) => {
-    setIsOpen({ isOpen: false });
+    setOpen(false);
     event.preventDefault();
   };
   
@@ -40,6 +40,10 @@ function RegistrationScreen() {
 
   const makeItChecked = () => {
     setState({ ...state, checked: !state.checked });
+  };
+  const handleRegister = (e) => {
+    e.preventDefault()
+    register(state);
   };
 
   const isInvalid =
@@ -149,7 +153,13 @@ function RegistrationScreen() {
                 defaultChecked={state.checked}
                 type="checkbox"
               />
-              <Terms closePopup={closePopup} />
+              <Popup
+                open={open}
+                trigger={<a style={a1Style}>Agree to terms and conditions</a>}
+                position="center-top"
+              >
+                <Terms closePopup={closePopup} />
+              </Popup>
             </Form.Group>
           </div>
 
@@ -157,7 +167,7 @@ function RegistrationScreen() {
             variant="warning"
             type="submit"
             style={buttonStyle}
-            onClick={register}
+            onClick={handleRegister}
             disabled={isInvalid}
           >
             Register
@@ -175,10 +185,7 @@ function RegistrationScreen() {
 
 function Terms({ closePopup }) {
   return (
-    <Popup
-      trigger={<a style={a1Style}>Agree to terms and conditions</a>}
-      position="center-top"
-    >
+    
       <div>
         <p style={pStyle}>Terms Of Service</p>
         <h3 style={h3Style}>
@@ -193,7 +200,7 @@ function Terms({ closePopup }) {
           Accept
         </Button>
       </div>
-    </Popup>
+  
   );
 }
 
