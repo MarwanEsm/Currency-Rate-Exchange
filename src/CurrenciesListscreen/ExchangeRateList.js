@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import Convert from "./Converter";
+import { AuthContext } from "../Firebase/FireBaseAuth";
+import firebase from "../Firebase/FirebaseConfig";
 
 
 
@@ -78,7 +80,7 @@ function ExchangeRateList() {
       </div>
 
       <div style={divStyle}>
-        <a href="/LandingScreen" style={aStyle}>
+        <a href="/LandingScreen" style={aStyle} onClick={()=> firebase.auth().signOut()}>
           Logout
         </a>
         <a href="/Chat" style={aStyle}>

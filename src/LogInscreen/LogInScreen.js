@@ -2,43 +2,27 @@ import React, { useContext, useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { AuthContext } from "../Firebase/FireBaseAuth";
-import { Redirect } from "react-router-dom";
+
 
 function LogInScreen() {
   const [state, setState] = useState({
     email: "",
     password: "",
   });
+
+  const { login, user } = useContext(AuthContext);
+
   const handelChange = (e) => {
     const value = e.target.value;
     setState({ ...state, [e.target.name]: value });
   };
-  // const [isAuthenticated, setIsAuthenticated] = useState();
-  // const signIn = (event) => {
-  //   if ({ user: isAuthenticated } ) {
-  //     event.preventDefault();
-  //     login();
 
-  //   } else {
-  //     alert('Please register')
-  //   }
-  // }
+  const handelLogin = (event) => {
+    event.preventDefault();
+    login(state);
+  };
 
-  // const [isAuthint, setLogedIn] = useState(false);
-  const { login, user } = useContext(AuthContext);
-  // const signIn = (event) => {
-  //   event.preverntDefault();
-  //   if ({ user }) {
-  //     login();
-  //   } else {
-  //     alert("Please sign up");
-  //   }
-  // };
-
-  // if (user) {
-  //   return <Redirect to="/CurrenciesList" />;
-  // } else {
-  //   alert("Please sign up");
+  const invalid = state.email === "" || state.password === "";
 
   return (
     <div>
@@ -79,9 +63,9 @@ function LogInScreen() {
         </div>
         <Button
           variant="warning"
-          type="submit"
           style={buttonStyle}
-          onClick={login}
+          disabled={invalid}
+          onClick={handelLogin}
         >
           Sign in
         </Button>

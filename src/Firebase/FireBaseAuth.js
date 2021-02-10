@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-// import { useHistory } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import firebase from "./FirebaseConfig";
 
 const initContext = {
@@ -17,10 +17,19 @@ export const AuthContextProvider = ({ children }) => {
   const db = firebase.firestore();
   const [user, setUser] = useState(initContext.user);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // let history = useHistory();
-  // useEffect(() => {
-  //   firebase.auth().onAuthStateChanged(setUser);
-  // }, []);
+
+  let history = useHistory();
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        setUser(user);
+        setIsAuthenticated(true);
+      }
+      // else {
+      //   return <Redirect to="/LoginScreen" />;
+      // }
+    });
+  }, []);
 
   const register = ({ email, password, firstName, lastName }) => {
     firebase
@@ -33,35 +42,34 @@ export const AuthContextProvider = ({ children }) => {
           firstName: firstName,
           lastName: lastName,
         });
-        // setIsAuthenticated(true)
       })
 
       .catch((error) => {
-        var errorMessage = error.message;
-        console.log("error", errorMessage);
+        var errorCode = error.code;
+        console.log("error", errorCode);
       });
   };
 
   const login = async ({ email, password }) => {
-    // if ({ user: isAuthenticated }) {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         setUser(user);
-        // if({user}){
-        //   history.push("/CurrenciesList");
-        // }
+        console.log(user);
+
+        history.push("/CurrenciesListScreen");
+        
       })
       .catch((error) => {
         var errorMessage = error.message;
-        console.log("error", errorMessage);
+        alert("error", errorMessage);
       });
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register }}>
+    <AuthContext.Provider value={{ user, login, register, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

@@ -26,7 +26,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={fromCurrency}
+            value={fromCurrency.toLocaleString()}
             onChange={updateInputValue}
           />
         </div>
@@ -43,14 +43,13 @@ function Converter({ searchedCurrency }) {
         </Button>
       </div>
       <br />
-      
+
       <div>
         <div className="input-group">
           <input
             type="number"
             className="form-control"
-            value={parseFloat(toCurrency).toFixed(6)}
-           
+            value={parseFloat(toCurrency).toFixed(6).toLocaleString()}
           />
         </div>
       </div>
