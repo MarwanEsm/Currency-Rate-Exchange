@@ -41,9 +41,9 @@ function RegistrationScreen() {
   const makeItChecked = () => {
     setState({ ...state, checked: !state.checked });
   };
-  const handleRegister = (e) => {
-    e.preventDefault();
+  const handleRegister = () => {
     register(state);
+    alert("thank you for submitting your details");
   };
 
   const isInvalid =
@@ -138,7 +138,7 @@ function RegistrationScreen() {
             <Form.Group as={Col} controlId="formGridZip">
               <Form.Label>Zip</Form.Label>
               <Form.Control
-                type="text"
+                type="number"
                 name="zip"
                 value={state.zip}
                 onChange={changeInput}
