@@ -23,7 +23,7 @@ export const ChatContextProvider = ({ children }) => {
   const getMessages = () => {
     db.collection("messages")
       .get()
-      .then((querySnapshots) => {
+      .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           const messagesArray = [];
           messagesArray.push(doc.data());
@@ -31,4 +31,22 @@ export const ChatContextProvider = ({ children }) => {
         setMessages(messagesArray);
       });
   };
+
+  const writeMessages = () => {
+    db.collection("messages")
+      .add({
+        body,
+        userName: user.firstName,
+        timeStamp: new Date(),
+      })
+      .then((docRef) => {
+        getMessages();
+      });
+  };
+
+  return (
+    <ChatContext.Provider value={{ messages, getMessages, writeMessages }}>
+      {children}
+    </ChatContext.Provider>
+  );
 };
