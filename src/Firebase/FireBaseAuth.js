@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 import firebase from "./FirebaseConfig";
 
 const initContext = {
@@ -17,10 +17,10 @@ export const AuthContextProvider = ({ children }) => {
   const db = firebase.firestore();
   const [user, setUser] = useState(initContext.user);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  let history = useHistory();
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(setUser);
-  }, []);
+  // let history = useHistory();
+  // useEffect(() => {
+  //   firebase.auth().onAuthStateChanged(setUser);
+  // }, []);
 
   const register = ({ email, password, firstName, lastName }) => {
     firebase
@@ -33,6 +33,7 @@ export const AuthContextProvider = ({ children }) => {
           firstName: firstName,
           lastName: lastName,
         });
+        // setIsAuthenticated(true)
       })
 
       .catch((error) => {
@@ -42,12 +43,16 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const login = async ({ email, password }) => {
+    // if ({ user: isAuthenticated }) {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         setUser(user);
+        // if({user}){
+        //   history.push("/CurrenciesList");
+        // }
       })
       .catch((error) => {
         var errorMessage = error.message;

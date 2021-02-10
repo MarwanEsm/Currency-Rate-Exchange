@@ -26,22 +26,19 @@ function LogInScreen() {
 
   // const [isAuthint, setLogedIn] = useState(false);
   const { login, user } = useContext(AuthContext);
-  const signIn = (event) => {
-    if ( state.email === "" || state.password === "") {
-      return <Redirect to="/LoginScreen" />;
-    } else if ({ user: user }){
-      login();
-      event.preverntDefault()
-     
-    }
-  };
+  // const signIn = (event) => {
+  //   event.preverntDefault();
+  //   if ({ user }) {
+  //     login();
+  //   } else {
+  //     alert("Please sign up");
+  //   }
+  // };
 
-  // const { user } = useContext(AuthContext);
   // if (user) {
   //   return <Redirect to="/CurrenciesList" />;
   // } else {
   //   alert("Please sign up");
-  // }
 
   return (
     <div>
@@ -84,7 +81,7 @@ function LogInScreen() {
           variant="warning"
           type="submit"
           style={buttonStyle}
-          onClick={signIn}
+          onClick={login}
         >
           Sign in
         </Button>
