@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import firebase from "./FirebaseConfig";
 
 const initContext = {
@@ -25,9 +25,6 @@ export const AuthContextProvider = ({ children }) => {
         setUser(user);
         setIsAuthenticated(true);
       }
-      // else {
-      //   return <Redirect to="/LoginScreen" />;
-      // }
     });
   }, []);
 
@@ -58,13 +55,12 @@ export const AuthContextProvider = ({ children }) => {
         const user = userCredential.user;
         setUser(user);
         console.log(user);
-
         history.push("/CurrenciesListScreen");
-        
       })
       .catch((error) => {
         var errorMessage = error.message;
-        alert("error", errorMessage);
+        alert(errorMessage, "Please signup");
+        console.log("error", errorMessage);
       });
   };
 

@@ -10,7 +10,7 @@ function LogInScreen() {
     password: "",
   });
 
-  const { login, user } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   const handelChange = (e) => {
     const value = e.target.value;

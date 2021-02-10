@@ -54,7 +54,7 @@ function RegistrationScreen() {
     state.country === "" ||
     state.city === "" ||
     state.zip === "" ||
-    state.checked == false;
+    state.checked === false;
 
   return (
     <div>
@@ -155,7 +155,7 @@ function RegistrationScreen() {
               />
               <Popup
                 open={open}
-                trigger={<a style={a1Style}>Agree to terms and conditions</a>}
+                trigger={<a href='' style={a1Style}>Agree to terms and conditions</a>}
                 position="center-top"
               >
                 <Terms closePopup={closePopup} />

@@ -43,15 +43,15 @@ function Chat() {
   );
 }
 
-const controlStyle = {
-  width: "70%",
-  height: "70%",
-  marginBottom: "10%",
-  marginLeft: "20%",
-  marginRight: "20%",
-  marginTop: "10%",
-  border: "bold",
-};
+// const controlStyle = {
+//   width: "70%",
+//   height: "70%",
+//   marginBottom: "10%",
+//   marginLeft: "20%",
+//   marginRight: "20%",
+//   marginTop: "10%",
+//   border: "bold",
+// };
 
 const contro1lStyle = {
   width: "70%",

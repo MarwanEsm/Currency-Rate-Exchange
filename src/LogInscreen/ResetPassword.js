@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function ResetPassword() {
-  const history = useHistory;
   const [email, setEmail] = useState();
   const enterEmail = (event) => {
     const enteredEmail = event.target.value;
     setEmail(enteredEmail);
   };
 
+  const invalid = email === '';
   return (
     <div style={divStyle}>
       <Form>
@@ -33,8 +32,11 @@ function ResetPassword() {
           type="submit"
           style={buttonStyle}
           onClick={() => {
-            alert("Please check your Email inbox");
+            alert(
+              "If you're already registered with us, we will send you a reset password link to your Email "
+            );
           }}
+          disabled={invalid}
         >
           Reset Password
         </Button>
