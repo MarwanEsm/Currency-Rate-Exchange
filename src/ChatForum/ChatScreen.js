@@ -13,13 +13,13 @@ function Chat() {
 
   // const [intialPosts, setInitialPosts] = useState();
 
-  const postText = (newText) => {
-    return (
-      <div>
-        <h1>{newText}</h1>
-      </div>
-    );
-  };
+  // const postText = (newText) => {
+  //   return (
+  //     <div>
+  //       <h1>{newText}</h1>
+  //     </div>
+  //   );
+  // };
   return (
     <div>
       {/* <InputGroup className="mb-3" style={controlStyle}>
