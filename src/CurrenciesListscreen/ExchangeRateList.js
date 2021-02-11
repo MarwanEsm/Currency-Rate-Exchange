@@ -82,7 +82,7 @@ function ExchangeRateList() {
         <a href="/" style={aStyle} onClick={()=> firebase.auth().signOut()}>
           Logout
         </a>
-        <a href="/Chat" style={aStyle}>
+        <a href="/ChatScreen" style={aStyle}>
           Chat with us
         </a>
       </div>
