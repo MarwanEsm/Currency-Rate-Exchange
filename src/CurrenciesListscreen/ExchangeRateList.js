@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import Convert from "./Converter";
 import firebase from "../Firebase/FirebaseConfig";
-
+import { Link } from "react-router-dom";
 
 
 function ExchangeRateList() {
@@ -79,12 +79,12 @@ function ExchangeRateList() {
       </div>
 
       <div style={divStyle}>
-        <a href="/" style={aStyle} onClick={()=> firebase.auth().signOut()}>
+        <Link to="/" style={aStyle} onClick={()=> firebase.auth().signOut()}/>
           Logout
-        </a>
-        <a href="/ChatScreen" style={aStyle}>
+       
+        <Link to="/ChatScreen" style={aStyle}/>
           Chat with us
-        </a>
+       
       </div>
       <br />
     </div>

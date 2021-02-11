@@ -6,6 +6,7 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "../Firebase/FireBaseAuth";
+import { Link } from "react-router-dom";
 
 function RegistrationScreen() {
   const [open, setOpen] = useState(false);
@@ -163,9 +164,9 @@ function RegistrationScreen() {
               <Popup
                 open={open}
                 trigger={
-                  <a href="" style={a1Style} onClick={preventReload}>
+                  <Link to="" style={a1Style} onClick={preventReload}>
                     Agree to terms and conditions
-                  </a>
+                  </Link>
                 }
                 position="center-top"
               >
@@ -186,9 +187,9 @@ function RegistrationScreen() {
         </Form>
         <br />
 
-        <a href="/LogInScreen" style={aStyle}>
+        <Link to="/LogInScreen" style={aStyle}/>
           Back to Log in
-        </a>
+        
       </div>
     </div>
   );

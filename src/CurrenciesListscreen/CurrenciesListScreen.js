@@ -1,14 +1,15 @@
 import React from "react";
 import CurrenciesList from "./CurrenciesList";
+import { Link } from "react-router-dom";
 
 function CurrenciesListScreen() {
   return (
     <div>
       <CurrenciesList />
       <br />
-      <a href="/" style={aStyle}>
+      <Link  to ="/" style={aStyle}/>
         Log out
-      </a>
+      
     </div>
   );
 }

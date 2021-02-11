@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 
 
@@ -7,9 +8,9 @@ function RegistrationLink() {
   return (
     <div>
       <h3 style={h3Style}>Don't have an account?</h3>
-          <a href='/RegistrationScreen' style={aStyle}>
+          <Link hto ='/RegistrationScreen' style={aStyle}/>
         Click here to register
-      </a>
+      
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { AuthContext } from "../Firebase/FireBaseAuth";
+import { Link } from "react-router-dom";
 
 
 function LogInScreen() {
@@ -57,9 +58,9 @@ function LogInScreen() {
         </Form.Group>
         <br />
         <div>
-          <a href="/Resetpassword" style={a2Style}>
+          <Link to="/Resetpassword" style={a2Style}/>
             Forgot Password ?
-          </a>
+          
         </div>
         <Button
           variant="warning"
@@ -71,9 +72,9 @@ function LogInScreen() {
         </Button>
       </Form>
       <br />
-      <a href="/" style={a2Style}>
+      <Link to="/" style={a2Style}/>
         Back
-      </a>
+     
     </div>
   );
 }
