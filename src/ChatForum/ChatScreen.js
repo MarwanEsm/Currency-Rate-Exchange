@@ -9,8 +9,9 @@ import firebase from "../Firebase/FirebaseConfig";
 
 function ChatScreen() {
   const { messages, writeMessages } = useContext(ChatContext);
-  const { isAuthenticated } = useContext(AuthContext);
+  const { user, isAuthenticated } = useContext(AuthContext);
   const [body, setBody] = useState("");
+
   const updateText = (event) => {
     const newText = event.target.value;
     setBody(newText);
@@ -46,9 +47,9 @@ function ChatScreen() {
         messages.map((message, index) => {
           return (
             <div>
-              {/* <h1>{message.userName}</h1>  */}
-              <h2>{message.body}</h2>
-              {/* <h2>{message.timestamp}</h2> */}
+              <h1 style={h1Style}>{message.firstName}</h1>
+              <h2 style={h2Style}>{message.body}</h2>
+              {/* <h2 style={h2Style}>{message.timestamp}</h2> */}
             </div>
           );
         })
@@ -80,7 +81,16 @@ const aStyle = {
   textDecoration: "underline",
   color: "#ff8000",
   marginBottom: "10%",
-  marginTop:'10%',
+  marginTop: "10%",
 };
 
+
+const h2Style = {
+  fontSize: 15,
+  
+}
+
+const h1Style = {
+  fontSize:12,
+}
 export default ChatScreen;

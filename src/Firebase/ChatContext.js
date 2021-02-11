@@ -40,7 +40,7 @@ export const ChatContextProvider = ({ children }) => {
     db.collection("messages")
       .add({
         body,
-        // userName: user.firstName,
+        firstName: user.displayName,
         // timeStamp: new Date(),
       })
       .then((docRef) => {
