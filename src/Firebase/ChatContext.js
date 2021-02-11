@@ -40,8 +40,8 @@ export const ChatContextProvider = ({ children }) => {
     db.collection("messages")
       .add({
         body,
-        userName: user.displayName,
-        timeStamp: new Date(),
+        // userName: user.firstName,
+        // timeStamp: new Date(),
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);
@@ -58,6 +58,5 @@ export const ChatContextProvider = ({ children }) => {
     </ChatContext.Provider>
   );
 };
-
 
 export default ChatContextProvider;

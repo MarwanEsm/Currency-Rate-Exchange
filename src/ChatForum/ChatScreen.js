@@ -5,11 +5,12 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { ChatContext } from "../Firebase/ChatContext";
 import { AuthContext } from "../Firebase/FireBaseAuth";
+import firebase from "../Firebase/FirebaseConfig";
 
 function ChatScreen() {
-  const { messages, writeMessages, getMessages } = useContext(ChatContext);
+  const { messages, writeMessages } = useContext(ChatContext);
   const { isAuthenticated } = useContext(AuthContext);
-  const [body, setBody] = useState('');
+  const [body, setBody] = useState("");
   const updateText = (event) => {
     const newText = event.target.value;
     setBody(newText);
@@ -21,9 +22,15 @@ function ChatScreen() {
 
   return (
     <div>
+      <div style={divStyle}>
+        <a href="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
+          Logout
+        </a>
+      </div>
+
       <InputGroup className="mb-3" style={contro1lStyle}>
         <Form.Control
-          type='message'
+          type="message"
           placeholder="Type your message"
           aria-describedby="basic-addon2"
           value={body}
@@ -35,14 +42,13 @@ function ChatScreen() {
           </Button>
         </InputGroup.Append>
       </InputGroup>
-
       {messages ? (
         messages.map((message, index) => {
           return (
             <div>
-              <h1>{message.dispalyName}</h1>
+              {/* <h1>{message.userName}</h1>  */}
               <h2>{message.body}</h2>
-            
+              {/* <h2>{message.timestamp}</h2> */}
             </div>
           );
         })
@@ -60,6 +66,21 @@ const contro1lStyle = {
   marginRight: "20%",
   marginTop: "10%",
   marginLeft: "20%",
+};
+
+const divStyle = {
+  display: "flex",
+  justifyContent: "space-around",
+  alignItems: "center",
+};
+
+const aStyle = {
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontSize: 13,
+  textDecoration: "underline",
+  color: "#ff8000",
+  marginBottom: "10%",
+  marginTop:'10%',
 };
 
 export default ChatScreen;
