@@ -11,8 +11,9 @@ function RegistrationScreen() {
   const [open, setOpen] = useState(false);
 
   const closePopup = (event) => {
-    setOpen(false);
     event.preventDefault();
+    setOpen(true);
+    
   };
 
   const { register } = useContext(AuthContext);
@@ -31,11 +32,16 @@ function RegistrationScreen() {
 
   const changeInput = (event) => {
     const value = event.target.value;
+    event.preventDefault();
 
     setState({
       ...state,
       [event.target.name]: value,
     });
+  };
+
+  const preventReload = (event) => {
+    event.preventDefault();
   };
 
   const makeItChecked = () => {
@@ -155,7 +161,11 @@ function RegistrationScreen() {
               />
               <Popup
                 open={open}
-                trigger={<a href='' style={a1Style}>Agree to terms and conditions</a>}
+                trigger={
+                  <a href="" style={a1Style} onClick={preventReload}>
+                    Agree to terms and conditions
+                  </a>
+                }
                 position="center-top"
               >
                 <Terms closePopup={closePopup} />

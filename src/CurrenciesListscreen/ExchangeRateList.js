@@ -40,7 +40,7 @@ function ExchangeRateList() {
     <div>
       <h2 style={h2Style}>Selected currency </h2>
       <h3 style={h3Style}>{currency} </h3>
-      <h2 style={h2Style}>Search currency</h2>
+      <h2 style={h2Style}>Conversion currency</h2>
       <input
         id="search"
         type="text"

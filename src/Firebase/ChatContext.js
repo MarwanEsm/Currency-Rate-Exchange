@@ -5,34 +5,36 @@ import firebase from "../Firebase/FirebaseConfig";
 const initContext = {
   messages: [],
 
-  getMessages() {
+  getMessages: () => {
     throw new Error("getMessages() is not implemented");
   },
 
-  writeMessages() {
+  writeMessages: () => {
     throw new Error("write messages() is not implemented");
   },
 };
 
 export const ChatContext = createContext(initContext);
 export const ChatContextProvider = ({ children }) => {
-  const [messages, setMessages] = useSatet(initContext.messages);
+  const [messages, setMessages] = useState(initContext.messages);
   const { user } = useContext(AuthContext);
   const db = firebase.firestore();
-
+  useEffect(() => {
+    getMessages();
+  });
   const getMessages = () => {
     db.collection("messages")
       .get()
       .then((querySnapshot) => {
+        const messagesArray = [];
         querySnapshot.forEach((doc) => {
-          const messagesArray = [];
           messagesArray.push(doc.data());
         });
         setMessages(messagesArray);
       });
   };
 
-  const writeMessages = () => {
+  const writeMessages = async (body) => {
     db.collection("messages")
       .add({
         body,
@@ -40,7 +42,11 @@ export const ChatContextProvider = ({ children }) => {
         timeStamp: new Date(),
       })
       .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
         getMessages();
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
       });
   };
 

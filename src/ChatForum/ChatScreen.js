@@ -1,31 +1,26 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { ChatContext } from "../Firebase/ChatContext";
 
-function Chat() {
+function ChatScreen() {
+  const { writeMessages } = useContext(ChatContext);
   const [text, setText] = useState();
   const updateText = (event) => {
     const newText = event.target.value;
     setText(newText);
+   
   };
 
-  // const [intialPosts, setInitialPosts] = useState();
+  const handelWriteMessages = (text) => {
+    writeMessages(text);
+    console.log(writeMessages);
+  };
 
-  // const postText = (newText) => {
-  //   return (
-  //     <div>
-  //       <h1>{newText}</h1>
-  //     </div>
-  //   );
-  // };
   return (
     <div>
-      {/* <InputGroup className="mb-3" style={controlStyle}>
-        <Form.Control placeholder="" aria-describedby="basic-addon2"  />
-        
-      </InputGroup> */}
       <InputGroup className="mb-3" style={contro1lStyle}>
         <Form.Control
           placeholder="Type your message"
@@ -34,7 +29,7 @@ function Chat() {
           onChange={updateText}
         />
         <InputGroup.Append>
-          <Button variant="outline-secondary" onClick={postText}>
+          <Button variant="outline-secondary" onClick={handelWriteMessages}>
             Send
           </Button>
         </InputGroup.Append>
@@ -42,16 +37,6 @@ function Chat() {
     </div>
   );
 }
-
-// const controlStyle = {
-//   width: "70%",
-//   height: "70%",
-//   marginBottom: "10%",
-//   marginLeft: "20%",
-//   marginRight: "20%",
-//   marginTop: "10%",
-//   border: "bold",
-// };
 
 const contro1lStyle = {
   width: "70%",
@@ -62,4 +47,4 @@ const contro1lStyle = {
   marginLeft: "20%",
 };
 
-export default Chat;
+export default ChatScreen;

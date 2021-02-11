@@ -92,7 +92,6 @@ const labelStyle = {
 
 const textStyle = {
   marginTop: "3%",
-  textDecoration: "underline",
   fontSize: 12,
 };
 
