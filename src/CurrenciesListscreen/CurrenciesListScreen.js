@@ -7,21 +7,13 @@ function CurrenciesListScreen() {
     <div>
       <CurrenciesList />
       <br />
-      <Link  to ="/" style={aStyle}>
+      <Link to="/"  className="badge badge-warning">
         Log out
-        </Link>
-      
+      </Link>
     </div>
   );
 }
 
-const aStyle = {
-  fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 15,
-  textDecoration: "underline",
-  paddingTop: 10,
-  paddingBottom: 20,
-  color: "#ff8000",
-};
+
 
 export default CurrenciesListScreen;

@@ -29,7 +29,7 @@ export default function App() {
                 <Route exact path="/CurrenciesListScreen">
                   <CurrenciesListScreen />
                 </Route>
-                <Route path="/CurrenciesList/:currency">
+                <Route exact path="/CurrenciesList/:currency">
                   <ExchangeRateList />
                 </Route>
                 <Route exact path="/RegistrationScreen">
@@ -38,7 +38,7 @@ export default function App() {
                 <Route path="/ResetPassword">
                   <ResetPassword />
                 </Route>
-                <Route exact path="/ChatScreen">
+                <Route  path="/ChatScreen">
                   <ChatScreen />
                 </Route>
               </Switch>

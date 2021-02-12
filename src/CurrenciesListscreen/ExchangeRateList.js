@@ -2,9 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import Convert from "./Converter";
-import firebase from "../Firebase/FirebaseConfig";
 import { Link } from "react-router-dom";
-
 
 function ExchangeRateList() {
   const { fetchExchangeRate, exchangeRates } = useContext(CurrenciesContext);
@@ -38,17 +36,34 @@ function ExchangeRateList() {
 
   return (
     <div>
+      <div style={divStyle}>
+        <Link
+          to="/CurrenciesListScreen"
+          className="badge badge-secondary"
+          style={linkStyle}
+        >
+          Back
+        </Link>
+        <Link
+          to="/ChatScreen"
+          className="badge badge-warning"
+          style={linkStyle}
+        >
+          Chat
+        </Link>
+      </div>
       <h2 style={h2Style}>Selected currency </h2>
       <h3 style={h3Style}>{currency} </h3>
       <h2 style={h2Style}>Conversion currency</h2>
       <input
         id="search"
         type="text"
-        placeholder="Type here"
+        placeholder="Search here"
         value={searchedCurrency}
         onChange={handleSearch}
         className="form-control"
         style={inputStyle}
+        id="inputGroup-sizing-sm"
       />
 
       <br />
@@ -78,18 +93,6 @@ function ExchangeRateList() {
         <Convert searchedCurrency={searchedCurrency} />
       </div>
 
-      <div style={divStyle}>
-        <Link to="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
-          Logout
-        </Link>
-        <Link to="/CurrenciesListScreen" style={aStyle}>
-          Back
-        </Link>
-
-        <Link to="/ChatScreen" style={aStyle}>
-          Chat
-        </Link>
-      </div>
       <br />
     </div>
   );
@@ -124,18 +127,17 @@ const h3Style = {
   marginTop: "3%",
 };
 
-const aStyle = {
-  fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 13,
-  textDecoration: "underline",
-  color: "#ff8000",
-  marginBottom: "10%",
-};
-
 const divStyle = {
   display: "flex",
   justifyContent: "space-around",
   alignItems: "center",
+  marginTop: "10%",
+  marginLeft: "1%",
+  marginRight: "1%",
+};
+
+const linkStyle = {
+  fontSize: 12,
 };
 
 export default ExchangeRateList;

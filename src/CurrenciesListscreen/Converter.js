@@ -2,14 +2,13 @@ import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 
-
 function Converter({ searchedCurrency }) {
   const { exchangeRates } = useContext(CurrenciesContext);
 
   const [fromCurrency, setFromCurrency] = useState("");
   const updateInputValue = (event) => {
     const inValue = event.target.value;
-    const newInValue = inValue.toLocaleString()
+    const newInValue = inValue.toLocaleString();
     setFromCurrency(newInValue);
   };
 
@@ -30,8 +29,6 @@ function Converter({ searchedCurrency }) {
             className="form-control"
             value={fromCurrency}
             onChange={updateInputValue}
-            thousandseparator={true}
-           
           />
         </div>
       </div>
@@ -53,8 +50,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={parseFloat(toCurrency).toFixed(6).toLocaleString()}
-           
+            value={parseFloat(toCurrency).toFixed(6)}
           />
         </div>
       </div>

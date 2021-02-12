@@ -28,13 +28,17 @@ function ChatScreen() {
       <div style={divStyle}>
         <Link
           to="/ExchangeRateList"
-          style={aStyle}
-          onClick={() => firebase.auth().signOut()}
-          className= 'main-nav'
+          className="badge badge-pill badge-warning"
+          style={linkStyle}
         >
           Back
         </Link>
-        <Link variant="secondary" to="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
+        <Link
+          to="/"
+          onClick={() => firebase.auth().signOut()}
+          className="badge badge-pill badge-warning"
+          style={linkStyle}
+        >
           Logout
         </Link>
       </div>
@@ -89,11 +93,8 @@ const divStyle = {
   alignItems: "center",
 };
 
-const aStyle = {
-  fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 13,
-  textDecoration: "underline",
-  color: "#ff8000",
+const linkStyle = {
+  
   marginBottom: "10%",
   marginTop: "10%",
   

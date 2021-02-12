@@ -70,6 +70,7 @@ const aStyle = {
   fontSize: 13,
   textDecoration: "underline",
   color: "#ff8000",
+  cursor: "pointer",
 };
 
 export default ResetPassword;

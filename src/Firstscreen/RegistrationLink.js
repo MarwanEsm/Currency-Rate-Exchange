@@ -22,11 +22,12 @@ const h3Style = {
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 13,
-  fontWeight :'bold', 
+  fontWeight: "bold",
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 30,
   color: "#ff8000",
+  cursor: "pointer",
 };
 
 export default RegistrationLink;
