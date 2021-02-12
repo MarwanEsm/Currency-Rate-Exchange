@@ -22,6 +22,7 @@ const h3Style = {
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 13,
+  fontWeight :'bold', 
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 30,

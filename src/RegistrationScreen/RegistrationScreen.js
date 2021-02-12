@@ -48,7 +48,7 @@ function RegistrationScreen() {
     setState({ ...state, checked: !state.checked });
   };
   const handleRegister = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     register(state);
     alert("thank you for submitting your details");
   };
@@ -160,12 +160,11 @@ function RegistrationScreen() {
                 defaultChecked={state.checked}
                 type="checkbox"
               />
+
               <Popup
                 open={open}
                 trigger={
-                  <Link style={a1Style} >
-                    Agree to terms and conditions
-                  </Link>
+                  <Link style={a1Style}>Agree to terms and conditions</Link>
                 }
                 position="center-top"
               >
@@ -229,6 +228,7 @@ const divStyle = {
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 13,
+  fontWeight: "bold",
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 20,
