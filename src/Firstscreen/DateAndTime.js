@@ -24,6 +24,7 @@ class DateAndTime extends Component {
     return (
       <div>
         <h1 style={h1Style}>Welcome Back</h1>
+        <br />
         <ShowCurrentDate />
         <h2 style={h2Style}>{this.state.date.toLocaleTimeString()}</h2>
       </div>
@@ -32,23 +33,43 @@ class DateAndTime extends Component {
 }
 
 function ShowCurrentDate() {
+  var months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   const date = new Date().getDate();
-  const month = new Date().getMonth() + 1;
+  var d = new Date();
+  const month = months[d.getMonth()];
   const year = new Date().getFullYear();
   const currentDate = date + "-" + month + "-" + year;
+  // const newCurrentDate = (currentDate.Intl.DateTimeFormatOptions = {
+  //   year: "numeric",
+  //   month: "long",
+  //   day: "numeric",
+  // });
 
   return (
-   
     <div>
-      <h2 style={h2Style}>{currentDate.toLocaleString()}</h2>
+      <h2 style={h2Style}>{currentDate}</h2>
     </div>
   );
 }
 
 const h1Style = {
   fontFamily: "Fantasy ",
-  fontSize: '1rem',
-  paddingTop: 50,
+  fontSize: "1rem",
+  marginTop: "10%",
+  margintBottom: "10%",
 };
 
 const h2Style = {

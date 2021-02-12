@@ -18,7 +18,7 @@ function Icon() {
 }
 
 const imageStyle = {
-  marginTop:50, 
+  marginTop:'10%', 
   borderRadius:6, 
 }
 
