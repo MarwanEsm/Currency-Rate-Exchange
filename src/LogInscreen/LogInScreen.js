@@ -40,7 +40,7 @@ function LogInScreen() {
             value={state.email}
           />
           <Form.Text style={textStyle}>
-            We'll never share your email with anyone else.
+            ( We'll never share your email with anyone else )
           </Form.Text>
         </Form.Group>
 
@@ -58,9 +58,10 @@ function LogInScreen() {
         </Form.Group>
         <br />
         <div>
-          <Link to="/Resetpassword" style={a2Style}/>
+          <Link to="/Resetpassword" style={a2Style}>
             Forgot Password ?
-          
+             </Link>
+             
         </div>
         <Button
           variant="warning"
@@ -72,9 +73,10 @@ function LogInScreen() {
         </Button>
       </Form>
       <br />
-      <Link to="/" style={a2Style}/>
+      <Link to="/" style={a2Style}>
         Back
-     
+         </Link>
+         
     </div>
   );
 }
@@ -92,7 +94,7 @@ const labelStyle = {
 };
 
 const textStyle = {
-  marginTop: "3%",
+  marginTop: "5%",
   fontSize: 12,
 };
 
@@ -104,12 +106,14 @@ const buttonStyle = {
 
 const a2Style = {
   fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 15,
+  fontSize: 14,
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 20,
   color: "#ff8000",
   cursor: "pointer",
 };
+
+
 
 export default LogInScreen;

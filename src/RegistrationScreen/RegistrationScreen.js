@@ -14,7 +14,6 @@ function RegistrationScreen() {
   const closePopup = (event) => {
     event.preventDefault();
     setOpen(true);
-    
   };
 
   const { register } = useContext(AuthContext);
@@ -41,14 +40,15 @@ function RegistrationScreen() {
     });
   };
 
-  const preventReload = (event) => {
-    event.preventDefault();
-  };
+  // const preventReload = (event) => {
+  //   event.preventDefault();
+  // };
 
   const makeItChecked = () => {
     setState({ ...state, checked: !state.checked });
   };
-  const handleRegister = () => {
+  const handleRegister = (event) => {
+    event.preventDefault()
     register(state);
     alert("thank you for submitting your details");
   };
@@ -163,7 +163,7 @@ function RegistrationScreen() {
               <Popup
                 open={open}
                 trigger={
-                  <Link  style={a1Style} onClick={preventReload}>
+                  <Link style={a1Style} >
                     Agree to terms and conditions
                   </Link>
                 }
@@ -176,7 +176,7 @@ function RegistrationScreen() {
 
           <Button
             variant="warning"
-       
+            type="submit"
             style={buttonStyle}
             onClick={handleRegister}
             disabled={isInvalid}

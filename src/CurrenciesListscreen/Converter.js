@@ -30,7 +30,7 @@ function Converter({ searchedCurrency }) {
             className="form-control"
             value={fromCurrency}
             onChange={updateInputValue}
-            thousandSeparator={true}
+            thousandseparator={true}
            
           />
         </div>

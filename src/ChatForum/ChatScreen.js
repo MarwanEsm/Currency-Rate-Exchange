@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect,  } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import { ChatContext } from "../Firebase/ChatContext";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 import firebase from "../Firebase/FirebaseConfig";
+import { Link } from "react-router-dom";
 
 function ChatScreen() {
   const { messages, writeMessages } = useContext(ChatContext);
@@ -24,9 +25,16 @@ function ChatScreen() {
   return (
     <div>
       <div style={divStyle}>
-        <a href="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
+        <Link
+          to="/ExchangeRateList"
+          style={aStyle}
+          onClick={() => firebase.auth().signOut()}
+        >
+          Back
+        </Link>
+        <Link to="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
           Logout
-        </a>
+        </Link>
       </div>
 
       <InputGroup className="mb-3" style={contro1lStyle}>
@@ -49,7 +57,7 @@ function ChatScreen() {
             <div>
               <h1 style={h1Style}>{message.firstName}</h1>
               <h2 style={h2Style}>{message.body}</h2>
-              {/* <h2 style={h2Style}>{message.timestamp}</h2> */}
+              <h2 style={h2Style}>{message.timestamp.toString()}</h2>
             </div>
           );
         })
@@ -66,7 +74,7 @@ const contro1lStyle = {
   border: "bold",
   marginRight: "20%",
   marginTop: "10%",
-  marginLeft: "20%",
+  marginLeft: "14%",
 };
 
 const divStyle = {
@@ -84,13 +92,11 @@ const aStyle = {
   marginTop: "10%",
 };
 
-
 const h2Style = {
   fontSize: 15,
-  
-}
+};
 
 const h1Style = {
-  fontSize:12,
-}
+  fontSize: 12,
+};
 export default ChatScreen;

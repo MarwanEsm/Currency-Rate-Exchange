@@ -79,12 +79,16 @@ function ExchangeRateList() {
       </div>
 
       <div style={divStyle}>
-        <Link to="/" style={aStyle} onClick={()=> firebase.auth().signOut()}/>
+        <Link to="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
           Logout
-       
-        <Link to="/ChatScreen" style={aStyle}/>
-          Chat with us
-       
+        </Link>
+        <Link to="/CurrenciesListScreen" style={aStyle}>
+          Back
+        </Link>
+
+        <Link to="/ChatScreen" style={aStyle}>
+          Chat
+        </Link>
       </div>
       <br />
     </div>

@@ -7,8 +7,9 @@ function CurrenciesListScreen() {
     <div>
       <CurrenciesList />
       <br />
-      <Link  to ="/" style={aStyle}/>
+      <Link  to ="/" style={aStyle}>
         Log out
+        </Link>
       
     </div>
   );
