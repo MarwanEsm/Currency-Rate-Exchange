@@ -1,16 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-
-
 function RegistrationLink() {
-  
   return (
     <div>
       <h3 style={h3Style}>Don't have an account?</h3>
-          <Link hto ='/RegistrationScreen' style={aStyle}/>
+      <Link to="/RegistrationScreen" style={aStyle} >
         Click here to register
-      
+      </Link>
+      <br/>
     </div>
   );
 }
@@ -23,10 +21,10 @@ const h3Style = {
 
 const aStyle = {
   fontFamily: "Trebuchet MS, sans-serif ",
-  fontSize: 12,
+  fontSize: 13,
   textDecoration: "underline",
   paddingTop: 10,
-  paddingBottom: 20,
+  paddingBottom: 30,
   color: "#ff8000",
 };
 

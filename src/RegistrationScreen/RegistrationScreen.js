@@ -48,8 +48,7 @@ function RegistrationScreen() {
   const makeItChecked = () => {
     setState({ ...state, checked: !state.checked });
   };
-  const handleRegister = (event) => {
-    event.preventDefault()
+  const handleRegister = () => {
     register(state);
     alert("thank you for submitting your details");
   };
@@ -164,7 +163,7 @@ function RegistrationScreen() {
               <Popup
                 open={open}
                 trigger={
-                  <Link to="" style={a1Style} onClick={preventReload}>
+                  <Link  style={a1Style} onClick={preventReload}>
                     Agree to terms and conditions
                   </Link>
                 }
@@ -187,9 +186,9 @@ function RegistrationScreen() {
         </Form>
         <br />
 
-        <Link to="/LogInScreen" style={aStyle}/>
+        <Link to="/LogInScreen" style={aStyle}>
           Back to Log in
-        
+        </Link>
       </div>
     </div>
   );
