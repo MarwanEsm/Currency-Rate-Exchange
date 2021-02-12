@@ -14,7 +14,9 @@
     "react-number-format": "^4.4.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "react-web-gifted-chat": "^0.6.7",
     "reactjs-popup": "^2.0.4",
+    "reactjs-simple-gifted-chat": "^2.0.2",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

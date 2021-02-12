@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect,  } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
@@ -7,6 +7,7 @@ import { ChatContext } from "../Firebase/ChatContext";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 import firebase from "../Firebase/FirebaseConfig";
 import { Link } from "react-router-dom";
+import Toast from "react-bootstrap/Toast";
 
 function ChatScreen() {
   const { messages, writeMessages } = useContext(ChatContext);
@@ -29,10 +30,11 @@ function ChatScreen() {
           to="/ExchangeRateList"
           style={aStyle}
           onClick={() => firebase.auth().signOut()}
+          className= 'main-nav'
         >
           Back
         </Link>
-        <Link to="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
+        <Link variant="secondary" to="/" style={aStyle} onClick={() => firebase.auth().signOut()}>
           Logout
         </Link>
       </div>
@@ -54,10 +56,14 @@ function ChatScreen() {
       {messages ? (
         messages.map((message, index) => {
           return (
-            <div>
-              <h1 style={h1Style}>{message.firstName}</h1>
-              <h2 style={h2Style}>{message.body}</h2>
-              <h2 style={h2Style}>{message.timestamp.toString()}</h2>
+            <div style={div1Style}>
+              <Toast>
+                <Toast.Header>
+                  <strong className="mr-auto">{message.firstName}</strong>
+                  <h6 style={h6Style}>{message.timestamp.toString()}</h6>
+                </Toast.Header>
+                <h2 style={h2Style}>{message.body}</h2>
+              </Toast>
             </div>
           );
         })
@@ -73,7 +79,7 @@ const contro1lStyle = {
   marginBottom: "10%",
   border: "bold",
   marginRight: "20%",
-  marginTop: "10%",
+  marginTop: "5%",
   marginLeft: "14%",
 };
 
@@ -90,13 +96,21 @@ const aStyle = {
   color: "#ff8000",
   marginBottom: "10%",
   marginTop: "10%",
+  
 };
 
 const h2Style = {
-  fontSize: 15,
+  fontSize: 13,
 };
 
-const h1Style = {
-  fontSize: 12,
+
+const h6Style = {
+  fontSize: 10,
 };
+
+const div1Style = {
+  marginLeft:'15%',
+  width: '60%',
+  marginTop: '15%'
+}
 export default ChatScreen;
