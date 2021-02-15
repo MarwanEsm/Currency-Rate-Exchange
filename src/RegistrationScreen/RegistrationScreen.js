@@ -42,9 +42,9 @@ function RegistrationScreen() {
   const makeItChecked = () => {
     setState({ ...state, checked: !state.checked });
   };
-  const handleRegister = () => {
+  const handleRegister = (event) => {
+    event.preventDefault()
     register(state);
-    setState('')
     alert("thank you for submitting your details");
   };
 

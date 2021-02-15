@@ -76,7 +76,10 @@ function ChatScreen() {
                   <strong className="mr-auto">{message.firstName}</strong>
                   <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
                 </Toast.Header>
-                <h2 style={h2Style}>{message.body}</h2>
+                <h2 style={h2Style}>
+                  {message.body}
+                  fromMe={message.fromMe}{" "}
+                </h2>
               </Toast>
             </div>
           );
