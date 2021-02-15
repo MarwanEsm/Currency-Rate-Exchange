@@ -16,7 +16,7 @@ function CurrenciesListScreen() {
 }
 
 const imagStyle = {
-  width: "10%",
+  width: 30,
 };
 
 

@@ -39,14 +39,14 @@ function ExchangeRateList() {
   return (
     <div>
       <div style={divStyle}>
-        <div style={imgDivStyle}>
+        <div>
           <Link to="/CurrenciesListScreen">
             <img src={Back} style={imagStyle} />
           </Link>
         </div>
-        <div style={imgDivStyle}>
+        <div>
           <Link to="/ChatScreen">
-            <img src={Chat} style={imagStyle} />
+            <img src={Chat} style={imag1Style} />
           </Link>
         </div>
       </div>
@@ -129,19 +129,18 @@ const h3Style = {
 
 const divStyle = {
   display: "flex",
-  justifyContent: "space-around",
-  alignItems: "center",
-  marginTop: "10%",
-  marginLeft: "1%",
-  marginRight: "1%",
+  justifyContent: "space-between",
+  marginTop: "5%",
+  marginLeft: "8%",
+  marginRight: "8%",
 };
-
 
 const imagStyle = {
-  width: "15%",
+  width: 25,
 };
 
-const imgDivStyle = {
-  marginRight: 5,
+const imag1Style = {
+  width: 28,
 };
+
 export default ExchangeRateList;

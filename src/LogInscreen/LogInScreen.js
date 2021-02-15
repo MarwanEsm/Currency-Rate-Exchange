@@ -90,7 +90,7 @@ const inputlStyle = {
 const labelStyle = {
   fontSize: 20,
   fontFamily: "Courier New",
-  marginTop: "5%",
+  marginTop: "10%",
   fontWeight: "bold",
 };
 
@@ -117,7 +117,7 @@ const a2Style = {
 };
 
 const imagStyle = {
-  width: "7%",
+  width: 35,
   marginTop:10,
 };
 
