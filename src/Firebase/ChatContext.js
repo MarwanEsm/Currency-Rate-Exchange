@@ -41,7 +41,7 @@ export const ChatContextProvider = ({ children }) => {
       .add({
         body,
         firstName: user.displayName,
-        timestamp: new Date().toLocaleString([], { timeStyle: "short" }),
+        timestamp: new Date().toLocaleString()
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);

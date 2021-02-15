@@ -11,9 +11,9 @@ import { Link } from "react-router-dom";
 function RegistrationScreen() {
   const [open, setOpen] = useState(false);
 
-  const closePopup = (event) => {
-    event.preventDefault();
-    setOpen(true);
+  const closePopup = () => {
+   
+    setOpen(false);
   };
 
   const { register } = useContext(AuthContext);
@@ -53,10 +53,10 @@ function RegistrationScreen() {
     alert("thank you for submitting your details");
   };
 
-  const [showPopup, setShowPopup] = useState({ showPopup: false })
+  // const [showPopup, setShowPopup] = useState({ showPopup: true })
   const openPopup = () => {
-    setShowPopup({ showPopup: !showPopup });
-  }
+    setOpen(true);
+  };
 
   const isInvalid =
     state.firstName === "" ||
@@ -165,16 +165,11 @@ function RegistrationScreen() {
                 defaultChecked={state.checked}
                 type="checkbox"
               />
-
-              <Popup
-                open={open}
-                trigger={
-                  <Link style={a1Style}>Agree to terms and conditions</Link>
-                }
-                position="center-top"
-                onClick={openPopup}
-              >
-                <Terms />
+              <p style={a1Style} onClick={openPopup}>
+                Agree to terms and conditions
+              </p>
+              <Popup open={open} onClose={closePopup} position="center-top">
+                <Terms closePopup={closePopup} />
               </Popup>
             </Form.Group>
           </div>

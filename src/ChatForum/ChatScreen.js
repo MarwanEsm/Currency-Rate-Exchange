@@ -25,6 +25,15 @@ function ChatScreen() {
     writeMessages(body);
   };
 
+  // const Toast = (props) => {
+  //   const { toastList, position } = props;
+  //   const [list, setList] = useState(toastList);
+  //   useEffect(() => {
+  //     setList(toastList);
+  //   }, [toastList, list]);
+
+  // }
+
   return (
     <div>
       <div style={divStyle}>
@@ -66,11 +75,7 @@ function ChatScreen() {
               <Toast>
                 <Toast.Header>
                   <strong className="mr-auto">{message.firstName}</strong>
-                  <h6 style={h6Style}>
-                    {message.timestamp.toLocaleString([], {
-                      timeStyle: "short",
-                    })}
-                  </h6>
+                  <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
                 </Toast.Header>
                 <h2 style={h2Style}>{message.body}</h2>
               </Toast>
@@ -89,7 +94,7 @@ const contro1lStyle = {
   marginBottom: "10%",
   marginRight: "20%",
   marginTop: "5%",
-  marginLeft: "14%",
+  marginLeft: "13%",
 };
 
 const h2Style = {
@@ -97,28 +102,27 @@ const h2Style = {
 };
 
 const h6Style = {
-  fontSize: 10,
+  fontSize: 8,
 };
 
 const div1Style = {
-  marginLeft: "15%",
+  marginLeft: "13%",
   width: "60%",
   marginTop: "15%",
 };
 
 const imagStyle = {
-  width: 25
+  width: 25,
 };
 
 const divStyle = {
   display: "flex",
   justifyContent: "space-between",
   marginTop: "7%",
-  marginBottom: '10%',
-  marginLeft: '7%',
-  marginRight:'7%'
+  marginBottom: "10%",
+  marginLeft: "7%",
+  marginRight: "7%",
 };
-
 
 const buttonStyle = {
   fontFamily: "Helvetica",

@@ -20,6 +20,15 @@ function Converter({ searchedCurrency }) {
     console.log(resultValue);
   };
 
+  //it didn't work 
+  function numberWithCommas(x) {
+  if (x){
+  return x.toString().replace(/\B(?=(\d{10})+(?!\d))/g, ",");
+  } 
+
+}
+  
+  
   return (
     <div style={divStyle}>
       <div>
@@ -27,7 +36,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={fromCurrency}
+            value={numberWithCommas(fromCurrency)}
             onChange={updateInputValue}
             style={inputStyle}
           />
@@ -51,7 +60,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={parseFloat(toCurrency).toFixed(6)}
+            value={numberWithCommas(toCurrency)}
             style={inputStyle}
           />
         </div>
