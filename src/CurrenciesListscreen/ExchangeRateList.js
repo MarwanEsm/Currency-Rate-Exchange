@@ -65,7 +65,7 @@ function ExchangeRateList() {
       />
 
       <br />
-      <br />
+      
       <div>
         {exchangeRates &&
           filteredRates().map((key, i) => (

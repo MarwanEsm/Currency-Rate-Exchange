@@ -28,33 +28,33 @@ function ChatScreen() {
   return (
     <div>
       <div style={divStyle}>
-        <Link to="/ExchangeRateList">
-          <img src={Back} style={imagStyle} />
-        </Link>
-        <Link
-          to="/"
-          onClick={() => firebase.auth().signOut()}
-          className="badge badge-pill badge-warning"
-          style={linkStyle}
-        >
-          <img src={Logout} style={imagStyle} />
-        </Link>
+        <div>
+          <Link to="/ExchangeRateList">
+            <img src={Back} style={imagStyle} />
+          </Link>
+        </div>
+        <div>
+          <Link to="/" onClick={() => firebase.auth().signOut()}>
+            <img src={Logout} style={imagStyle} />
+          </Link>
+        </div>
       </div>
-
-      <InputGroup className="mb-3" style={contro1lStyle}>
-        <Form.Control
-          type="message"
-          placeholder="Type your message"
-          aria-describedby="basic-addon2"
-          value={body}
-          onChange={updateText}
-        />
-        <InputGroup.Append>
-          <Button variant="outline-secondary" onClick={handelWriteMessages}>
-            Send
-          </Button>
-        </InputGroup.Append>
-      </InputGroup>
+      <div>
+        <InputGroup className="mb-3" style={contro1lStyle}>
+          <Form.Control
+            type="message"
+            placeholder="Type your message"
+            aria-describedby="basic-addon2"
+            value={body}
+            onChange={updateText}
+          />
+          <InputGroup.Append>
+            <Button variant="outline-secondary" onClick={handelWriteMessages}>
+              Send
+            </Button>
+          </InputGroup.Append>
+        </InputGroup>
+      </div>
       {messages ? (
         messages.map((message, index) => {
           return (
@@ -85,17 +85,6 @@ const contro1lStyle = {
   marginLeft: "14%",
 };
 
-const divStyle = {
-  display: "flex",
-  justifyContent: "space-around",
-  alignItems: "center",
-};
-
-const linkStyle = {
-  marginBottom: "10%",
-  marginTop: "10%",
-};
-
 const h2Style = {
   fontSize: 13,
 };
@@ -111,11 +100,14 @@ const div1Style = {
 };
 
 const imagStyle = {
-  width: "15%",
+  width: "8%",
 };
 
-const imgDivStyle = {
-  marginRight: 5,
+const divStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginTop: "7%",
+  marginBottom:'10%'
 };
 
 export default ChatScreen;
