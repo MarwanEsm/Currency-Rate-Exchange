@@ -21,14 +21,17 @@ function ChatScreen() {
   const updateText = (event) => {
     const newText = event.target.value;
     setBody(newText);
+    
   };
 
   const handelWriteMessages = () => {
     writeMessages(body);
+    setBody('')
+    
+    
   };
 
   const goBack =()=> {
-    
     history.push("/CurrenciesListScreen");
   }
 
@@ -71,7 +74,7 @@ function ChatScreen() {
               <Toast>
                 <Toast.Header>
                   <strong className="mr-auto">{message.firstName}</strong>
-                  <h6 style={h6Style}>{message.timestamp.toLocaleTimeString()}</h6>
+                  <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
                 </Toast.Header>
                 <h2 style={h2Style}>{message.body}</h2>
               </Toast>

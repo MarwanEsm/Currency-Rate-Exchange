@@ -12,7 +12,6 @@ function RegistrationScreen() {
   const [open, setOpen] = useState(false);
 
   const closePopup = () => {
-   
     setOpen(false);
   };
 
@@ -40,18 +39,15 @@ function RegistrationScreen() {
     });
   };
 
-  
-
   const makeItChecked = () => {
     setState({ ...state, checked: !state.checked });
   };
-  const handleRegister = (event) => {
-    event.preventDefault();
+  const handleRegister = () => {
     register(state);
+    setState('')
     alert("thank you for submitting your details");
   };
 
-  
   const openPopup = () => {
     setOpen(true);
   };
