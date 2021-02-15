@@ -49,7 +49,11 @@ function ChatScreen() {
             onChange={updateText}
           />
           <InputGroup.Append>
-            <Button variant="outline-secondary" onClick={handelWriteMessages}>
+            <Button
+              variant="warning"
+              onClick={handelWriteMessages}
+              style={buttonStyle}
+            >
               Send
             </Button>
           </InputGroup.Append>
@@ -62,7 +66,11 @@ function ChatScreen() {
               <Toast>
                 <Toast.Header>
                   <strong className="mr-auto">{message.firstName}</strong>
-                  <h6 style={h6Style}>{message.timestamp.toString()}</h6>
+                  <h6 style={h6Style}>
+                    {message.timestamp.toLocaleString([], {
+                      timeStyle: "short",
+                    })}
+                  </h6>
                 </Toast.Header>
                 <h2 style={h2Style}>{message.body}</h2>
               </Toast>
@@ -79,7 +87,6 @@ function ChatScreen() {
 const contro1lStyle = {
   width: "70%",
   marginBottom: "10%",
-  border: "bold",
   marginRight: "20%",
   marginTop: "5%",
   marginLeft: "14%",
@@ -100,14 +107,22 @@ const div1Style = {
 };
 
 const imagStyle = {
-  width: "8%",
+  width: 25
 };
 
 const divStyle = {
   display: "flex",
   justifyContent: "space-between",
   marginTop: "7%",
-  marginBottom:'10%'
+  marginBottom: '10%',
+  marginLeft: '7%',
+  marginRight:'7%'
+};
+
+
+const buttonStyle = {
+  fontFamily: "Helvetica",
+  fontWeight: "bold",
 };
 
 export default ChatScreen;
