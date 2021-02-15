@@ -38,7 +38,7 @@ export default function App() {
                 <Route path="/ResetPassword">
                   <ResetPassword />
                 </Route>
-                <Route  path="/ChatScreen">
+                <Route path="/ChatScreen">
                   <ChatScreen />
                 </Route>
               </Switch>

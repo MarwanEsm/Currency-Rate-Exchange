@@ -20,15 +20,14 @@ function Converter({ searchedCurrency }) {
     console.log(resultValue);
   };
 
-  //it didn't work 
+  //it didn't work
   function numberWithCommas(x) {
-  if (x){
-  return x.toString().replace(/\B(?=(\d{10})+(?!\d))/g, ",");
-  } 
+   
+    if (x){
+    return x.toString().replace(/\B(?=(\d{10})+(?!\d))/g, ",");
+    }
+  }
 
-}
-  
-  
   return (
     <div style={divStyle}>
       <div>
@@ -88,6 +87,5 @@ const inputStyle = {
   border: "bold",
   borderColor: "black",
 };
-
 
 export default Converter;

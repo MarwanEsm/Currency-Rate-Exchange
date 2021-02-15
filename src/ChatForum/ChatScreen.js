@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useHistory } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
@@ -14,6 +15,7 @@ import Logout from "../Photos/Logout.png";
 function ChatScreen() {
   const { messages, writeMessages } = useContext(ChatContext);
   const { user, isAuthenticated } = useContext(AuthContext);
+  let history = useHistory();
   const [body, setBody] = useState("");
 
   const updateText = (event) => {
@@ -25,22 +27,16 @@ function ChatScreen() {
     writeMessages(body);
   };
 
-  // const Toast = (props) => {
-  //   const { toastList, position } = props;
-  //   const [list, setList] = useState(toastList);
-  //   useEffect(() => {
-  //     setList(toastList);
-  //   }, [toastList, list]);
-
-  // }
+  const goBack =()=> {
+    
+    history.push("/CurrenciesListScreen");
+  }
 
   return (
     <div>
       <div style={divStyle}>
         <div>
-          <Link to="/ExchangeRateList">
-            <img src={Back} style={imagStyle} />
-          </Link>
+          <img src={Back} style={imagStyle} onClick={goBack} />
         </div>
         <div>
           <Link to="/" onClick={() => firebase.auth().signOut()}>
@@ -75,7 +71,7 @@ function ChatScreen() {
               <Toast>
                 <Toast.Header>
                   <strong className="mr-auto">{message.firstName}</strong>
-                  <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
+                  <h6 style={h6Style}>{message.timestamp.toLocaleTimeString()}</h6>
                 </Toast.Header>
                 <h2 style={h2Style}>{message.body}</h2>
               </Toast>

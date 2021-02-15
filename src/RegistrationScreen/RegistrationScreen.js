@@ -40,9 +40,7 @@ function RegistrationScreen() {
     });
   };
 
-  // const preventReload = (event) => {
-  //   event.preventDefault();
-  // };
+  
 
   const makeItChecked = () => {
     setState({ ...state, checked: !state.checked });
@@ -53,7 +51,7 @@ function RegistrationScreen() {
     alert("thank you for submitting your details");
   };
 
-  // const [showPopup, setShowPopup] = useState({ showPopup: true })
+  
   const openPopup = () => {
     setOpen(true);
   };

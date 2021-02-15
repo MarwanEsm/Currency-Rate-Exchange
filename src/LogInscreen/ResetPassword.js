@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
 
 function ResetPassword() {
   const [email, setEmail] = useState();
@@ -11,7 +12,8 @@ function ResetPassword() {
     setEmail(enteredEmail);
   };
 
-  const invalid = email === '';
+  const invalid = email === ""
+
   return (
     <div style={divStyle}>
       <Form>
@@ -26,10 +28,8 @@ function ResetPassword() {
             />
           </Form.Group>
         </Form.Row>
-
         <Button
           variant="warning"
-          type="submit"
           style={buttonStyle}
           onClick={() => {
             alert(
@@ -41,9 +41,9 @@ function ResetPassword() {
           Reset Password
         </Button>
         <div>
-          <a href="/" style={aStyle}>
+          <Link to="/" style={aStyle}>
             Home
-          </a>
+          </Link>
         </div>
       </Form>
     </div>
