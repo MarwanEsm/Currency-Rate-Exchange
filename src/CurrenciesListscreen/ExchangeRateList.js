@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import Convert from "./Converter";
 import { Link } from "react-router-dom";
+import Chat from "../Photos/Chat.png";
+import Back from "../Photos/Back.png";
 
 function ExchangeRateList() {
   const { fetchExchangeRate, exchangeRates } = useContext(CurrenciesContext);
@@ -37,20 +39,16 @@ function ExchangeRateList() {
   return (
     <div>
       <div style={divStyle}>
-        <Link
-          to="/CurrenciesListScreen"
-          className="badge badge-secondary"
-          style={linkStyle}
-        >
-          Back
-        </Link>
-        <Link
-          to="/ChatScreen"
-          className="badge badge-warning"
-          style={linkStyle}
-        >
-          Chat
-        </Link>
+        <div style={imgDivStyle}>
+          <Link to="/CurrenciesListScreen">
+            <img src={Back} style={imagStyle} />
+          </Link>
+        </div>
+        <div style={imgDivStyle}>
+          <Link to="/ChatScreen">
+            <img src={Chat} style={imagStyle} />
+          </Link>
+        </div>
       </div>
       <h2 style={h2Style}>Selected currency </h2>
       <h3 style={h3Style}>{currency} </h3>
@@ -85,7 +83,7 @@ function ExchangeRateList() {
                   className="badge badge-pill badge-warning"
                   style={spanStyle}
                 >
-                  {parseFloat(exchangeRates.rates[key]).toFixed(8)}
+                  {parseFloat(exchangeRates.rates[key]).toFixed(4)}
                 </span>
               </p>
             </div>
@@ -103,6 +101,7 @@ const spanStyle = {
   fontFamily: "DejaVu Sans Mono, monospace",
   wordSpacing: "5 em",
   margin: 20,
+  width: 100,
 };
 
 const h2Style = {
@@ -117,6 +116,7 @@ const inputStyle = {
   marginLeft: "35%",
   width: "30%",
   border: "bold",
+  borderColor: "black",
 };
 
 const h3Style = {
@@ -136,8 +136,12 @@ const divStyle = {
   marginRight: "1%",
 };
 
-const linkStyle = {
-  fontSize: 12,
+
+const imagStyle = {
+  width: "15%",
 };
 
+const imgDivStyle = {
+  marginRight: 5,
+};
 export default ExchangeRateList;

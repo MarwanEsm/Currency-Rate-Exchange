@@ -8,6 +8,8 @@ import { AuthContext } from "../Firebase/FireBaseAuth";
 import firebase from "../Firebase/FirebaseConfig";
 import { Link } from "react-router-dom";
 import Toast from "react-bootstrap/Toast";
+import Back from "../Photos/Back.png";
+import Logout from "../Photos/Logout.png";
 
 function ChatScreen() {
   const { messages, writeMessages } = useContext(ChatContext);
@@ -26,12 +28,8 @@ function ChatScreen() {
   return (
     <div>
       <div style={divStyle}>
-        <Link
-          to="/ExchangeRateList"
-          className="badge badge-pill badge-warning"
-          style={linkStyle}
-        >
-          Back
+        <Link to="/ExchangeRateList">
+          <img src={Back} style={imagStyle} />
         </Link>
         <Link
           to="/"
@@ -39,7 +37,7 @@ function ChatScreen() {
           className="badge badge-pill badge-warning"
           style={linkStyle}
         >
-          Logout
+          <img src={Logout} style={imagStyle} />
         </Link>
       </div>
 
@@ -94,24 +92,30 @@ const divStyle = {
 };
 
 const linkStyle = {
-  
   marginBottom: "10%",
   marginTop: "10%",
-  
 };
 
 const h2Style = {
   fontSize: 13,
 };
 
-
 const h6Style = {
   fontSize: 10,
 };
 
 const div1Style = {
-  marginLeft:'15%',
-  width: '60%',
-  marginTop: '15%'
-}
+  marginLeft: "15%",
+  width: "60%",
+  marginTop: "15%",
+};
+
+const imagStyle = {
+  width: "15%",
+};
+
+const imgDivStyle = {
+  marginRight: 5,
+};
+
 export default ChatScreen;

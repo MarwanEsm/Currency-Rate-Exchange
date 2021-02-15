@@ -53,6 +53,11 @@ function RegistrationScreen() {
     alert("thank you for submitting your details");
   };
 
+  const [showPopup, setShowPopup] = useState({ showPopup: false })
+  const openPopup = () => {
+    setShowPopup({ showPopup: !showPopup });
+  }
+
   const isInvalid =
     state.firstName === "" ||
     state.lastName === "" ||
@@ -167,8 +172,9 @@ function RegistrationScreen() {
                   <Link style={a1Style}>Agree to terms and conditions</Link>
                 }
                 position="center-top"
+                onClick={openPopup}
               >
-                <Terms closePopup={closePopup} />
+                <Terms />
               </Popup>
             </Form.Group>
           </div>

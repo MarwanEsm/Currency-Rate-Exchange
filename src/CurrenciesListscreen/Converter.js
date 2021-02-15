@@ -29,6 +29,7 @@ function Converter({ searchedCurrency }) {
             className="form-control"
             value={fromCurrency}
             onChange={updateInputValue}
+            style={inputStyle}
           />
         </div>
       </div>
@@ -51,6 +52,7 @@ function Converter({ searchedCurrency }) {
             type="number"
             className="form-control"
             value={parseFloat(toCurrency).toFixed(6)}
+            style={inputStyle}
           />
         </div>
       </div>
@@ -72,5 +74,11 @@ const buttonStyle = {
   fontFamily: "Helvetica",
   fontWeight: "bold",
 };
+
+const inputStyle = {
+  border: "bold",
+  borderColor: "black",
+};
+
 
 export default Converter;

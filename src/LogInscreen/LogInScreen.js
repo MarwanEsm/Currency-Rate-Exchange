@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 import { Link } from "react-router-dom";
+import Back  from '../Photos/Back.png'; 
 
 
 function LogInScreen() {
@@ -73,8 +74,8 @@ function LogInScreen() {
         </Button>
       </Form>
       <br />
-      <Link to="/" style={a2Style}>
-        Back
+      <Link to="/">
+        <img src={Back} style={imagStyle}/>
          </Link>
          
     </div>
@@ -115,6 +116,9 @@ const a2Style = {
  
 };
 
-
+const imagStyle = {
+  width: "7%",
+  marginTop:10,
+};
 
 export default LogInScreen;
