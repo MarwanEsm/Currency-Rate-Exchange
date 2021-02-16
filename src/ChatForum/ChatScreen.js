@@ -32,6 +32,11 @@ function ChatScreen() {
     history.push("/CurrenciesListScreen");
   };
 
+  // const [showToaster, setShowToaster] = useState(true)
+  // const closeToast = () => {
+  //   setShowToaster(false);
+  // }
+
   return (
     <div>
       <div style={divStyle}>
@@ -66,22 +71,26 @@ function ChatScreen() {
       </div>
       {messages ? (
         messages.map((message, index) => {
-          
-          if (user.firstName === message.firstName) {
-            return (
-              <div style={div1Style}>
-                <Toast>
-                  <Toast.Header>
-                    <strong className="mr-auto">{message.firstName}</strong>
-                    <h6 style={h6Style}>
-                      {message.timestamp.toLocaleString()}
-                    </h6>
-                  </Toast.Header>
-                  <h2 style={h2Style}>{message.body}</h2>
-                </Toast>
-              </div>
-            );
-          } else {
+          {
+            /* if (user.firstName === message.firstName) { */
+          }
+          return (
+            <div style={div1Style}>
+              <Toast
+                // className={
+                //   user.firstName === !message.firstName ? reverse :''
+                // }
+              >
+                <Toast.Header>
+                  <strong className="mr-auto">{message.firstName}</strong>
+                  <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
+                </Toast.Header>
+                <h2 style={h2Style}>{message.body}</h2>
+              </Toast>
+            </div>
+          );
+          {
+            /* } else {
             <div style={reverse}>
               <Toast>
                 <Toast.Header>
@@ -91,6 +100,7 @@ function ChatScreen() {
                 <h2 style={h2Style}>{message.body}</h2>
               </Toast>
             </div>;
+          } */
           }
         })
       ) : (
@@ -140,10 +150,10 @@ const buttonStyle = {
   fontWeight: "bold",
 };
 
-const reverse = {
-  marginLeft: "30%",
-  width: "60%",
-  marginTop: "15%",
-};
+// const reverse = {
+//   marginLeft: "30%",
+//   width: "60%",
+//   marginTop: "15%",
+// };
 
 export default ChatScreen;
