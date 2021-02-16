@@ -21,10 +21,19 @@ function Converter({ searchedCurrency }) {
   };
 
   //it didn't work
-  function numberWithCommas(x) {
-   
-    if (x){
-    return x.toString().replace(/\B(?=(\d{15})+(?!\d))/g, ",");
+  // function numberWithCommas(x) {
+
+  //   if (x){
+  //   return x.toString().replace(/\B(?=(\d{15})+(?!\d))/g, ",");
+  //   }
+  // }
+
+  function addCommas(x) {
+    if (x) {
+      var parts = x.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{6})+(?!\d))/g, ",");
+
+      return parts.join(".");
     }
   }
 
@@ -35,7 +44,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={numberWithCommas(fromCurrency)}
+            value={addCommas(fromCurrency)}
             onChange={updateInputValue}
             style={inputStyle}
           />
@@ -59,7 +68,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={numberWithCommas(toCurrency)}
+            value={addCommas(toCurrency)}
             style={inputStyle}
           />
         </div>
