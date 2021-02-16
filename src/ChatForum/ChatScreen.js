@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
@@ -21,19 +21,16 @@ function ChatScreen() {
   const updateText = (event) => {
     const newText = event.target.value;
     setBody(newText);
-    
   };
 
   const handelWriteMessages = () => {
     writeMessages(body);
-    setBody('')
-    
-    
+    setBody("");
   };
 
-  const goBack =()=> {
+  const goBack = () => {
     history.push("/CurrenciesListScreen");
-  }
+  };
 
   return (
     <div>
@@ -69,20 +66,32 @@ function ChatScreen() {
       </div>
       {messages ? (
         messages.map((message, index) => {
-          return (
-            <div style={div1Style}>
+          
+          if (user.firstName === message.firstName) {
+            return (
+              <div style={div1Style}>
+                <Toast>
+                  <Toast.Header>
+                    <strong className="mr-auto">{message.firstName}</strong>
+                    <h6 style={h6Style}>
+                      {message.timestamp.toLocaleString()}
+                    </h6>
+                  </Toast.Header>
+                  <h2 style={h2Style}>{message.body}</h2>
+                </Toast>
+              </div>
+            );
+          } else {
+            <div style={reverse}>
               <Toast>
                 <Toast.Header>
                   <strong className="mr-auto">{message.firstName}</strong>
                   <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
                 </Toast.Header>
-                <h2 style={h2Style}>
-                  {message.body}
-                  fromMe={message.fromMe}{" "}
-                </h2>
+                <h2 style={h2Style}>{message.body}</h2>
               </Toast>
-            </div>
-          );
+            </div>;
+          }
         })
       ) : (
         <h2>...Loading</h2>
@@ -129,6 +138,12 @@ const divStyle = {
 const buttonStyle = {
   fontFamily: "Helvetica",
   fontWeight: "bold",
+};
+
+const reverse = {
+  marginLeft: "30%",
+  width: "60%",
+  marginTop: "15%",
 };
 
 export default ChatScreen;
