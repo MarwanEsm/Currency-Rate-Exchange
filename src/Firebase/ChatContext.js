@@ -21,9 +21,11 @@ export const ChatContextProvider = ({ children }) => {
   const histroy = useHistory();
   const { user } = useContext(AuthContext);
   const db = firebase.firestore();
+
   useEffect(() => {
     getMessages();
-  });
+  }, []);
+
   const getMessages = () => {
     db.collection("messages")
       .get()
@@ -41,7 +43,7 @@ export const ChatContextProvider = ({ children }) => {
       .add({
         body,
         firstName: user.displayName,
-        timestamp: new Date().toLocaleString()
+        timestamp: new Date().toLocaleString(),
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);

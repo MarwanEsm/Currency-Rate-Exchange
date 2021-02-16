@@ -1,20 +1,21 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { ChatContext } from "../Firebase/ChatContext";
-import { AuthContext } from "../Firebase/FireBaseAuth";
+
 import firebase from "../Firebase/FirebaseConfig";
 import { Link } from "react-router-dom";
-import Toast from "react-bootstrap/Toast";
+
 import Back from "../Photos/Back.png";
 import Logout from "../Photos/Logout.png";
+import Message from "./Message";
 
 function ChatScreen() {
   const { messages, writeMessages } = useContext(ChatContext);
-  const { user, isAuthenticated } = useContext(AuthContext);
+
   let history = useHistory();
   const [body, setBody] = useState("");
 
@@ -32,9 +33,14 @@ function ChatScreen() {
     history.push("/CurrenciesListScreen");
   };
 
-  // const [showToaster, setShowToaster] = useState(true)
-  // const closeToast = () => {
-  //   setShowToaster(false);
+  console.log("foo");
+  // const toast = useToast();
+  // const toastIdRef = useRef();
+
+  // function closeToast() {
+  //   if (toastIdRef.current) {
+  //     toast.close(toastIdRef.current);
+  //   }
   // }
 
   return (
@@ -70,38 +76,8 @@ function ChatScreen() {
         </InputGroup>
       </div>
       {messages ? (
-        messages.map((message, index) => {
-          {
-            /* if (user.firstName === message.firstName) { */
-          }
-          return (
-            <div style={div1Style}>
-              <Toast
-                // className={
-                //   user.firstName === !message.firstName ? reverse :''
-                // }
-              >
-                <Toast.Header>
-                  <strong className="mr-auto">{message.firstName}</strong>
-                  <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
-                </Toast.Header>
-                <h2 style={h2Style}>{message.body}</h2>
-              </Toast>
-            </div>
-          );
-          {
-            /* } else {
-            <div style={reverse}>
-              <Toast>
-                <Toast.Header>
-                  <strong className="mr-auto">{message.firstName}</strong>
-                  <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
-                </Toast.Header>
-                <h2 style={h2Style}>{message.body}</h2>
-              </Toast>
-            </div>;
-          } */
-          }
+        messages.map((message, i) => {
+          return <Message message={message} key={i} />;
         })
       ) : (
         <h2>...Loading</h2>
@@ -116,20 +92,6 @@ const contro1lStyle = {
   marginRight: "20%",
   marginTop: "5%",
   marginLeft: "13%",
-};
-
-const h2Style = {
-  fontSize: 13,
-};
-
-const h6Style = {
-  fontSize: 8,
-};
-
-const div1Style = {
-  marginLeft: "13%",
-  width: "60%",
-  marginTop: "15%",
 };
 
 const imagStyle = {
@@ -149,11 +111,5 @@ const buttonStyle = {
   fontFamily: "Helvetica",
   fontWeight: "bold",
 };
-
-// const reverse = {
-//   marginLeft: "30%",
-//   width: "60%",
-//   marginTop: "15%",
-// };
 
 export default ChatScreen;
