@@ -14,34 +14,15 @@ const Message = ({ message }) => {
   const isUser = user.displayName === message.firstName;
 
   return (
-    <Toast
-      // key={message.uid}
-      style={isUser ? div1Style : reverse}
-      show={showToaster}
-      onClose={closeToast}
-
-      // className={
-      //   user.firstName === !message.firstName ? reverse :''
-      // }
-    >
-      <Toast.Header>
-        <strong className="mr-auto">{message.firstName}</strong>
-        <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
-      </Toast.Header>
-      <h2 style={h2Style}>{message.body}</h2>
-    </Toast>
-
-    /* } else {
-            <div style={reverse}>
-              <Toast>
-                <Toast.Header>
-                  <strong className="mr-auto">{message.firstName}</strong>
-                  <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
-                </Toast.Header>
-                <h2 style={h2Style}>{message.body}</h2>
-              </Toast>
-            </div>;
-          } */
+    <div style={isUser ? div1Style : reverse}>
+      <Toast show={showToaster} onClose={closeToast}>
+        <Toast.Header>
+          <strong className="mr-auto">{message.firstName}</strong>
+          <h6 style={h6Style}>{message.timestamp.toLocaleString()}</h6>
+        </Toast.Header>
+        <h2 style={h2Style}>{message.body}</h2>
+      </Toast>
+    </div>
   );
 };
 
@@ -62,8 +43,9 @@ const div1Style = {
   width: "40%",
   marginTop: "15%",
 };
+
 const reverse = {
-  marginLeft: "30%",
-  width: "60%",
+  marginRight: "13%",
+  width: "40%",
   marginTop: "15%",
 };

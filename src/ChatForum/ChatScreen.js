@@ -5,10 +5,8 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { ChatContext } from "../Firebase/ChatContext";
-
 import firebase from "../Firebase/FirebaseConfig";
 import { Link } from "react-router-dom";
-
 import Back from "../Photos/Back.png";
 import Logout from "../Photos/Logout.png";
 import Message from "./Message";
@@ -32,17 +30,6 @@ function ChatScreen() {
   const goBack = () => {
     history.push("/CurrenciesListScreen");
   };
-
-  console.log("foo");
-  // const toast = useToast();
-  // const toastIdRef = useRef();
-
-  // function closeToast() {
-  //   if (toastIdRef.current) {
-  //     toast.close(toastIdRef.current);
-  //   }
-  // }
-
   return (
     <div>
       <div style={divStyle}>

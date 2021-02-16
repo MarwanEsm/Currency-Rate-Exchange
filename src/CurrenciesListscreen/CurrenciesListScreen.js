@@ -8,7 +8,7 @@ function CurrenciesListScreen() {
     <div>
       <CurrenciesList />
       <br />
-      <Link to="/" >
+      <Link to="/">
         <img src={Logout} style={imagStyle} />
       </Link>
     </div>
@@ -16,8 +16,7 @@ function CurrenciesListScreen() {
 }
 
 const imagStyle = {
-  width: 30,
+  width: 50,
 };
-
 
 export default CurrenciesListScreen;
