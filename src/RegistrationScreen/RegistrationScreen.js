@@ -43,9 +43,11 @@ function RegistrationScreen() {
     setState({ ...state, checked: !state.checked });
   };
   const handleRegister = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     register(state);
-    alert("thank you for submitting your details");
+    alert(
+      "thank you for submitting your details, we've sent you a confirmation link to your E-mail"
+    );
   };
 
   const openPopup = () => {

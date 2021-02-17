@@ -28,15 +28,6 @@ function Converter({ searchedCurrency }) {
   //   }
   // }
 
-  function addCommas(x) {
-    if (x) {
-      var parts = x.toString().split(".");
-      parts[0] = parts[0].replace(/\B(?=(\d{6})+(?!\d))/g, ",");
-
-      return parts.join(".");
-    }
-  }
-
   return (
     <div style={divStyle}>
       <div>
@@ -44,7 +35,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={addCommas(fromCurrency)}
+            value={parseFloat(fromCurrency.replace(/,/g, ""))}
             onChange={updateInputValue}
             style={inputStyle}
           />
@@ -68,7 +59,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={addCommas(toCurrency)}
+            value={parseFloat(toCurrency.replace(/,/g, ""))}
             style={inputStyle}
           />
         </div>
