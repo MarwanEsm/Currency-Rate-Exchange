@@ -35,7 +35,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={parseFloat(fromCurrency.replace(/,/g, ""))}
+            value={parseFloat(fromCurrency)}
             onChange={updateInputValue}
             style={inputStyle}
           />
@@ -59,7 +59,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={parseFloat(toCurrency.replace(/,/g, ""))}
+            value={parseFloat(toCurrency)}
             style={inputStyle}
           />
         </div>
