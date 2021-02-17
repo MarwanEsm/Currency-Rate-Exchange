@@ -45,7 +45,7 @@ const div1Style = {
 };
 
 const reverse = {
-  marginLeft: "40%",
+  marginLeft: "42%",
   width: "40%",
   marginTop: "15%",
 };
