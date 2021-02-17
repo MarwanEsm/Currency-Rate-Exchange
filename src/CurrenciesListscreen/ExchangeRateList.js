@@ -54,7 +54,6 @@ function ExchangeRateList() {
       <h3 style={h3Style}>{currency} </h3>
       <h2 style={h2Style}>Conversion currency</h2>
       <input
-        id="search"
         type="text"
         placeholder="Search here"
         value={searchedCurrency}

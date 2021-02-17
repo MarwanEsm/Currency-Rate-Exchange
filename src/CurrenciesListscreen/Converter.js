@@ -35,7 +35,7 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={parseFloat(fromCurrency)}
+            value={fromCurrency}
             onChange={updateInputValue}
             style={inputStyle}
           />
@@ -57,11 +57,10 @@ function Converter({ searchedCurrency }) {
       <div>
         <div className="input-group">
           <input
-            type="number"
+            type="string"
+            value={toCurrency}
+            style={input1Style}
             className="form-control"
-            value={parseFloat(toCurrency)}
-            style={inputStyle}
-            onChange={""}
           />
         </div>
       </div>
@@ -85,6 +84,11 @@ const buttonStyle = {
 };
 
 const inputStyle = {
+  border: "bold",
+  borderColor: "black",
+};
+
+const input1Style = {
   border: "bold",
   borderColor: "black",
 };
