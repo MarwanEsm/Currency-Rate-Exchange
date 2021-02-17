@@ -41,12 +41,12 @@ function ExchangeRateList() {
       <div style={divStyle}>
         <div>
           <Link to="/CurrenciesListScreen">
-            <img src={Back} style={imagStyle} />
+            <img src={Back} style={imagStyle} alt={""} />
           </Link>
         </div>
         <div>
           <Link to="/ChatScreen">
-            <img src={Chat} style={imag1Style} />
+            <img src={Chat} style={imag1Style} alt={""} />
           </Link>
         </div>
       </div>
@@ -65,7 +65,7 @@ function ExchangeRateList() {
       />
 
       <br />
-      
+
       <div>
         {exchangeRates &&
           filteredRates().map((key, i) => (

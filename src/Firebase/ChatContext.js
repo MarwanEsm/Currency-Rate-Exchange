@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 import firebase from "../Firebase/FirebaseConfig";
 
@@ -18,7 +17,6 @@ const initContext = {
 export const ChatContext = createContext(initContext);
 export const ChatContextProvider = ({ children }) => {
   const [messages, setMessages] = useState(initContext.messages);
-  const histroy = useHistory();
   const { user } = useContext(AuthContext);
   const db = firebase.firestore();
 

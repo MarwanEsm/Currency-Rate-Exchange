@@ -3,8 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 import { Link } from "react-router-dom";
-import Back  from '../Photos/Back.png'; 
-
+import Back from "../Photos/Back.png";
 
 function LogInScreen() {
   const [state, setState] = useState({
@@ -61,8 +60,7 @@ function LogInScreen() {
         <div>
           <Link to="/Resetpassword" style={a2Style}>
             Forgot Password ?
-             </Link>
-             
+          </Link>
         </div>
         <Button
           variant="warning"
@@ -75,9 +73,8 @@ function LogInScreen() {
       </Form>
       <br />
       <Link to="/">
-        <img src={Back} style={imagStyle}/>
-         </Link>
-         
+        <img src={Back} style={imagStyle} alt={""} />
+      </Link>
     </div>
   );
 }
@@ -113,12 +110,11 @@ const a2Style = {
   paddingBottom: 20,
   color: "#ff8000",
   cursor: "pointer",
- 
 };
 
 const imagStyle = {
   width: 35,
-  marginTop:10,
+  marginTop: 10,
 };
 
 export default LogInScreen;

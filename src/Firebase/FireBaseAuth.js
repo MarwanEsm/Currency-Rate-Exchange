@@ -34,19 +34,17 @@ export const AuthContextProvider = ({ children }) => {
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         var user = userCredential.user;
-        
+
         user
           .updateProfile({
             displayName: firstName,
-            photoURL: "https://example.com/jane-q-user/profile.jpg",
           })
           .then(function () {
-           console.log("user", user);
-            const { email, firstName } = user;
-            setUser( user );
+            console.log("user", user);
+            setUser(user);
             setIsAuthenticated(true);
           })
-          .catch(function (error) {});
+          .catch(function () {});
         db.collection("user").doc(user.uid).set({
           firstName: firstName,
           lastName: lastName,

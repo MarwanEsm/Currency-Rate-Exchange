@@ -9,7 +9,7 @@ function CurrenciesListScreen() {
       <CurrenciesList />
       <br />
       <Link to="/">
-        <img src={Logout} style={imagStyle} />
+        <img src={Logout} style={imagStyle} alt={""} />
       </Link>
     </div>
   );

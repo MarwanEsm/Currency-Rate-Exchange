@@ -34,11 +34,11 @@ function ChatScreen() {
     <div>
       <div style={divStyle}>
         <div>
-          <img src={Back} style={imagStyle} onClick={goBack} />
+          <img src={Back} style={imagStyle} onClick={goBack} alt={""} />
         </div>
         <div>
           <Link to="/" onClick={() => firebase.auth().signOut()}>
-            <img src={Logout} style={imagStyle} />
+            <img src={Logout} style={imagStyle} alt={""} />
           </Link>
         </div>
       </div>

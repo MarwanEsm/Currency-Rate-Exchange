@@ -1,10 +1,9 @@
 import React, { useState, useContext } from "react";
-import PropTypes from "prop-types";
 import Toast from "react-bootstrap/Toast";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 
 const Message = ({ message }) => {
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [showToaster, setShowToaster] = useState(true);
   const closeToast = (event) => {
     event.preventDefault();

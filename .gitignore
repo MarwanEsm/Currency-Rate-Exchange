@@ -24,3 +24,5 @@ yarn-error.log*
 
 # web
 firebaseconfig.js
+# Local Netlify folder
+.netlify

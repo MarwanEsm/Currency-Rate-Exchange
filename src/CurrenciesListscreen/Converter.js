@@ -61,6 +61,7 @@ function Converter({ searchedCurrency }) {
             className="form-control"
             value={parseFloat(toCurrency)}
             style={inputStyle}
+            onChange={""}
           />
         </div>
       </div>
