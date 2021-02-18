@@ -35,7 +35,9 @@ function Converter({ searchedCurrency }) {
           <input
             type="number"
             className="form-control"
-            value={fromCurrency}
+            value={
+              /*parsefloat didn't work*/ fromCurrency /*toFixed(6) does not allow more numbers to be written */
+            }
             onChange={updateInputValue}
             style={inputStyle}
           />
