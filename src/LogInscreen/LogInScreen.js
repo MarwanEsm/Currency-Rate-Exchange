@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 import { Link } from "react-router-dom";
 import Back from "../Photos/Back.png";
+import LandingScreenStyle from "../Style/LandingScreenStyle";
 
 function LogInScreen() {
   const [state, setState] = useState({
@@ -27,54 +28,59 @@ function LogInScreen() {
 
   return (
     <div>
-      <Form>
-        <Form.Group controlId="formBasicEmail">
-          <Form.Label style={labelStyle}>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            data-ng-init="resp()"
-            name="email"
-            style={inputlStyle}
-            onChange={handelChange}
-            value={state.email}
-          />
-          <Form.Text style={textStyle}>
-            ( We'll never share your email with anyone else )
-          </Form.Text>
-        </Form.Group>
+      <div>
+        <LandingScreenStyle></LandingScreenStyle>
+      </div>
+      <div style={divStyle}>
+        <Form>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label style={text1Style}>Email address</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              data-ng-init="resp()"
+              name="email"
+              style={inputlStyle}
+              onChange={handelChange}
+              value={state.email}
+            />
+            <Form.Text style={textStyle}>
+              ( We'll never share your email with anyone else )
+            </Form.Text>
+          </Form.Group>
 
-        <Form.Group controlId="formBasicPassword">
-          <Form.Label style={labelStyle}>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            data-ng-init="resp()"
-            name="password"
-            style={inputlStyle}
-            onChange={handelChange}
-            value={state.password}
-          />
-        </Form.Group>
+          <Form.Group controlId="formBasicPassword">
+            <Form.Label style={text1Style}>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              data-ng-init="resp()"
+              name="password"
+              style={inputlStyle}
+              onChange={handelChange}
+              value={state.password}
+            />
+          </Form.Group>
+          <br />
+          <div>
+            <Link to="/Resetpassword" style={a2Style}>
+              Forgot Password ?
+            </Link>
+          </div>
+          <Button
+            variant="warning"
+            style={buttonStyle}
+            disabled={invalid}
+            onClick={handelLogin}
+          >
+            Sign in
+          </Button>
+        </Form>
         <br />
-        <div>
-          <Link to="/Resetpassword" style={a2Style}>
-            Forgot Password ?
-          </Link>
-        </div>
-        <Button
-          variant="warning"
-          style={buttonStyle}
-          disabled={invalid}
-          onClick={handelLogin}
-        >
-          Sign in
-        </Button>
-      </Form>
-      <br />
-      <Link to="/">
-        <img src={Back} style={imagStyle} alt={""} />
-      </Link>
+        <Link to="/">
+          <img src={Back} style={imagStyle} alt={""} />
+        </Link>
+      </div>
     </div>
   );
 }
@@ -84,22 +90,17 @@ const inputlStyle = {
   marginLeft: "15%",
 };
 
-const labelStyle = {
-  fontSize: 20,
-  fontFamily: "Courier New",
-  marginTop: "10%",
-  fontWeight: "bold",
-};
-
 const textStyle = {
   marginTop: "5%",
   fontSize: 12,
+  color: "#f2f2f2",
 };
 
 const buttonStyle = {
   marginTop: 30,
-  fontFamily: "Helvetica",
-  fontWeight: "bold",
+  marginBottom: 20,
+  fontFamily: "Fantasy ",
+  backgroundColor: "yellow",
 };
 
 const a2Style = {
@@ -108,13 +109,26 @@ const a2Style = {
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 20,
-  color: "#ff8000",
+  color: "#f2f2f2",
   cursor: "pointer",
 };
 
 const imagStyle = {
   width: 35,
   marginTop: 10,
+};
+
+const divStyle = {
+  marginLeft: "5%",
+  marginRight: "5%",
+  marginTop: "19%",
+  marginBottom: "15%",
+  position: "relative",
+};
+
+const text1Style = {
+  color: "#f2f2f2",
+  fontWeight: "bold",
 };
 
 export default LogInScreen;

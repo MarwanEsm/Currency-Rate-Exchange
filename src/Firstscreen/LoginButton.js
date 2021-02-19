@@ -21,8 +21,7 @@ function LoginButton() {
 }
 
 const buttonStyle = {
-  marginTop: 60,
-  marginBottom: 35,
+  marginTop: "13%",
   fontFamily: "Fantasy ",
   backgroundColor: "yellow",
 };

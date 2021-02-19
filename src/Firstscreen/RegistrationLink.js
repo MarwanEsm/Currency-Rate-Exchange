@@ -16,7 +16,7 @@ function RegistrationLink() {
 const h3Style = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 13,
-  paddingTop: 20,
+  marginTop: "13%",
   color: "white",
 };
 
