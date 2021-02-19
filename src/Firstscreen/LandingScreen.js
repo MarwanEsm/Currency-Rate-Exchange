@@ -9,7 +9,7 @@ function LandingScreen() {
   return (
     <div>
       <div>
-        <LandingScreenStyle style={style}></LandingScreenStyle>
+        <LandingScreenStyle></LandingScreenStyle>
       </div>
       <div style={divStyle}>
         <DateAndTime />
@@ -20,10 +20,6 @@ function LandingScreen() {
     </div>
   );
 }
-
-const style = {
-  overflow: "hidden",
-};
 
 const divStyle = {
   position: "relative",

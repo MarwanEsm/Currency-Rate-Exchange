@@ -7,6 +7,7 @@ import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "../Firebase/FireBaseAuth";
 import { Link } from "react-router-dom";
+import LandingScreenStyle from "../Style/LandingScreenStyle";
 
 function RegistrationScreen() {
   const [open, setOpen] = useState(false);
@@ -66,11 +67,12 @@ function RegistrationScreen() {
 
   return (
     <div>
+      <LandingScreenStyle></LandingScreenStyle>
       <div style={divStyle}>
         <Form>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridfName">
-              <Form.Label>First Name</Form.Label>
+              <Form.Label style={textStyle}>First Name</Form.Label>
               <Form.Control
                 type="text"
                 name="firstName"
@@ -80,7 +82,7 @@ function RegistrationScreen() {
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridlName">
-              <Form.Label>Last Name</Form.Label>
+              <Form.Label style={textStyle}>Last Name</Form.Label>
               <Form.Control
                 type="text"
                 name="lastName"
@@ -91,7 +93,7 @@ function RegistrationScreen() {
           </Form.Row>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridEmail">
-              <Form.Label>Email</Form.Label>
+              <Form.Label style={textStyle}>Email</Form.Label>
               <Form.Control
                 type="email"
                 name="email"
@@ -102,7 +104,7 @@ function RegistrationScreen() {
           </Form.Row>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridPassword">
-              <Form.Label>Password</Form.Label>
+              <Form.Label style={textStyle}>Password</Form.Label>
               <Form.Control
                 type="password"
                 name="password"
@@ -112,7 +114,7 @@ function RegistrationScreen() {
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridConfirmPassword">
-              <Form.Label>Confirm Password</Form.Label>
+              <Form.Label style={textStyle}>Confirm Password</Form.Label>
               <Form.Control
                 type="password"
                 name="passwordConfirmation"
@@ -124,7 +126,7 @@ function RegistrationScreen() {
 
           <Form.Row>
             <Form.Group as={Col} controlId="formGridCity">
-              <Form.Label>Country</Form.Label>
+              <Form.Label style={textStyle}>Country</Form.Label>
               <Form.Control
                 type="text"
                 name="country"
@@ -134,7 +136,7 @@ function RegistrationScreen() {
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridState">
-              <Form.Label>City</Form.Label>
+              <Form.Label style={textStyle}>City</Form.Label>
               <Form.Control
                 type="text"
                 name="city"
@@ -144,7 +146,7 @@ function RegistrationScreen() {
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridZip">
-              <Form.Label>Zip</Form.Label>
+              <Form.Label style={textStyle}>Zip</Form.Label>
               <Form.Control
                 type="number"
                 name="zip"
@@ -164,7 +166,7 @@ function RegistrationScreen() {
               <p style={a1Style} onClick={openPopup}>
                 Agree to terms and conditions
               </p>
-              <Popup open={open} onClose={closePopup} position="center-top">
+              <Popup open={open} onClose={closePopup} position="center">
                 <Terms closePopup={closePopup} />
               </Popup>
             </Form.Group>
@@ -180,7 +182,6 @@ function RegistrationScreen() {
             Register
           </Button>
         </Form>
-        <br />
 
         <Link to="/LogInScreen" style={aStyle}>
           Back to Log in
@@ -197,12 +198,7 @@ function Terms({ closePopup }) {
       <h3 style={h3Style}>
         Make sure you're enjoying your life and enjoy using this App either :)
       </h3>
-      <Button
-        variant="warning"
-        type="submit"
-        style={buttonStyle}
-        onClick={closePopup}
-      >
+      <Button type="submit" style={buttonStyle} onClick={closePopup}>
         Accept
       </Button>
     </div>
@@ -220,6 +216,7 @@ const divStyle = {
   marginRight: "5%",
   marginTop: "10%",
   marginBottom: "15%",
+  position: "relative",
 };
 
 const aStyle = {
@@ -227,15 +224,16 @@ const aStyle = {
   fontSize: 13,
   fontWeight: "bold",
   textDecoration: "underline",
-  paddingTop: 10,
-  paddingBottom: 20,
-  color: "#ff8000",
+  marginTop: 10,
+  marginBottom: 20,
+  color: "#f2f2f2",
 };
+
 const buttonStyle = {
-  marginTop: 20,
-  fontFamily: "Helvetica",
-  fontWeight: "bold",
-  fontSize: 15,
+  marginTop: 7,
+  marginBottom: 20,
+  fontFamily: "Fantasy ",
+  backgroundColor: "yellow",
 };
 
 const groupStyle = {
@@ -254,6 +252,11 @@ const a1Style = {
 
 const h3Style = {
   fontSize: 15,
+};
+
+const textStyle = {
+  color: "#f2f2f2",
+  fontWeight: "bold",
 };
 
 export default RegistrationScreen;

@@ -12,7 +12,7 @@ function LandingScreenStyle() {
 const div1Style = {
   width: "50%",
   marginRight: "50%",
-  height: "100vh",
+  height: "100%",
   backgroundColor: "#ffa31a",
   position: "absolute",
 };
@@ -20,7 +20,7 @@ const div1Style = {
 const div2Style = {
   width: "100%",
   marginLeft: "100%",
-  height: "100vh",
+  height: "100%",
   backgroundColor: "#3B474D",
   position: "absolute",
 };
@@ -29,6 +29,7 @@ const divStyle = {
   display: "flex",
   justifyContent: "space-around",
   width: "100%",
+  height: "auto",
 };
 
 export default LandingScreenStyle;

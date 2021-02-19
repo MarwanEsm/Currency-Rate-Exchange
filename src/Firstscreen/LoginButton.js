@@ -24,7 +24,7 @@ const buttonStyle = {
   marginTop: 60,
   marginBottom: 35,
   fontFamily: "Fantasy ",
-
   backgroundColor: "yellow",
 };
+
 export default LoginButton;

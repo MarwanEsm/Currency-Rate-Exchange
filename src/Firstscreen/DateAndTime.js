@@ -75,12 +75,12 @@ const h2Style = {
   fontFamily: "FreeMono, monospace ",
   fontSize: 18,
   fontWeight: "bold",
-  color: "white",
+  color: "#f2f2f2",
 };
 
 const currentDate = {
   marginBottom: "10%",
-  color: "white",
+  color: "#f2f2f2",
 };
 
 export default DateAndTime;
