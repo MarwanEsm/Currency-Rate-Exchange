@@ -6,7 +6,7 @@ function LoginButton() {
   const showLogInPage = (event) => {
     event.preventDefault();
     history.push("/LogInScreen");
-  }
+  };
   return (
     <div>
       <button
@@ -22,8 +22,9 @@ function LoginButton() {
 
 const buttonStyle = {
   marginTop: 60,
-  marginBottom:35,
-  fontFamily: "Helvetica",
-  fontWeight: "bold",
+  marginBottom: 35,
+  fontFamily: "Fantasy ",
+
+  backgroundColor: "yellow",
 };
 export default LoginButton;

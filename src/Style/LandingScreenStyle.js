@@ -21,7 +21,7 @@ const div2Style = {
   width: "100%",
   marginLeft: "100%",
   height: "100vh",
-  backgroundColor: "#999966",
+  backgroundColor: "#3B474D",
   position: "absolute",
 };
 

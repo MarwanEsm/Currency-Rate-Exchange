@@ -5,10 +5,10 @@ function RegistrationLink() {
   return (
     <div>
       <h3 style={h3Style}>Don't have an account?</h3>
-      <Link to="/RegistrationScreen" style={aStyle} >
+      <Link to="/RegistrationScreen" style={aStyle}>
         Click here to register
       </Link>
-      <br/>
+      <br />
     </div>
   );
 }
@@ -17,6 +17,7 @@ const h3Style = {
   fontFamily: "Trebuchet MS, sans-serif ",
   fontSize: 13,
   paddingTop: 20,
+  color: "white",
 };
 
 const aStyle = {
@@ -26,7 +27,7 @@ const aStyle = {
   textDecoration: "underline",
   paddingTop: 10,
   paddingBottom: 30,
-  color: "#ff8000",
+  color: "black",
   cursor: "pointer",
 };
 

@@ -75,10 +75,12 @@ const h2Style = {
   fontFamily: "Apple Color Emoji ",
   fontSize: 20,
   fontWeight: "bold",
+  color: "white",
 };
 
 const currentDate = {
   marginBottom: "10%",
+  color: "white",
 };
 
 export default DateAndTime;
