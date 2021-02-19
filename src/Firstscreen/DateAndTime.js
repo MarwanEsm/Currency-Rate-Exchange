@@ -72,8 +72,8 @@ const h1Style = {
 };
 
 const h2Style = {
-  fontFamily: "Apple Color Emoji ",
-  fontSize: 20,
+  fontFamily: "FreeMono, monospace ",
+  fontSize: 18,
   fontWeight: "bold",
   color: "white",
 };
