@@ -5,10 +5,9 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { ChatContext } from "../Firebase/ChatContext";
-import firebase from "../Firebase/FirebaseConfig";
 import { Link } from "react-router-dom";
-import Back from "../Photos/Back.png";
-import Logout from "../Photos/Logout.png";
+
+import { Nav, Navbar } from "react-bootstrap";
 import Message from "./Message";
 
 function ChatScreen() {
@@ -32,14 +31,23 @@ function ChatScreen() {
   };
   return (
     <div>
-      <div style={divStyle}>
+      <div style={div1Style}>
         <div>
-          <img src={Back} style={imagStyle} onClick={goBack} alt={""} />
-        </div>
-        <div>
-          <Link to="/" onClick={() => firebase.auth().signOut()}>
-            <img src={Logout} style={imagStyle} alt={""} />
-          </Link>
+          <Navbar collapseOnSelect expand="lg" bg="white">
+            <Navbar.Brand href="#home"></Navbar.Brand>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="mr-auto">
+                <Link to="/" style={textStyle}>
+                  Logout
+                </Link>
+
+                <Link to="/ExchangeRateList" style={textStyle}>
+                  Back
+                </Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
         </div>
       </div>
       <div>
@@ -81,22 +89,24 @@ const contro1lStyle = {
   marginLeft: "13%",
 };
 
-const imagStyle = {
-  width: 25,
+const textStyle = {
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontSize: 18,
+  fontWeight: "bold",
+  color: "#ffa31a",
+  marginBottom: "3%",
 };
 
-const divStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "7%",
-  marginBottom: "10%",
-  marginLeft: "7%",
-  marginRight: "7%",
+const div1Style = {
+  backgroundColor: "#ffff00",
+  width: "100%",
+  borderColor: "black",
+  border: "bold",
 };
 
 const buttonStyle = {
-  fontFamily: "Helvetica",
-  fontWeight: "bold",
+  fontFamily: "Fantasy ",
+  backgroundColor: "yellow",
 };
 
 export default ChatScreen;
