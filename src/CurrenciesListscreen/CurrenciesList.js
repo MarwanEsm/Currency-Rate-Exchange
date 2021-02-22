@@ -21,7 +21,7 @@ function CurrenciesList() {
         {currencies &&
           currencies.map((currency) => {
             return (
-              <option key={currency.id} value={currency.id}>
+              <option key={currency.id} value={currency.id} style={optionStyle}>
                 {currency.id}
               </option>
             );
@@ -42,6 +42,11 @@ const h2Style = {
   fontWeight: "bold",
   fontSize: 18,
   marginTop: "10%",
+};
+
+const optionStyle = {
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontWeight: "bold",
 };
 
 export default CurrenciesList;

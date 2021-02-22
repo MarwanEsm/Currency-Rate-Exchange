@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import { CurrenciesContext } from "../Components/CurrenciesContext";
 import Convert from "./Converter";
 import { Link } from "react-router-dom";
-import Chat from "../Photos/Chat.png";
-import Back from "../Photos/Back.png";
+import { Nav, Navbar } from "react-bootstrap";
 
 function ExchangeRateList() {
   const { fetchExchangeRate, exchangeRates } = useContext(CurrenciesContext);
@@ -38,62 +37,83 @@ function ExchangeRateList() {
 
   return (
     <div>
-      <div style={divStyle}>
+      <div style={div1Style}>
         <div>
-          <Link to="/CurrenciesListScreen">
-            <img src={Back} style={imagStyle} alt={""} />
-          </Link>
-        </div>
-        <div>
-          <Link to="/ChatScreen">
-            <img src={Chat} style={imag1Style} alt={""} />
-          </Link>
+          <Navbar collapseOnSelect expand="lg" bg="white">
+            <Navbar.Brand href="#home"></Navbar.Brand>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="mr-auto">
+                <Link to="/" style={textStyle}>
+                  Logout
+                </Link>
+                <Link to="/ChatScreen" style={textStyle}>
+                  Chat
+                </Link>
+                <Link to="/CurrenciesListScreen" style={textStyle}>
+                  Back
+                </Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
         </div>
       </div>
-      <h2 style={h2Style}>Selected currency </h2>
-      <h3 style={h3Style}>{currency} </h3>
-      <h2 style={h2Style}>Conversion currency</h2>
-      <input
-        type="text"
-        placeholder="Search here"
-        value={searchedCurrency}
-        onChange={handleSearch}
-        className="form-control"
-        style={inputStyle}
-        id="inputGroup-sizing-sm"
-      />
-
-      <br />
-
       <div>
-        {exchangeRates &&
-          filteredRates().map((key, i) => (
-            <div key={i}>
-              <p>
-                <button
-                  className="badge badge-pill badge-primary"
-                  style={spanStyle}
-                  value={key}
-                  onClick={displayInSearchBar}
-                >
-                  {key} &nbsp;
-                </button>{" "}
-                <span
-                  className="badge badge-pill badge-warning"
-                  style={spanStyle}
-                >
-                  {parseFloat(exchangeRates.rates[key]).toFixed(4)}
-                </span>
-              </p>
-            </div>
-          ))}
-        <Convert searchedCurrency={searchedCurrency} />
-      </div>
+        <div style={divStyle}></div>
+        <h2 style={h2Style}>Selected currency </h2>
+        <h3 style={h3Style}>{currency} </h3>
+        <h2 style={h2Style}>Conversion currency</h2>
+        <input
+          type="text"
+          placeholder="Search here"
+          value={searchedCurrency}
+          onChange={handleSearch}
+          className="form-control"
+          style={inputStyle}
+          id="inputGroup-sizing-sm"
+        />
 
-      <br />
+        <br />
+
+        <div>
+          {exchangeRates &&
+            filteredRates().map((key, i) => (
+              <div key={i}>
+                <p>
+                  <button
+                    className="badge badge-pill badge-primary"
+                    style={span1Style}
+                    value={key}
+                    onClick={displayInSearchBar}
+                  >
+                    {key} &nbsp;
+                  </button>{" "}
+                  <span
+                    className="badge badge-pill badge-warning"
+                    style={spanStyle}
+                  >
+                    {parseFloat(exchangeRates.rates[key]).toFixed(4)}
+                  </span>
+                </p>
+              </div>
+            ))}
+          <Convert searchedCurrency={searchedCurrency} />
+        </div>
+
+        <br />
+      </div>
     </div>
   );
 }
+
+const span1Style = {
+  fontSize: 15,
+  fontFamily: "DejaVu Sans Mono, monospace",
+  wordSpacing: "5 em",
+  margin: 20,
+  width: 100,
+  backgroundColor: "#ffa31a",
+};
 
 const spanStyle = {
   fontSize: 15,
@@ -101,11 +121,13 @@ const spanStyle = {
   wordSpacing: "5 em",
   margin: 20,
   width: 100,
+  backgroundColor: "#3B474D",
+  color: "white",
 };
 
 const h2Style = {
-  fontFamily: "Apple Color Emoji ",
-  fontSize: 20,
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontSize: 18,
   fontWeight: "bold",
   marginTop: "9%",
 };
@@ -129,17 +151,23 @@ const h3Style = {
 const divStyle = {
   display: "flex",
   justifyContent: "space-between",
-  marginTop: "5%",
   marginLeft: "8%",
   marginRight: "8%",
+  position: "relative",
 };
 
-const imagStyle = {
-  width: 25,
+const textStyle = {
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontSize: 18,
+  fontWeight: "bold",
+  color: "#ffa31a",
+  marginBottom: "3%",
 };
 
-const imag1Style = {
-  width: 28,
+const div1Style = {
+  backgroundColor: "#ffff00",
+  width: "100%",
+  borderColor: "black",
+  border: "bold",
 };
-
 export default ExchangeRateList;

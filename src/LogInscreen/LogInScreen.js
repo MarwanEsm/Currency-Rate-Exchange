@@ -111,6 +111,7 @@ const a2Style = {
   paddingBottom: 20,
   color: "#f2f2f2",
   cursor: "pointer",
+  fontWeight: "bold",
 };
 
 const imagStyle = {

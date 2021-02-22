@@ -58,12 +58,7 @@ function Converter({ searchedCurrency }) {
 
       <div>
         <div className="input-group">
-          <input
-            type="string"
-            value={toCurrency}
-            style={input1Style}
-            className="form-control"
-          />
+          <p style={pStyle}>{toCurrency}</p>
         </div>
       </div>
       <br />
@@ -81,18 +76,18 @@ const divStyle = {
 const buttonStyle = {
   marginTop: 30,
   marginBottom: 10,
-  fontFamily: "Helvetica",
-  fontWeight: "bold",
+  fontFamily: "Fantasy ",
+  backgroundColor: "yellow",
 };
 
 const inputStyle = {
   border: "bold",
   borderColor: "black",
+  fontFamily: "Fantasy ",
 };
 
-const input1Style = {
-  border: "bold",
-  borderColor: "black",
+const pStyle = {
+  fontFamily: "Fantasy ",
 };
 
 export default Converter;

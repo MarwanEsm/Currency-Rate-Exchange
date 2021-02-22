@@ -26,8 +26,9 @@ export default function ThreeDotsMenu() {
 }
 
 const textStyle = {
-  fontFamily: "Fantasy ",
-  fontSize: 17,
+  fontFamily: "Trebuchet MS, sans-serif ",
+  fontWeight: "bold",
+  fontSize: 18,
   color: "#ffa31a",
   marginBottom: "3%",
 };

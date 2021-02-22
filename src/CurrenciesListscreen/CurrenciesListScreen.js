@@ -26,6 +26,8 @@ const div1Style = {
   fontSize: 20,
   backgroundColor: "#ffff00",
   width: "100%",
+  borderColor: "black",
+  border: "bold",
 };
 
 export default CurrenciesListScreen;
