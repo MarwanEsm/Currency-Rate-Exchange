@@ -38,9 +38,9 @@ const selectStyle = {
 };
 
 const h2Style = {
-  fontFamily: "Apple Color Emoji ",
-  fontSize: 20,
+  color: "#f2f2f2",
   fontWeight: "bold",
+  fontSize: 18,
   marginTop: "10%",
 };
 
