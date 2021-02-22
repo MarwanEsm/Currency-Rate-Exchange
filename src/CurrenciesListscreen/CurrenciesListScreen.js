@@ -1,6 +1,6 @@
 import React from "react";
 import CurrenciesList from "./CurrenciesList";
-import NavBar from "../Style/NavBar";
+import LandingScreenStyle from "../Style/LandingScreenStyle";
 import ThreeDotsMenu from "../Style/ThreeDotsMenu";
 
 function CurrenciesListScreen() {
@@ -9,7 +9,7 @@ function CurrenciesListScreen() {
       <div style={div1Style}>
         <ThreeDotsMenu />
       </div>
-      <NavBar />
+      <LandingScreenStyle />
       <div style={divStyle}>
         <CurrenciesList />
       </div>

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Navbar from "react-bootstrap/Navbar";
 
 class DateAndTime extends Component {
   constructor(props) {
@@ -63,12 +62,14 @@ function ShowCurrentDate() {
 
 const h1Style = {
   fontFamily: "Fantasy ",
-  fontSize: 20,
+  fontSize: 17,
   marginTop: "10%",
   margintBottom: "10%",
-  backgroundColor: "#ffff00",
+  paddingTop: "2%",
+  paddingBottom: "2%",
+  backgroundColor: "white",
   width: "100%",
-  backgroundBorder: "bold",
+  color: "#3B474D",
 };
 
 const h2Style = {
