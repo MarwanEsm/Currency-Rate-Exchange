@@ -23,7 +23,7 @@ const divStyle = {
 
 const div1Style = {
   fontFamily: "Fantasy ",
-  fontSize: 10,
+  fontSize: 20,
   backgroundColor: "#ffff00",
   width: "100%",
 };

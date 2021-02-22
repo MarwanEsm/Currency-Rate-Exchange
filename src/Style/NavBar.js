@@ -13,14 +13,10 @@ import LandingScreenStyle from "./LandingScreenStyle";
 
 function NavBar() {
   return (
-    <div style={divStyle}>
+    <div>
       <LandingScreenStyle></LandingScreenStyle>
     </div>
   );
 }
-
-const divStyle = {
-  height: "15%",
-};
 
 export default NavBar;
