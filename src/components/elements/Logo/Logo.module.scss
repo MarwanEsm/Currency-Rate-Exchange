@@ -1,7 +1,9 @@
-.container img {
-    width: 10%;
-    display: flex;
+.image {
+    width: 20%;
+    margin: 70px auto 20px auto;
     display: block;
-    margin-left: 0;
-    margin-right: 0;
+}
+
+.image:hover {
+    scale: 1.1;
 }

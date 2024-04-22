@@ -4,12 +4,12 @@ import styles from "./Logo.module.scss"
 
 
 const Logo = () =>
-    <div className={styles.container}>
-        <img
-            src={Currency}
-            alt="Currency-Exchange"
-        />
-    </div>
+    <img
+        src={Currency}
+        alt="Currency-Exchange"
+        className={styles.image}
+    />
+
 
 
 export default Logo;

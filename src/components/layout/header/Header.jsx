@@ -1,4 +1,4 @@
-import DateAndTime from "../../elements/DateAndTime/DateAndTime"
+import DateAndTime from "../../elements/dateAndTime/DateAndTime"
 import Headline from "../../elements/headline/Headline"
 
 const Header = () => <>

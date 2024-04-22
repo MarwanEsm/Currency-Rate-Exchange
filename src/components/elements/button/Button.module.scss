@@ -1,0 +1,19 @@
+.button {
+    margin-top: 20px;
+    background: linear-gradient(to right, #f18900 50%, #3b474d 50%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.3s;
+    display: block;
+    margin: 70px auto auto auto;
+}
+
+.button:hover {
+    background: linear-gradient(to top, #f18900 50%, #3b474d 50%);
+    color: #fff;
+    cursor: pointer;
+}

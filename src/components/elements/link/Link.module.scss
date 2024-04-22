@@ -1,0 +1,37 @@
+.container {
+    text-align: center;
+}
+
+.container label {
+    display: block;
+    font-size: 13px;
+    margin: 5px 0 5px 0;
+}
+
+.container label span {
+    color: #f18900;
+    font-size: 14px;
+}
+
+.container a {
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    color: white
+}
+
+.container a::before {
+    content: "";
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    position: absolute;
+    left: 0;
+    transform: translateY(-50%);
+    transition: width 0.3s ease;
+}
+
+.container a:hover::before {
+    width: 0;
+}
