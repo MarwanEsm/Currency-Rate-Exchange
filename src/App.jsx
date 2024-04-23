@@ -1,6 +1,6 @@
 import './style/global.scss'
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import LandingScreen from "./Firstscreen/LandingScreen";
 // import LogInScreen from "./LogInscreen/LogInScreen";
 // import CurrenciesListScreen from "./CurrenciesListscreen/CurrenciesListScreen";
@@ -13,7 +13,7 @@ import { BrowserRouter as Router, Switch, Route, Routes } from "react-router-dom
 // import AuthContextProvider from './firebase/FirebaseAuth';
 // import CurrenciesContextProvider from "./context/CurrenciesContext";
 import Home from "./screens/home/Home"
-import LogIn from './screens/login/Login';
+import SignIn from './screens/login/SignIn';
 
 const App = () => {
   return (
@@ -24,7 +24,7 @@ const App = () => {
         {/* <CurrenciesContextProvider> */}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path='/login' element={<LogIn />} />
+          <Route path='/sign' element={<SignIn />} />
         </Routes>
         {/* <Switch>
                 <Route exact path="/">

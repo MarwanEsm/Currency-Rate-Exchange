@@ -10,10 +10,20 @@
     transition: background-color 0.3s;
     display: block;
     margin: 70px auto auto auto;
-}
-
-.button:hover {
-    background: linear-gradient(to right, #f18900 50%, #3b474d 50%);
-    color: #fff;
     cursor: pointer;
+
+    // Disabled style
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(to right, #f18900 50%, #3b474d 50%);
+        color: #fff;
+    }
+
+    &.disabled {
+        background: #f0f0f0;
+        color: #999;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
 }
