@@ -1,27 +1,17 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import styles from "./Button.module.scss"
 
-const Button = ({ children }) => {
+const Button = ({ children, onClick }) =>
+    <div>
+        <button
+            className={styles.button}
+            onClick={onClick}
+        >
+            {children}
+        </button>
+    </div>
 
-    const navigate = useNavigate()
 
-    const showLogInPage = (event) => {
-        event.preventDefault();
-        navigate("/LogInScreen");
-    };
-
-    return (
-        <div>
-            <button
-                className={styles.button}
-                onClick={showLogInPage}
-            >
-                {children}
-            </button>
-        </div>
-    );
-}
 
 
 
