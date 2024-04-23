@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { AuthContext } from "./authContext";
-import firebase from "./firebaseConfig"
+import { firebaseApp } from "./firebaseConfig"; // Import firebaseApp to access Firestore
+import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore"; // Import necessary Firestore functions
+
 
 // Initial context values
 const initialContext = {
@@ -9,7 +11,7 @@ const initialContext = {
         throw new Error("getMessages() is not implemented");
     },
     writeMessages: () => {
-        throw new Error("write messages() is not implemented");
+        throw new Error("writeMessages() is not implemented");
     },
 };
 
@@ -19,7 +21,7 @@ export const ChatContextProvider = ({ children }) => {
     // State variables
     const [messages, setMessages] = useState(initialContext.messages);
     const { user } = useContext(AuthContext);
-    const db = firebase.firestore();
+    const db = getFirestore(firebaseApp); // Initialize Firestore instance
 
     // Effect hook to get messages on component mount
     useEffect(() => {
@@ -27,30 +29,27 @@ export const ChatContextProvider = ({ children }) => {
     }, []);
 
     // Function to retrieve messages from Firestore
-    const getMessages = () => {
-        db.collection("messages")
-            .get()
-            .then((querySnapshot) => {
-                const messagesArray = [];
-                querySnapshot.forEach((doc) => {
-                    messagesArray.push(doc.data());
-                });
-                setMessages(messagesArray);
-            })
-            .catch((error) => {
-                console.error("Error fetching messages:", error);
+    const getMessages = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "messages")); // Use collection() and getDocs() to fetch messages
+            const messagesArray = [];
+            querySnapshot.forEach((doc) => {
+                messagesArray.push(doc.data());
             });
+            setMessages(messagesArray);
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+        }
     };
 
     // Function to write a new message to Firestore
     const writeMessages = async (body) => {
         try {
-            const docRef = await db.collection("messages").add({
+            await addDoc(collection(db, "messages"), { // Use collection() and addDoc() to add a new message
                 body,
                 firstName: user.displayName,
                 timestamp: new Date().toLocaleString(),
             });
-            console.log("Document written with ID:", docRef.id);
             getMessages(); // Refresh messages after writing
         } catch (error) {
             console.error("Error adding document:", error);

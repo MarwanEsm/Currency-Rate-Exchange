@@ -21,3 +21,4 @@ const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 export { auth, firestore, firebaseApp };
+
