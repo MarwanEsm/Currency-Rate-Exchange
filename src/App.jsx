@@ -13,6 +13,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import AuthContextProvider from './firebase/FirebaseAuth';
 import ChatContextProvider from './firebase/chatContext';
 import AuthContextProvider from './firebase/authContext';
+import CurrenciesContextProvider from './firebase/currenciesContext';
 // import CurrenciesContextProvider from "./context/CurrenciesContext";
 import Home from "./screens/home/Home"
 import SignIn from './screens/login/SignIn';
@@ -23,12 +24,12 @@ const App = () => {
       <div className="App">
         <AuthContextProvider>
           <ChatContextProvider>
-            {/* <CurrenciesContextProvider> */}
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path='/sign' element={<SignIn />} />
-            </Routes>
-            {/* <Switch>
+            <CurrenciesContextProvider>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path='/sign' element={<SignIn />} />
+              </Routes>
+              {/* <Switch>
                 <Route exact path="/">
                   <LandingScreen />
                 </Route>
@@ -51,10 +52,11 @@ const App = () => {
                   <ChatScreen />
                 </Route>
               </Switch> */}
-            {/* </CurrenciesContextProvider>
+              {/* </CurrenciesContextProvider>
         // </AuthContextProvider> */}
-            {/* </ChatContextProvider>
+              {/* </ChatContextProvider>
         </FirebaseAuthentication> */}
+            </CurrenciesContextProvider>
           </ChatContextProvider>
         </AuthContextProvider>
       </div>
