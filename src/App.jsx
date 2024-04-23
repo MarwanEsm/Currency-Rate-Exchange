@@ -11,6 +11,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import ChatScreen from "./ChatForum/ChatScreen";
 
 // import AuthContextProvider from './firebase/FirebaseAuth';
+// import ChatContextProvider from './firebase/chatContext';
+import AuthContextProvider from './firebase/authContext';
 // import CurrenciesContextProvider from "./context/CurrenciesContext";
 import Home from "./screens/home/Home"
 import SignIn from './screens/login/SignIn';
@@ -19,14 +21,14 @@ const App = () => {
   return (
     <Router>
       <div className="App">
-        {/* <AuthContextProvider> */}
-        {/* <ChatContextProvider> */}
-        {/* <CurrenciesContextProvider> */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path='/sign' element={<SignIn />} />
-        </Routes>
-        {/* <Switch>
+        <AuthContextProvider>
+          {/* <ChatContextProvider> */}
+          {/* <CurrenciesContextProvider> */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path='/sign' element={<SignIn />} />
+          </Routes>
+          {/* <Switch>
                 <Route exact path="/">
                   <LandingScreen />
                 </Route>
@@ -49,10 +51,12 @@ const App = () => {
                   <ChatScreen />
                 </Route>
               </Switch> */}
-        {/* </CurrenciesContextProvider>
-        </AuthContextProvider> */}
-        {/* </ChatContextProvider>
+          {/* </CurrenciesContextProvider>
+        // </AuthContextProvider> */}
+          {/* </ChatContextProvider>
         </FirebaseAuthentication> */}
+          {/* </ChatContextProvider> */}
+        </AuthContextProvider>
       </div>
     </Router>
   );

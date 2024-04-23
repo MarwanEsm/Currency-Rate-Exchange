@@ -1,10 +1,9 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-const firebase = {
+// Your Firebase configuration
+const firebaseConfig = {
     apiKey: "AIzaSyAXaxNct1q5yhiiom6HSaBMWrbCqGPV_WA",
     authDomain: "curreny-exchange-rate.firebaseapp.com",
     databaseURL: "https://curreny-exchange-rate-default-rtdb.europe-west1.firebasedatabase.app",
@@ -15,5 +14,10 @@ const firebase = {
 };
 
 // Initialize Firebase
-export const app = initializeApp(firebase);
-export default firebase
+const firebaseApp = initializeApp(firebaseConfig);
+
+// Get Auth and Firestore instances
+const auth = getAuth(firebaseApp);
+const firestore = getFirestore(firebaseApp);
+
+export { auth, firestore, firebaseApp };

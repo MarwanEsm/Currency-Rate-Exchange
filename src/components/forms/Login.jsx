@@ -2,12 +2,15 @@ import React, { useState } from "react"
 import Container from "../layout/container/Container"
 import Button from "../../components/elements/button/Button";
 import styles from "./Login.module.scss"
+import { Form } from "reactstrap";
 import { Link } from "react-router-dom";
 
 
 const Login = ({ onFormChange, onLogin }) => {
 
     //TODO: add validation for email and password
+    //TODO: add example of email and password as placeholder
+    //TODO: add validation and check that password include number, special character and min 6 letters
     const [loginCredentials, setLoginCredentials] = useState({
         email: "",
         password: "",
@@ -24,34 +27,39 @@ const Login = ({ onFormChange, onLogin }) => {
         <div>
             <Container></Container>
         </div>
-        <div className={styles.formContainer}>
-            <label>Email address</label>
-            <input
-                type="email"
-                placeholder="Enter email"
-                data-ng-init="resp()"
-                name="email"
-                onChange={handelChange}
-                value={loginCredentials.email}
-            />
+        <Form>
+            <div className={styles.formContainer}>
+                <label>Email address</label>
+                <input
+                    type="email"
+                    placeholder="example: jo@gmail.com"
+                    data-ng-init="resp()"
+                    name="email"
+                    onChange={handelChange}
+                    value={loginCredentials.email}
+                    autoComplete=""
+                />
 
-            <label>Password</label>
-            <input
-                type="password"
-                placeholder="Password"
-                data-ng-init="resp()"
-                name="password"
-                onChange={handelChange}
-                value={loginCredentials.password}
-            />
+                <label>Password</label>
+                <input
+                    type="password"
+                    // placeholder="Password"
+                    data-ng-init="resp()"
+                    name="password"
+                    onChange={handelChange}
+                    value={loginCredentials.password}
+                    autoComplete=""
+                />
 
-            <Link onClick={onFormChange}> Forgot Password ? </Link>
+                <Link onClick={onFormChange}> Forgot Password ? </Link>
 
-            <Button onClick={() => onLogin(loginCredentials)} disabled={invalid}>
-                Sign in
-            </Button>
-        </div>
-    </div>
+                <Button onClick={() => onLogin(loginCredentials)} disabled={invalid}>
+                    Sign in
+                </Button>
+
+            </div>
+        </Form>
+    </div >
 }
 
 export default Login

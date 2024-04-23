@@ -20,7 +20,7 @@ const Home = () => {
             <div className={styles.container}>
                 <Header />
                 <Logo />
-                <Button onClick={() => navigate("/login")}>Log in</Button>
+                <Button onClick={() => navigate("/sign")}>Log in</Button>
                 <Link />
             </div>
         </div >
