@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "../../components/elements/button/Button";
 import { Link } from "react-router-dom";
+import { Row, Col } from "reactstrap"
 // import { AuthContext } from "../../firebase/FirebaseAuth";
 import Container from "../../components/layout/container/Container";
 import styles from "./Login.module.scss"
@@ -31,8 +32,8 @@ const LogIn = () => {
             <div>
                 <Container></Container>
             </div>
-            <div className={styles.formContainer}>
 
+            <div className={styles.formContainer}>
                 <label>Email address</label>
                 <input
                     type="email"
@@ -56,6 +57,7 @@ const LogIn = () => {
                 <Link to="/resetpassword" >
                     Forgot Password ?
                 </Link>
+
                 <Button
                     variant="warning"
                     disabled={invalid}
@@ -63,11 +65,6 @@ const LogIn = () => {
                 >
                     Sign in
                 </Button>
-
-                <br />
-                {/* <Link to="/">
-                    <img src={Back} alt={""} />
-                </Link> */}
             </div>
         </div>
     );

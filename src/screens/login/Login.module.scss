@@ -1,22 +1,36 @@
 .formContainer {
-    margin: 19% 5% 15% 5%;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 0 5%;
 }
 
 .formContainer input {
-    width: "70%";
+    width: 100%;
+    max-width: 400px;
+    border-radius: 6px;
+    height: 30px;
+    margin-bottom: 15px;
+}
+
+.formContainer input:focus-visible {
+    outline: none !important;
 }
 
 .formContainer label {
-    color: "#f2f2f2";
-    font-weight: bolder
+    font-weight: bolder;
+    color: #e8e8e8;
+    margin-bottom: 4px;
 }
 
 .formContainer a {
     font-size: 14px;
     text-decoration: underline;
     padding-top: 10px;
-    color: #f2f2f2;
+    color: #eeeeee;
     font-weight: bolder;
 }
 
@@ -25,5 +39,3 @@
     margin-bottom: 20px;
     background-color: yellow;
 }
-
-.formContainer img {}
