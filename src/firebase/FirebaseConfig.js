@@ -1,24 +1,21 @@
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your Firebase configuration
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyAXaxNct1q5yhiiom6HSaBMWrbCqGPV_WA",
-    authDomain: "curreny-exchange-rate.firebaseapp.com",
-    databaseURL: "https://curreny-exchange-rate-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "curreny-exchange-rate",
-    storageBucket: "curreny-exchange-rate.appspot.com",
-    messagingSenderId: "49297494787",
-    appId: "1:49297494787:web:c999833dd0dad7fcd44f36"
+    apiKey: "AIzaSyDwk-mGmYP_dQdUwKPXcbZcSs0uUs4mXUg",
+    authDomain: "currency-exchange-d9615.firebaseapp.com",
+    projectId: "currency-exchange-d9615",
+    storageBucket: "currency-exchange-d9615.appspot.com",
+    messagingSenderId: "677786325381",
+    appId: "1:677786325381:web:2427f2543b7c7dd61e74ec",
+    measurementId: "G-992H5MPSFR"
 };
 
 // Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig);
-
-// Get Auth and Firestore instances
-const auth = getAuth(firebaseApp);
-const firestore = getFirestore(firebaseApp);
-
-export { auth, firestore, firebaseApp };
-
+export const app = initializeApp(firebaseConfig);
+export const analytics = getAnalytics(app);
