@@ -5,7 +5,6 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import Container from "../../layout/container/Container";
 import { AuthContext } from "../../../firebase/authContext";
 import styles from "./SignUp.module.scss"
 
@@ -65,76 +64,54 @@ const SignUp = () => {
         state.zip === "" ||
         state.checked === false;
 
-    return <div>
-        <div>
-            <Container></Container>
-        </div>
+    return <div className={styles.container}>
 
         <Form>
             <div className={styles.formContainer}>
 
-                <label>First Name</label>
                 <input
                     type="text"
+                    placeholder="First Name"
                     name="firstName"
                     value={state.firstName}
                     onChange={changeInput}
+                    autoComplete=""
                 />
 
-                <label>Last Name</label>
                 <input
                     type="text"
+                    placeholder="Last Name"
                     name="lastName"
                     value={state.lastName}
                     onChange={changeInput}
+                    autoComplete=""
                 />
 
-                <label>Email</label>
                 <input
                     type="email"
+                    placeholder="Email"
                     name="email"
                     value={state.email}
                     onChange={changeInput}
+                    autoComplete=""
                 />
 
-                <label>Password</label>
                 <input
                     type="password"
+                    placeholder="Password"
                     name="password"
                     value={state.password}
                     onChange={changeInput}
+                    autoComplete=""
                 />
 
-                <label>Confirm Password</label>
                 <input
                     type="password"
+                    placeholder="Confirm Password"
                     name="passwordConfirmation"
                     value={state.passwordConfirmation}
                     onChange={changeInput}
-                />
-
-                <label>Country</label>
-                <input
-                    type="text"
-                    name="country"
-                    value={state.country}
-                    onChange={changeInput}
-                />
-
-                <label>City</label>
-                <input
-                    type="text"
-                    name="city"
-                    value={state.city}
-                    onChange={changeInput}
-                />
-
-                <label>Zip</label>
-                <input
-                    type="number"
-                    name="zip"
-                    value={state.zip}
-                    onChange={changeInput}
+                    autoComplete=""
                 />
 
                 <input
@@ -144,45 +121,22 @@ const SignUp = () => {
                 />
 
 
-                <p onClick={openPopup}>
+                <span onClick={openPopup}>
                     Agree to terms and conditions
-                </p>
-
-                <Popup open={open} onClose={closePopup} position="center">
-                    <Terms closePopup={closePopup} />
-                </Popup>
-
-                <Button
-                    type="submit"
-                    onClick={handleRegister}
-                    disabled={isInvalid}
-                >
-                    Register
-                </Button>
-
-                <Link to="/LogInScreen">
-                    Back to Log in
-                </Link>
+                    <Button
+                        type="submit"
+                        onClick={handleRegister}
+                        disabled={isInvalid}
+                    >
+                        Register
+                    </Button>
+                </span>
             </div>
         </Form>
 
     </div>
 }
 
-
-const Terms = ({ closePopup }) => {
-    return (
-        <div>
-            <p>Terms Of Service</p>
-            <h3>
-                Make sure you're enjoying your life and enjoy using this App either
-            </h3>
-            <Button type="submit" onClick={closePopup}>
-                Accept
-            </Button>
-        </div>
-    );
-}
 
 
 export default SignUp;

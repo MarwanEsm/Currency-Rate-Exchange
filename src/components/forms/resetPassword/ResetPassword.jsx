@@ -30,6 +30,7 @@ const ResetPassword = ({ onPasswordReset }) => {
                 placeholder="Enter email"
                 value={email}
                 onChange={enterEmail}
+                autoComplete=""
             />
 
             <Button onClick={onPasswordReset} disabled={invalid}>
