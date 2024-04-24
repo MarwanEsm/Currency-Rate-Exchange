@@ -2,8 +2,8 @@ import React, { useContext, useState } from "react";
 // import { AuthContext } from "../../firebase/FirebaseAuth";
 import Container from "../../components/layout/container/Container";
 // import styles from "./Login.module.scss"
-import Login from "../../components/forms/Login";
-import ResetPassword from "../../components/forms/ResetPassword";
+import Login from "../../components/forms/login/Login";
+import ResetPassword from "../../components/forms/resetPassword/ResetPassword";
 
 const SignIn = () => {
 

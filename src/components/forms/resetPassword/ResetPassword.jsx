@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Container from "../layout/container/Container";
-import Button from "../elements/button/Button";
-import styles from './Login.module.scss'
+import Container from "../../layout/container/Container";
+import Button from "../../elements/button/Button";
+import styles from './ResetPassword.module.scss'
 
 
 //TODO: set a better alert 

@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import Container from "../layout/container/Container"
-import Button from "../../components/elements/button/Button";
+import Container from "../../layout/container/Container"
+import Button from "../../elements/button/Button";
 import styles from "./Login.module.scss"
 import { Form } from "reactstrap";
 import { Link } from "react-router-dom";
