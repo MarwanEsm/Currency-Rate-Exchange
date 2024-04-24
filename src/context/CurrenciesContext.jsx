@@ -9,7 +9,7 @@ const intiContext = {
 export const CurrenciesContext = createContext(intiContext);
 export const ExchangeRatesContext = createContext(intiContext);
 
-const CurrenciesContextProvider = ({ children }) => {
+export const CurrenciesContextProvider = ({ children }) => {
   const [currencies, setCurrencies] = useState();
   const [exchangeRates, setExchangeRates] = useState();
 

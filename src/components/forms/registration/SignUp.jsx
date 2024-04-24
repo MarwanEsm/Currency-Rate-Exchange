@@ -1,16 +1,12 @@
 import React, { useState, useContext } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "../../elements/button/Button";
-import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link } from "react-router-dom";
-import TermsAndConditions from "../../layout/termsAndCondition/TermsAndCondition";
 import { AuthContext } from "../../../firebase/authContext";
 import styles from "./SignUp.module.scss"
 
 const SignUp = () => {
-    const [open, setOpen] = useState(false);
 
     const { register } = useContext(AuthContext);
 

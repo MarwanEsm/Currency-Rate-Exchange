@@ -22,7 +22,11 @@ const Home = () => {
             </div>
             {
                 showRegistrationModal &&
-                <Modal isOpen={showRegistrationModal} toggle={setShowRegistrationModal} className={styles.modal}>
+
+                <Modal isOpen={showRegistrationModal}
+                    toggle={() => setShowRegistrationModal(false)}
+                    className={styles.modal}
+                >
                     <SignUp />
                 </Modal>
             }
