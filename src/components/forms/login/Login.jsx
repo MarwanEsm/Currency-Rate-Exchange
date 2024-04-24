@@ -6,7 +6,7 @@ import { Form } from "reactstrap";
 import { Link } from "react-router-dom";
 
 
-const Login = ({ onFormChange, onLogin }) => {
+const Login = ({ onPasswordReset, onLogin }) => {
 
     //TODO: add validation for email and password
     //TODO: add example of email and password as placeholder
@@ -51,7 +51,7 @@ const Login = ({ onFormChange, onLogin }) => {
                     autoComplete=""
                 />
 
-                <Link onClick={onFormChange}> Forgot Password ? </Link>
+                <Link onClick={onPasswordReset}> Forgot Password ? </Link>
 
                 <Button onClick={() => onLogin(loginCredentials)} disabled={invalid}>
                     Sign in

@@ -25,7 +25,7 @@ const SignIn = () => {
             </div>
             {isPasswordForgotten ?
                 <ResetPassword /> :
-                <Login onFormChange={() => setIsPasswordForgotten(true)} onLogin={(state) => handelLogin(state)} />
+                <Login onPasswordReset={() => setIsPasswordForgotten(true)} onLogin={(state) => handelLogin(state)} />
             }
         </div>
     );

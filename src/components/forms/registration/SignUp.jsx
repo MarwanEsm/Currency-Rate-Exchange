@@ -4,9 +4,9 @@ import Button from "../../elements/button/Button";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { AuthContext } from "../Firebase/FireBaseAuth";
 import { Link } from "react-router-dom";
 import Container from "../../layout/container/Container";
+import { AuthContext } from "../../../firebase/authContext";
 import styles from "./SignUp.module.scss"
 
 const SignUp = () => {
