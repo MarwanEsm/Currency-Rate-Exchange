@@ -1,6 +1,6 @@
 import Button from "../../elements/button/Button";
 
-const TermsAndCondition = ({ closePopup }) => {
+const TermsAndConditions = ({ closePopup }) => {
     return (
         <div>
             <p>Terms Of Service</p>
@@ -15,4 +15,4 @@ const TermsAndCondition = ({ closePopup }) => {
 }
 
 
-export default TermsAndCondition
+export default TermsAndConditions

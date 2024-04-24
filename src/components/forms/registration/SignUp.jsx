@@ -5,15 +5,12 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
+import TermsAndConditions from "../../layout/termsAndCondition/TermsAndCondition";
 import { AuthContext } from "../../../firebase/authContext";
 import styles from "./SignUp.module.scss"
 
 const SignUp = () => {
     const [open, setOpen] = useState(false);
-
-    const closePopup = () => {
-        setOpen(false);
-    };
 
     const { register } = useContext(AuthContext);
 
@@ -50,18 +47,12 @@ const SignUp = () => {
         );
     };
 
-    const openPopup = () => {
-        setOpen(true);
-    };
 
     const isInvalid =
         state.firstName === "" ||
         state.lastName === "" ||
         state.password === "" ||
         state.passwordConfirmation !== state.password ||
-        state.country === "" ||
-        state.city === "" ||
-        state.zip === "" ||
         state.checked === false;
 
     return <div className={styles.container}>
@@ -114,23 +105,23 @@ const SignUp = () => {
                     autoComplete=""
                 />
 
-                <input
-                    onClick={makeItChecked}
-                    defaultChecked={state.checked}
-                    type="checkbox"
-                />
-
-
-                <span onClick={openPopup}>
+                <span>
+                    <input
+                        onClick={makeItChecked}
+                        defaultChecked={state.checked}
+                        type="checkbox"
+                    />
                     Agree to terms and conditions
-                    <Button
-                        type="submit"
-                        onClick={handleRegister}
-                        disabled={isInvalid}
-                    >
-                        Register
-                    </Button>
                 </span>
+
+                <Button
+                    type="submit"
+                    onClick={handleRegister}
+                    disabled={isInvalid}
+                >
+                    Register
+                </Button>
+
             </div>
         </Form>
 
