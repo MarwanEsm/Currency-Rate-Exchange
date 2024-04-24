@@ -29,35 +29,20 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path='/sign_in' element={<SignIn />} />
-
               </Routes>
               {/* <Switch>
-                <Route exact path="/">
-                  <LandingScreen />
-                </Route>
-                <Route path="/LogInScreen">
-                  <LogInScreen />
-                </Route>
                 <Route exact path="/CurrenciesListScreen">
                   <CurrenciesListScreen />
                 </Route>
                 <Route exact path="/CurrenciesList/:currency">
                   <ExchangeRateList />
                 </Route>
-                <Route exact path="/RegistrationScreen">
-                  <RegistrationScreen />
-                </Route>
-                <Route path="/ResetPassword">
-                  <ResetPassword />
-                </Route>
+                
                 <Route path="/ChatScreen">
                   <ChatScreen />
                 </Route>
               </Switch> */}
-              {/* </CurrenciesContextProvider>
-        // </AuthContextProvider> */}
-              {/* </ChatContextProvider>
-        </FirebaseAuthentication> */}
+
             </CurrenciesContextProvider>
           </ChatContextProvider>
         </AuthContextProvider>
