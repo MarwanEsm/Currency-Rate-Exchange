@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { AuthContext } from "./authContext";
-import { firebaseApp } from "./firebaseConfig"; // Import firebaseApp to access Firestore
+import { app } from "./firebaseConfig"; // Import firebaseApp to access Firestore
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore"; // Import necessary Firestore functions
 
 
@@ -21,7 +21,7 @@ export const ChatContextProvider = ({ children }) => {
     // State variables
     const [messages, setMessages] = useState(initialContext.messages);
     const { user } = useContext(AuthContext);
-    const db = getFirestore(firebaseApp); // Initialize Firestore instance
+    const db = getFirestore(app); // Initialize Firestore instance
 
     // Effect hook to get messages on component mount
     useEffect(() => {
