@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "../../elements/button/Button";
+import styles from "./SignUp.module.scss"
+import { AuthContext } from "../../../firebase/authContext";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { AuthContext } from "../../../firebase/authContext";
-import styles from "./SignUp.module.scss"
 
 const SignUp = () => {
 

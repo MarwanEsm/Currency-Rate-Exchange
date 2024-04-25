@@ -1,8 +1,7 @@
 import styles from "./ColoredDot.module.scss"
 
-const ColoredDot = ({ children, character }) => {
-
-    return <>
+const ColoredDot = ({ children, character }) =>
+    <>
         {Array.isArray(children) ? children[0] : children}
         <span
             className={styles.green}
@@ -13,6 +12,5 @@ const ColoredDot = ({ children, character }) => {
             children.length >= 1 &&
             children.slice(1)}
     </>
-}
 
 export default ColoredDot

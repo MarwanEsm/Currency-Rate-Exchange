@@ -29,7 +29,7 @@ const App = () => {
           <ChatContextProvider>
             <CurrenciesContextProvider>
               <Routes>
-                <Route exact path="/" element={<Home />} />
+                <Route exact path="/" element={<CurrenciesList />} />
                 <Route path='/sign_in' element={<SignIn />} />
                 <Route path='/currenciesList' element={<CurrenciesList />} />
                 <Route path='/currencies/:currency' element={<ExchangeRateList />} />

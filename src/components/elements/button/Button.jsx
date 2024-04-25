@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "./Button.module.scss"
 
-//TODO: add disabled style
 const Button = ({ children, onClick, disabled }) =>
     <div>
         <button
