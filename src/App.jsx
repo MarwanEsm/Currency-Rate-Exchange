@@ -14,6 +14,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ChatContextProvider from "./firebase/chatContext"
 import AuthContextProvider from "./firebase/authContext"
 import CurrenciesContextProvider from "./context/CurrenciesContext"
+import CurrenciesList from './screens/currenciesList/CurrenciesList';
+import ExchangeRateList from './screens/exchangeRate/ExchangeRate';
 // import CurrenciesContextProvider from "./context/CurrenciesContext";
 import Home from "./screens/home/Home"
 import SignIn from "./screens/login/SignIn"
@@ -27,16 +29,13 @@ const App = () => {
           <ChatContextProvider>
             <CurrenciesContextProvider>
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route exact path="/" element={<Home />} />
                 <Route path='/sign_in' element={<SignIn />} />
+                <Route path='/currenciesList' element={<CurrenciesList />} />
+                <Route path='/currencies/:currency' element={<ExchangeRateList />} />
               </Routes>
               {/* <Switch>
-                <Route exact path="/CurrenciesListScreen">
-                  <CurrenciesListScreen />
-                </Route>
-                <Route exact path="/CurrenciesList/:currency">
-                  <ExchangeRateList />
-                </Route>
+          
                 
                 <Route path="/ChatScreen">
                   <ChatScreen />

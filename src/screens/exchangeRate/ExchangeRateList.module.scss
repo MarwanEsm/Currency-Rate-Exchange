@@ -1,0 +1,65 @@
+.exchangeContainer {
+    button {
+        font-size: 15px;
+        font-family: "DejaVu Sans Mono", monospace;
+        word-spacing: 5em;
+        margin: 20px;
+        width: 100px;
+        background-color: #ffa31a;
+    }
+
+    span {
+        font-size: 15px;
+        font-family: "DejaVu Sans Mono", monospace;
+        word-spacing: 5em;
+        margin: 20px;
+        width: 100px;
+        background-color: #3b474d;
+        color: white;
+    }
+}
+
+.section {
+    h2 {
+        font-family: "Trebuchet MS", sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 9%;
+    }
+
+    input {
+        margin-top: 4%;
+        margin-left: 35%;
+        width: 30%;
+        border: 2px solid black;
+        font-weight: bold;
+    }
+
+    h3 {
+        font-family: "Apple Color Emoji";
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff8000;
+        margin-top: 3%;
+    }
+
+    display: flex;
+    justify-content: space-between;
+    margin-left: 8%;
+    margin-right: 8%;
+    position: relative;
+}
+
+.container {
+    a {
+        font-family: "Trebuchet MS", sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        color: #ffa31a;
+        margin-bottom: 3%;
+    }
+
+    background-color: #ffff00;
+    width: 100%;
+    border: 2px solid black;
+}

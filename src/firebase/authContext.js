@@ -13,7 +13,6 @@ export const AuthContextProvider = ({ children }) => {
     // History hook
     const navigate = useNavigate();
     const firestore = getFirestore(app)
-    console.log(auth);
 
     // Effect hook to listen for authentication changes
     useEffect(() => {
