@@ -4,6 +4,7 @@ import Container from "../../components/layout/container/Container"
 import Headline from "../../components/elements/headline/Headline";
 import Logo from "../../components/elements/Logo/Logo";
 import styles from "./CurrenciesList.module.scss"
+import { Row, COl } from "reactstrap"
 
 const CurrenciesList = () =>
     <div>

@@ -26,7 +26,7 @@ const ListOfCurrencies = ({ onCurrencySelect }) => {
     return (
         <div className={styles.container}>
             <AsyncSelect
-                options={options}
+                options={options !== null ? options : []}
                 onChange={onCurrencySelect}
                 className={styles.select}
                 placeholder="Select a currency"
