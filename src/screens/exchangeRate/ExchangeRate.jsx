@@ -5,13 +5,13 @@ import Converter from "../../components/elements/converter/Converter";
 import { Link } from "react-router-dom";
 import { Nav, Navbar } from "react-bootstrap";
 import styles from "./ExchangeRateList.module.scss"
+import Async from "react-select"
 
-const ExchangeRateList = () => {
+const ExchangeRateList = ({ currency }) => {
 
     const [searchedCurrency, setSearchedCurrency] = useState("");
 
     const { fetchExchangeRate, exchangeRates } = useContext(CurrenciesContext);
-    const { currency } = useParams();
 
     useEffect(() => {
         fetchExchangeRate(currency);
@@ -40,45 +40,8 @@ const ExchangeRateList = () => {
 
     return (
         <div>
-            <div className={styles.container}>
-                <div>
-                    <Navbar collapseOnSelect expand="lg" bg="white">
-                        <Navbar.Brand href="#home"></Navbar.Brand>
-                        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                        <Navbar.Collapse id="responsive-navbar-nav">
-                            <Nav className="mr-auto">
-                                <Link to="/">
-                                    Logout
-                                </Link>
-                                <Link to="/ChatScreen">
-                                    Chat
-                                </Link>
-                                <Link to="/currenciesList">
-                                    Back
-                                </Link>
-                            </Nav>
-                        </Navbar.Collapse>
-                    </Navbar>
-                </div>
-            </div>
             <div>
-
-                <div className={styles.section}></div>
-                <h2 >Selected currency </h2>
-                <h3 >{currency} </h3>
-                <h2 >Conversion currency</h2>
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={searchedCurrency}
-                    onChange={handleSearch}
-                    className="form-control"
-                    id="inputGroup-sizing-sm"
-                />
-
-                <br />
-
-                <div className={styles.exchangeContainer}>
+                {/* <div className={styles.exchangeContainer}>
                     {exchangeRates &&
                         filteredRates().map((key, i) => (
                             <div key={i}>
@@ -98,8 +61,8 @@ const ExchangeRateList = () => {
                                 </p>
                             </div>
                         ))}
-                    <Converter searchedCurrency={searchedCurrency} />
-                </div>
+                    {/* <Converter searchedCurrency={searchedCurrency} /> */}
+                {/* </div> */}
 
                 <br />
             </div>

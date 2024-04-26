@@ -1,14 +1,13 @@
-import React, { useEffect, useContext, useState } from "react";
-import { CurrenciesContext } from "../../context/CurrenciesContext";
-import styles from "./ListOfCurrencies.module.scss";
+import React, { useEffect, useState } from "react";
+import styles from "./CurrencySelect.module.scss"
 import AsyncSelect from "react-select";
 import axios from "axios";
 
-const ListOfCurrencies = ({ onCurrencySelect }) => {
+const CurrencySelect = ({ onCurrencySelect, url }) => {
     const [options, setOptions] = useState(null);
 
     const loadCurrencies = () => {
-        axios.get("https://api.coinbase.com/v2/currencies")
+        axios.get(url)
             .then(response => {
                 if (response.data) {
                     setOptions(response.data.data.map(currency => ({ value: currency.id, label: currency.name })));
@@ -29,10 +28,10 @@ const ListOfCurrencies = ({ onCurrencySelect }) => {
                 options={options !== null ? options : []}
                 onChange={onCurrencySelect}
                 className={styles.select}
-                placeholder="Select a currency"
+                placeholder="From Currency"
             />
         </div>
     );
 };
 
-export default ListOfCurrencies;
+export default CurrencySelect;

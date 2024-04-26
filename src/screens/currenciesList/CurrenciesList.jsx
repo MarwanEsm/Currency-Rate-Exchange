@@ -1,22 +1,30 @@
-import React from "react";
-import ListOfCurrencies from "../../components/listOfCurrencies/ListOfCurrencies"
-import Container from "../../components/layout/container/Container"
+import React, { useState } from "react";
+import CurrencySelect from "../../components/elements/currencySelector/CurrencySelect";
+import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
 import Logo from "../../components/elements/Logo/Logo";
-import styles from "./CurrenciesList.module.scss"
-import { Row, COl } from "reactstrap"
+import styles from "./CurrenciesList.module.scss";
+import ExchangeRateList from "../exchangeRate/ExchangeRate";
 
-const CurrenciesList = () =>
-    <div>
-        <Container />
-        <div className={styles.list}>
-            <Headline size={2} character="!" >Discover Real-Time Currency Exchange Rates Now</Headline>
+
+const CurrenciesList = () => {
+
+    const [selectedCurrency, setSelectedCurrency] = useState("")
+
+    return <Container>
+        <div className={styles.listContainer}>
+            <Headline size={2} character="!">Discover Real-Time Currency Exchange Rates Now</Headline>
             <Logo />
-            <ListOfCurrencies onCurrencySelect={(value) => console.log(value)} />
+
+            <CurrencySelect
+                url={"https://api.coinbase.com/v2/currencies"}
+                onCurrencySelect={(currency) => setSelectedCurrency(currency)}
+            />
+
+            <ExchangeRateList currency={selectedCurrency.value} />
+
         </div>
-    </div>
-
-
-
+    </Container>
+}
 
 export default CurrenciesList;
