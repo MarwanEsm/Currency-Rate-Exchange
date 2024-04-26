@@ -6,3 +6,12 @@
     color: white;
     margin: 40px auto 40px auto;
 }
+
+.currencySelectorContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.currencySelectorContainer>div:first-child {
+    margin-right: 10px;
+}

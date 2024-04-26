@@ -3,7 +3,7 @@ import styles from "./CurrencySelect.module.scss"
 import AsyncSelect from "react-select";
 import axios from "axios";
 
-const CurrencySelect = ({ onCurrencySelect, url }) => {
+const CurrencySelect = ({ onCurrencySelect, url, placeholder }) => {
     const [options, setOptions] = useState(null);
 
     const loadCurrencies = () => {
@@ -28,7 +28,7 @@ const CurrencySelect = ({ onCurrencySelect, url }) => {
                 options={options !== null ? options : []}
                 onChange={onCurrencySelect}
                 className={styles.select}
-                placeholder="From Currency"
+                placeholder={placeholder}
             />
         </div>
     );

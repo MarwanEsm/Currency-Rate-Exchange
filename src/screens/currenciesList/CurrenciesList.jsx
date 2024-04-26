@@ -9,19 +9,27 @@ import ExchangeRateList from "../exchangeRate/ExchangeRate";
 
 const CurrenciesList = () => {
 
-    const [selectedCurrency, setSelectedCurrency] = useState("")
+    const [fromCurrency, setFromCurrency] = useState(null)
+    const [toCurrency, setToCurrency] = useState(null)
 
     return <Container>
         <div className={styles.listContainer}>
             <Headline size={2} character="!">Discover Real-Time Currency Exchange Rates Now</Headline>
             <Logo />
 
-            <CurrencySelect
-                url={"https://api.coinbase.com/v2/currencies"}
-                onCurrencySelect={(currency) => setSelectedCurrency(currency)}
-            />
-
-            <ExchangeRateList currency={selectedCurrency.value} />
+            <div className={styles.currencySelectorContainer}>
+                <CurrencySelect
+                    url={"https://api.coinbase.com/v2/currencies"}
+                    placeholder={"From Currency"}
+                    onCurrencySelect={(currency) => setFromCurrency(currency)}
+                />
+                <CurrencySelect
+                    url={"https://api.coinbase.com/v2/currencies"}
+                    placeholder={"To Currency"}
+                    onCurrencySelect={(currency) => setToCurrency(currency)}
+                />
+            </div>
+            {toCurrency !== null && <ExchangeRateList currency={toCurrency} />}
 
         </div>
     </Container>
