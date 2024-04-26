@@ -5,6 +5,7 @@ import Headline from "../../components/elements/headline/Headline";
 import Logo from "../../components/elements/Logo/Logo";
 import styles from "./CurrenciesList.module.scss";
 import ExchangeRateList from "../exchangeRate/ExchangeRate";
+import { Row, Col } from 'reactstrap';
 
 
 const CurrenciesList = () => {
@@ -14,21 +15,32 @@ const CurrenciesList = () => {
 
     return <Container>
         <div className={styles.listContainer}>
-            <Headline size={2} character="!">Discover Real-Time Currency Exchange Rates Now</Headline>
+            <Row className="justify-content-center">
+                <Col lg={8} md={8} sm={10}>
+                    <Headline size={2} character="!">
+                        Discover Real-Time Currency Exchange Rates Now
+                    </Headline>
+                </Col>
+            </Row>
+
             <Logo />
 
-            <div className={styles.currencySelectorContainer}>
-                <CurrencySelect
-                    url={"https://api.coinbase.com/v2/currencies"}
-                    placeholder={"From Currency"}
-                    onCurrencySelect={(currency) => setFromCurrency(currency)}
-                />
-                <CurrencySelect
-                    url={"https://api.coinbase.com/v2/currencies"}
-                    placeholder={"To Currency"}
-                    onCurrencySelect={(currency) => setToCurrency(currency)}
-                />
-            </div>
+            <Row className="justify-content-center">
+                <Col lg={5} md={5} sm={6}>
+                    <CurrencySelect
+                        url={"https://api.coinbase.com/v2/currencies"}
+                        placeholder={"From Currency"}
+                        onCurrencySelect={(currency) => setFromCurrency(currency)}
+                    />
+                </Col>
+                <Col lg={5} md={5} sm={6}>
+                    <CurrencySelect
+                        url={"https://api.coinbase.com/v2/currencies"}
+                        placeholder={"To Currency"}
+                        onCurrencySelect={(currency) => setToCurrency(currency)}
+                    />
+                </Col>
+            </Row>
             {toCurrency !== null && <ExchangeRateList currency={toCurrency} />}
 
         </div>

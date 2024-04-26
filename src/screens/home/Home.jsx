@@ -16,10 +16,8 @@ const Home = () => {
     const navigate = useNavigate()
 
     return (
-        <div>
-            <div>
-                <Container></Container>
-            </div>
+        <Container>
+
             {
                 showRegistrationModal &&
 
@@ -36,7 +34,7 @@ const Home = () => {
                 <Button onClick={() => navigate("/sign_in")}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
-        </div >
+        </Container>
     );
 }
 

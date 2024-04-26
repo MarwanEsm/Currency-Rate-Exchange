@@ -13,11 +13,11 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import AuthContextProvider from './firebase/FirebaseAuth';
 import ChatContextProvider from "./firebase/chatContext"
 import AuthContextProvider from "./firebase/authContext"
-import CurrenciesContextProvider from "./context/CurrenciesContext"
 import CurrenciesList from './screens/currenciesList/CurrenciesList';
 import ExchangeRateList from './screens/exchangeRate/ExchangeRate';
 // import CurrenciesContextProvider from "./context/CurrenciesContext";
 import Home from "./screens/home/Home"
+import "./style/global.scss"
 import SignIn from "./screens/login/SignIn"
 
 
@@ -27,22 +27,20 @@ const App = () => {
       <div className="App">
         <AuthContextProvider>
           <ChatContextProvider>
-            <CurrenciesContextProvider>
-              <Routes>
-                <Route exact path="/" element={<CurrenciesList />} />
-                <Route path='/sign_in' element={<SignIn />} />
-                <Route path='/currenciesList' element={<CurrenciesList />} />
-                <Route path='/currencies/:currency' element={<ExchangeRateList />} />
-              </Routes>
-              {/* <Switch>
+
+            <Routes>
+              <Route exact path="/" element={<CurrenciesList />} />
+              <Route path='/sign_in' element={<SignIn />} />
+              <Route path='/currenciesList' element={<CurrenciesList />} />
+              <Route path='/currencies/:currency' element={<ExchangeRateList />} />
+            </Routes>
+            {/* <Switch>
           
                 
                 <Route path="/ChatScreen">
                   <ChatScreen />
                 </Route>
               </Switch> */}
-
-            </CurrenciesContextProvider>
           </ChatContextProvider>
         </AuthContextProvider>
       </div>
