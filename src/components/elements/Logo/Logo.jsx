@@ -3,12 +3,15 @@ import Currency from "../../../assets/Currency.png";
 import styles from "./Logo.module.scss"
 
 
-const Logo = () =>
-    <img
+const Logo = ({ onClick }) => {
+
+    return <img
         src={Currency}
         alt="Currency-Exchange"
         className={styles.image}
+        onClick={onClick}
     />
+}
 
 
 

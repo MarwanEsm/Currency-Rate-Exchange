@@ -18,9 +18,7 @@ const Home = () => {
     return (
         <Container>
 
-            {
-                showRegistrationModal &&
-
+            {showRegistrationModal &&
                 <Modal isOpen={showRegistrationModal}
                     toggle={() => setShowRegistrationModal(false)}
                     className={styles.modal}
@@ -28,9 +26,10 @@ const Home = () => {
                     <SignUp />
                 </Modal>
             }
+
             <div className={styles.container}>
                 <Header />
-                <Logo />
+                <Logo onClick={() => navigate("/currencies")} />
                 <Button onClick={() => navigate("/sign_in")}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>

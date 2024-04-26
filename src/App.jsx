@@ -29,9 +29,9 @@ const App = () => {
           <ChatContextProvider>
 
             <Routes>
-              <Route exact path="/" element={<CurrenciesList />} />
+              <Route exact path="/" element={<Home />} />
               <Route path='/sign_in' element={<SignIn />} />
-              <Route path='/currenciesList' element={<CurrenciesList />} />
+              <Route path='/currencies' element={<CurrenciesList />} />
               <Route path='/currencies/:currency' element={<ExchangeRateList />} />
             </Routes>
             {/* <Switch>

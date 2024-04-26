@@ -6,12 +6,15 @@ import Logo from "../../components/elements/Logo/Logo";
 import styles from "./CurrenciesList.module.scss";
 import ExchangeRateList from "../exchangeRate/ExchangeRate";
 import { Row, Col } from 'reactstrap';
+import { useNavigate } from "react-router-dom";
 
 
 const CurrenciesList = () => {
 
     const [fromCurrency, setFromCurrency] = useState(null)
     const [toCurrency, setToCurrency] = useState(null)
+
+    const navigate = useNavigate()
 
     return <Container>
         <div className={styles.listContainer}>
@@ -23,7 +26,7 @@ const CurrenciesList = () => {
                 </Col>
             </Row>
 
-            <Logo />
+            <Logo onClick={() => navigate("/")} />
 
             <Row className="justify-content-center">
                 <Col lg={5} md={5} sm={6}>
