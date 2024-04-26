@@ -6,7 +6,8 @@ import Button from "../../components/elements/button/Button"
 import Link from "../../components/elements/link/Link";
 import Container from "../../components/layout/container/Container";
 import styles from "./Home.module.scss";
-import { Modal } from 'reactstrap';
+// 
+import Modal from "../../components/layout/modal/Modal";
 import SignUp from "../../components/forms/registration/SignUp";
 
 

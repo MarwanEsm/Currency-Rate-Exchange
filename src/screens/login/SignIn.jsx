@@ -18,17 +18,12 @@ const SignIn = () => {
     };
 
 
-    return (
-        <div>
-            <div>
-                <Container></Container>
-            </div>
-            {isPasswordForgotten ?
-                <ResetPassword /> :
-                <Login onPasswordReset={() => setIsPasswordForgotten(true)} onLogin={(state) => handelLogin(state)} />
-            }
-        </div>
-    );
+    return <Container>
+        {isPasswordForgotten ?
+            <ResetPassword /> :
+            <Login onPasswordReset={() => setIsPasswordForgotten(true)} onLogin={(state) => handelLogin(state)} />
+        }
+    </Container>
 }
 
 
