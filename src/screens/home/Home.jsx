@@ -20,8 +20,9 @@ const Home = () => {
         <Container>
 
             {showRegistrationModal &&
-                <Modal isOpen={showRegistrationModal}
-                    toggle={() => setShowRegistrationModal(false)}
+                <Modal
+                    onClose={() => setShowRegistrationModal(false)}
+                    isOpen={showRegistrationModal}
                     className={styles.modal}
                 >
                     <SignUp />
