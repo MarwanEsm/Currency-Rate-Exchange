@@ -6,7 +6,6 @@ import Button from "../../components/elements/button/Button"
 import Link from "../../components/elements/link/Link";
 import Container from "../../components/layout/container/Container";
 import styles from "./Home.module.scss";
-// 
 import Modal from "../../components/layout/modal/Modal";
 import SignUp from "../../components/forms/registration/SignUp";
 
@@ -18,7 +17,6 @@ const Home = () => {
 
     return (
         <Container>
-
             {showRegistrationModal &&
                 <Modal
                     onClose={() => setShowRegistrationModal(false)}
@@ -40,4 +38,4 @@ const Home = () => {
 }
 
 
-export default Home;
+export default Home

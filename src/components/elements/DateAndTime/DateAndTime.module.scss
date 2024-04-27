@@ -9,7 +9,10 @@
 }
 
 .container h2 {
-    margin: 0 10px 0 10px;
     min-width: 100px;
     color: white;
+}
+
+.container h2:first-child {
+    margin-right: 10px;
 }

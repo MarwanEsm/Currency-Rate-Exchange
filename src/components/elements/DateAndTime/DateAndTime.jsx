@@ -41,7 +41,7 @@ const DateAndTime = () => {
     return (
         <div className={styles.container}>
             <div>
-                <div><CurrentDate /></div>
+                <CurrentDate />
                 <h2 className={styles.time}>{date.toLocaleTimeString()}</h2>
             </div>
         </div>

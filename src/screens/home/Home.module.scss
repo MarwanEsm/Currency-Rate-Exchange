@@ -2,14 +2,16 @@
     position: relative;
 }
 
-
 .container h2 {
-    color: white;
     margin-bottom: 30px;
 }
 
 .modal {
     display: flex;
-    background: linear gradient(to left, #f18900 50%, #3b474d 50%);
-    background: red;
+}
+
+@media screen and (max-width:690px) {
+    .container h2 {
+        font-size: 20px;
+    }
 }
