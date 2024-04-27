@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "../../components/elements/button/Button"
 import styles from "./ExchangeRateList.module.scss"
-const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
+const ExchangeRateList = ({ toCurrency, fromCurrency, restExchangeRate, onRateReset }) => {
+    console.log(restExchangeRate);
+
     const [exchangeRates, setExchangeRates] = useState(null);
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null)
@@ -39,6 +41,7 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
     const onConvert = () => {
         const result = (amount * exchangeRate).toFixed(2)
         setResult(result)
+        onRateReset()
     }
 
     return (
@@ -64,7 +67,7 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
                     </div>
 
                     <Button onClick={onConvert}>
-                        {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency.value}`}
+                        {result === null || restExchangeRate ? "Convert" : numberWithCommas(result) + " " + `${toCurrency.value}`}
                     </Button>
                 </div>
             )}

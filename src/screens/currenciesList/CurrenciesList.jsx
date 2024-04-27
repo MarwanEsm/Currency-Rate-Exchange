@@ -13,6 +13,8 @@ const CurrenciesList = () => {
 
     const [fromCurrency, setFromCurrency] = useState(null)
     const [toCurrency, setToCurrency] = useState(null)
+    const [restExchangeRate, setResetExchangeRate] = useState(false)
+    console.log(restExchangeRate);
 
     const navigate = useNavigate()
 
@@ -33,7 +35,10 @@ const CurrenciesList = () => {
                     <CurrencySelect
                         url={"https://api.coinbase.com/v2/currencies"}
                         placeholder={"From Currency"}
-                        onCurrencySelect={(currency) => setFromCurrency(currency)}
+                        onCurrencySelect={(currency) => {
+                            setFromCurrency(currency)
+                            setResetExchangeRate(true)
+                        }}
                     />
                 </Col>
                 <Col lg={5} md={5} sm={6}>
@@ -44,7 +49,14 @@ const CurrenciesList = () => {
                     />
                 </Col>
             </Row>
-            {toCurrency !== null && <ExchangeRateList toCurrency={toCurrency} fromCurrency={fromCurrency} />}
+            {toCurrency !== null &&
+                <ExchangeRateList
+                    toCurrency={toCurrency}
+                    fromCurrency={fromCurrency}
+                    restExchangeRate={restExchangeRate}
+                    onRateReset={() => setResetExchangeRate(false)}
+                />
+            }
 
         </div>
     </Container>
