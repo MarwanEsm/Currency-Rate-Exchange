@@ -34,6 +34,28 @@
     margin-right: 10px;
 }
 
+.inputWrapper>input[type="number"] {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+
+.inputWrapper>input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    display: none;
+}
+
+
+.inputWrapper>input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    display: none;
+}
+
+.inputWrapper>input:focus-visible {
+    outline: none;
+}
+
 .container strong {
     position: absolute;
     right: 20px;
