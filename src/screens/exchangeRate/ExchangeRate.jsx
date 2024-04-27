@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import styles from "./ExchangeRateList.module.scss"
 import axios from "axios";
+import styles from "./ExchangeRateList.module.scss"
 
 const ExchangeRateList = ({ currency }) => {
 
     const [exchangeRates, setExchangeRates] = useState(null);
+    const [amount, setAmount] = useState(null)
+    console.log(amount);
+
     const loadExchangeRate = () => {
         axios.get(`https://api.coinbase.com/v2/exchange-rates?currency=${currency?.value}`)
             .then(response => {
@@ -22,22 +25,23 @@ const ExchangeRateList = ({ currency }) => {
     }, []);
 
 
-    return (
-        <div>
-            <div className={styles.exchangeContainer}>
-                {exchangeRates && currency && exchangeRates[currency.value] &&
-                    <div>
-                        <p>
-                            <span className="badge badge-pill badge-warning">
-                                {parseFloat(exchangeRates[currency.value]).toFixed(4)}
-                            </span>
-                        </p>
-                    </div>
-                }
+    return <>
+        {exchangeRates && currency && exchangeRates[currency.value] &&
+            <div className={styles.container}>
+                <input
+                    type="number"
+                    placeholder="Amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                />
+                <span>
+                    <label>Exchange Rate :</label>{parseFloat(exchangeRates[currency.value]).toFixed(4)}
+                </span>
             </div>
-            <br />
-        </div>
-    );
+        }
+    </>
+
+
 }
 
 
