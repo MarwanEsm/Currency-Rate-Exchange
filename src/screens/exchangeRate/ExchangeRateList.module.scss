@@ -6,16 +6,20 @@
 }
 
 
+.container>span>label {
+    font-weight: 600;
+}
+
 
 .container>span {
     display: flex;
     align-items: center;
     padding: 10px 20px;
     color: white;
-    background: linear-gradient(to right, #f18900 30%, #ad6c17 70%);
+    background: linear-gradient(to left, #f18900 50%, #3b474d 50%);
     margin-right: 10px;
     border-radius: 8px;
-    box-shadow: 1px 1px 2px rgb(125, 122, 122)
+    box-shadow: 2px 2px 2px rgb(125, 122, 122)
 }
 
 .container>input {

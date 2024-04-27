@@ -44,7 +44,7 @@ const CurrenciesList = () => {
                     />
                 </Col>
             </Row>
-            {toCurrency !== null && <ExchangeRateList currency={toCurrency} />}
+            {toCurrency !== null && <ExchangeRateList toCurrency={toCurrency} fromCurrency={fromCurrency} />}
 
         </div>
     </Container>
