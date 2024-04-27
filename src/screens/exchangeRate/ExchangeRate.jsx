@@ -6,6 +6,7 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
 
     const [exchangeRates, setExchangeRates] = useState(null);
     const [amount, setAmount] = useState(null)
+    console.log(amount);
 
     const loadExchangeRate = () => {
         axios.get(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency?.value}`)
@@ -27,14 +28,17 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
     return <>
         {exchangeRates && toCurrency && exchangeRates[toCurrency.value] &&
             <div className={styles.container}>
-                <input
-                    type="number"
-                    placeholder={`Amount ${fromCurrency.value}`}
-                    value={`${amount} ${fromCurrency.value}`}
-                    onChange={(e) => setAmount(e.target.value)}
-                />
+                <div className={styles.inputWrapper}>
+                    <strong>{`${fromCurrency.value}`}</strong>
+                    <input
+                        type="number"
+                        placeholder={`Amount ${fromCurrency.value}`}
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
+                </div>
                 <span>
-                    <label>Exchange Rate :</label>{parseFloat(exchangeRates[toCurrency.value]).toFixed(4)}
+                    <label>Exchange Rate</label>{parseFloat(exchangeRates[toCurrency.value]).toFixed(4)}
                 </span>
             </div>
         }
