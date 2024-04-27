@@ -19,7 +19,7 @@ To run the Currency Exchange Rate App locally, follow these steps:
 
 ## Clone the repository: ##
 
-*git clone https://github.com/your-username/currency-exchange-rate-app.git
+* git clone https://github.com/your-username/currency-exchange-rate-app.git
 * cd currency-exchange-rate-app
 * Install dependencies:npm install
 * Start the development server:npm start
