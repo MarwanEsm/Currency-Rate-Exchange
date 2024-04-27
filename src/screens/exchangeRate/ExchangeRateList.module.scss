@@ -29,9 +29,10 @@
 .inputWrapper>input {
     padding: 8px 5px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 8px;
     max-width: 180px;
     margin-right: 10px;
+    margin-bottom: 20px;
 }
 
 .inputWrapper>input[type="number"] {
@@ -60,6 +61,10 @@
     position: absolute;
     right: 20px;
     top: 7px
+}
+
+.mainContainer button {
+    margin-top: 20px;
 }
 
 @media screen and (max-width:650px) {

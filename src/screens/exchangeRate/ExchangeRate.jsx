@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Button from "../../components/elements/button/Button"
 import styles from "./ExchangeRateList.module.scss"
 const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
     const [exchangeRates, setExchangeRates] = useState(null);
     const [amount, setAmount] = useState(null);
+    const [result, setResult] = useState(null)
 
     const numberWithCommas = (x) => {
         if (!x) return "";
@@ -13,6 +15,8 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
             x = x.replace(pattern, "$1,$2");
         return x;
     };
+
+    const exchangeRate = exchangeRates ? parseFloat(exchangeRates[toCurrency.value]).toFixed(4) : 0; // Add a null check for exchangeRates
 
     const loadExchangeRate = () => {
         axios.get(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency?.value}`)
@@ -26,27 +30,42 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
             });
     };
 
+
     useEffect(() => {
         loadExchangeRate();
     }, []);
 
+
+    const onConvert = () => {
+        const result = (amount * exchangeRate).toFixed(2)
+        setResult(result)
+    }
+
     return (
         <>
             {exchangeRates && toCurrency && exchangeRates[toCurrency.value] && (
-                <div className={styles.container}>
-                    <div className={styles.inputWrapper}>
-                        <strong>{fromCurrency.value}</strong>
-                        <input
-                            type="text"
-                            placeholder="Amount"
-                            value={numberWithCommas(amount)}
-                            onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
-                        />
+                <div className={styles.mainContainer}>
+                    <div className={styles.container}>
+
+                        <div className={styles.inputWrapper}>
+                            <strong>{fromCurrency.value}</strong>
+                            <input
+                                type="text"
+                                placeholder="Amount"
+                                value={numberWithCommas(amount)}
+                                onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
+                            />
+                        </div>
+
+                        <span>
+                            <label>Exchange Rate</label>
+                            <b>{exchangeRate}</b>
+                        </span>
                     </div>
-                    <span>
-                        <label>Exchange Rate</label>
-                        <b>{parseFloat(exchangeRates[toCurrency.value]).toFixed(4)}</b>
-                    </span>
+
+                    <Button onClick={onConvert}>
+                        {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency.value}`}
+                    </Button>
                 </div>
             )}
         </>
