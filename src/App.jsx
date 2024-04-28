@@ -14,7 +14,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ChatContextProvider from "./firebase/chatContext"
 import AuthContextProvider from "./firebase/authContext"
 import CurrenciesList from './screens/currenciesList/CurrenciesList';
-import ExchangeRateList from './screens/exchangeRate/ExchangeRate';
 // import CurrenciesContextProvider from "./context/CurrenciesContext";
 import Home from "./screens/home/Home"
 import "./style/global.scss"
@@ -32,7 +31,6 @@ const App = () => {
               <Route exact path="/" element={<Home />} />
               <Route path='/sign_in' element={<SignIn />} />
               <Route path='/currencies' element={<CurrenciesList />} />
-              <Route path='/currencies/:currency' element={<ExchangeRateList />} />
             </Routes>
             {/* <Switch>
           
