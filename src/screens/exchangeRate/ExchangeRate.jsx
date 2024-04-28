@@ -45,30 +45,27 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
     };
 
 
-    return (
-        <>
-            <div className={styles.mainContainer}>
-                <div className={styles.container}>
-                    <div className={styles.inputWrapper}>
-                        <strong>{fromCurrency?.value}</strong>
-                        <input
-                            type="text"
-                            placeholder="Amount"
-                            value={numberWithCommas(amount)}
-                            onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
-                        />
-                    </div>
-                    <span>
-                        <label>Exchange Rate :</label>
-                        <b>{exchangeRate}</b>
-                    </span>
-                </div>
-                <Button onClick={onConvert}>
-                    {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value}`}
-                </Button>
+    return <>
+        <div className={styles.container}>
+            <div className={styles.inputWrapper}>
+                <strong>{fromCurrency?.value}</strong>
+                <input
+                    type="text"
+                    placeholder="Amount"
+                    value={numberWithCommas(amount)}
+                    onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
+                />
             </div>
-        </>
-    );
+            <span>
+                <label>Exchange Rate :</label>
+                <b>{exchangeRate}</b>
+            </span>
+        </div>
+        <Button onClick={onConvert}>
+            {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value}`}
+        </Button>
+    </>
+
 };
 
 export default ExchangeRateList;
