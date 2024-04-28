@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "../../components/elements/button/Button"
 import styles from "./ExchangeRateList.module.scss"
+
 const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
+
     const [exchangeRates, setExchangeRates] = useState(null);
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
+
 
     const numberWithCommas = (x) => {
         if (!x) return "";
@@ -36,13 +39,11 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
         loadExchangeRate()
     }, [])
 
-
-
-
     const onConvert = () => {
         const result = (amount * exchangeRate).toFixed(2);
         setResult(result);
     };
+
 
     return (
         <>
