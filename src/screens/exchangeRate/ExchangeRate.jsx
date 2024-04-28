@@ -35,6 +35,7 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
 
     const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
 
+    //TODO: new branch and replace useEffect with React Query
     useEffect(() => {
         loadExchangeRate()
     }, [])
