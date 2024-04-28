@@ -19,6 +19,7 @@ const CurrenciesList = () => {
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
 
+    const navigate = useNavigate()
 
     const numberWithCommas = (x) => {
         if (!x) return "";
@@ -43,20 +44,19 @@ const CurrenciesList = () => {
     };
 
 
-    const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
-
-    //TODO: new branch and replace useEffect with React Query
     useEffect(() => {
         loadExchangeRate()
     }, [])
+
+
+    const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
+
 
     const onConvert = () => {
         const result = (amount * exchangeRate).toFixed(2);
         setResult(result);
     };
 
-
-    const navigate = useNavigate()
 
     return <Container>
         <div className={styles.listContainer}>
