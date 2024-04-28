@@ -17,7 +17,7 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
         return x;
     };
 
-    const exchangeRate = exchangeRates ? parseFloat(exchangeRates[toCurrency.value]).toFixed(4) : 0; // Add a null check for exchangeRates
+    const exchangeRate = toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-"; // Add a null check for exchangeRates
 
     const loadExchangeRate = () => {
         axios.get(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency?.value}`)
@@ -44,31 +44,29 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
 
     return (
         <>
-            {exchangeRates && toCurrency && exchangeRates[toCurrency.value] && (
-                <div className={styles.mainContainer}>
-                    <div className={styles.container}>
+            <div className={styles.mainContainer}>
+                <div className={styles.container}>
 
-                        <div className={styles.inputWrapper}>
-                            <strong>{fromCurrency.value}</strong>
-                            <input
-                                type="text"
-                                placeholder="Amount"
-                                value={numberWithCommas(amount)}
-                                onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
-                            />
-                        </div>
-
-                        <span>
-                            <label>Exchange Rate</label>
-                            <b>{exchangeRate}</b>
-                        </span>
+                    <div className={styles.inputWrapper}>
+                        <strong>{fromCurrency?.value}</strong>
+                        <input
+                            type="text"
+                            placeholder="Amount"
+                            value={numberWithCommas(amount)}
+                            onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
+                        />
                     </div>
 
-                    <Button onClick={onConvert}>
-                        {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency.value}`}
-                    </Button>
+                    <span>
+                        <label>Exchange Rate :</label>
+                        <b>{exchangeRate}</b>
+                    </span>
                 </div>
-            )}
+
+                <Button onClick={onConvert}>
+                    {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value}`}
+                </Button>
+            </div>
         </>
     );
 };
