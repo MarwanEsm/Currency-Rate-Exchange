@@ -15,3 +15,70 @@
 .currencySelectorContainer>div:first-child {
     margin-right: 10px;
 }
+
+.inputWrapper {
+    position: relative;
+}
+
+.inputWrapper strong {
+    position: absolute;
+    right: 20px;
+    top: 10px
+}
+
+.inputWrapper>input {
+    padding: 8px 7px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.inputWrapper>input[type="number"] {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+
+.inputWrapper>input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    display: none;
+}
+
+
+.inputWrapper>input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    display: none;
+}
+
+.inputWrapper>input:focus-visible {
+    outline: none;
+}
+
+.exchangeRateWrapper>span>label {
+    font-weight: 600;
+}
+
+.exchangeRateWrapper>span {
+    font-size: 14px;
+    padding: 10px 20px;
+    color: white;
+    background: linear-gradient(to left, #f18900 50%, #3b474d 50%);
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px rgb(125, 122, 122);
+    display: flex;
+}
+
+@media screen and (max-width:570px) {
+    .exchangeRateWrapper>span {
+        margin-top: 20px;
+    }
+}
+
+.divider {
+    margin-top: 40px;
+}
+
+.listContainer button {
+    margin-top: 30px;
+}
