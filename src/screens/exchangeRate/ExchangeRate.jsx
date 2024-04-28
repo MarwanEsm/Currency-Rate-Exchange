@@ -4,7 +4,6 @@ import Button from "../../components/elements/button/Button"
 import styles from "./ExchangeRateList.module.scss"
 const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
     const [exchangeRates, setExchangeRates] = useState(null);
-    const [exchangeRate, setExchangeRate] = useState(null)
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
 
@@ -17,7 +16,8 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
         return x;
     };
 
-    const loadExchangeRate = () => {
+    const loadExchangeRate = async () => {
+
         axios.get(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency?.value}`)
             .then(response => {
                 if (response.data) {
@@ -29,17 +29,13 @@ const ExchangeRateList = ({ toCurrency, fromCurrency }) => {
             });
     };
 
-    useEffect(() => {
-        if (toCurrency?.value) {
-            loadExchangeRate()
-        }
-    }, [toCurrency?.value]);
 
+    const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
 
     useEffect(() => {
-        const rate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
-        setExchangeRate(rate)
-    }, [exchangeRates, toCurrency?.value]);
+        loadExchangeRate()
+    }, [])
+
 
 
 
