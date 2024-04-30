@@ -32,14 +32,12 @@ const CurrenciesList = () => {
         return x;
     };
 
-    const loadExchangeRate = async () => {
+    const loadExchangeRate = () => {
 
         axios.get(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency?.value}`)
             .then(response => {
                 if (response.data) {
                     setExchangeRates(response.data.data.rates);
-                    const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
-                    setExchangeRate(exchangeRate)
                 }
             })
             .catch(error => {
@@ -52,6 +50,10 @@ const CurrenciesList = () => {
         loadExchangeRate()
     }, [toCurrency?.value])
 
+    useEffect(() => {
+        const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
+        setExchangeRate(exchangeRate)
+    }, [exchangeRates, toCurrency?.value])
 
 
     const onConvert = () => {
