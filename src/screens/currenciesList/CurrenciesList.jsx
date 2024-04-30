@@ -16,6 +16,8 @@ const CurrenciesList = () => {
     const [toCurrency, setToCurrency] = useState(null)
 
     const [exchangeRates, setExchangeRates] = useState(null);
+    const [exchangeRate, setExchangeRate] = useState(null)
+
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
 
@@ -36,6 +38,8 @@ const CurrenciesList = () => {
             .then(response => {
                 if (response.data) {
                     setExchangeRates(response.data.data.rates);
+                    const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
+                    setExchangeRate(exchangeRate)
                 }
             })
             .catch(error => {
@@ -46,10 +50,8 @@ const CurrenciesList = () => {
 
     useEffect(() => {
         loadExchangeRate()
-    }, [])
+    }, [toCurrency?.value])
 
-
-    const exchangeRate = exchangeRates && toCurrency?.value ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-";
 
 
     const onConvert = () => {
@@ -111,7 +113,7 @@ const CurrenciesList = () => {
 
                 <Col lg={4} md={4} sm={6} className={styles.exchangeRateWrapper}>
                     <span>
-                        <label>Exchange Rate :</label>
+                        <label>Exchange Rate : </label>
                         <b>{exchangeRate}</b>
                     </span>
                 </Col>
