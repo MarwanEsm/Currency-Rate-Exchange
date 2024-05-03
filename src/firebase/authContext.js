@@ -49,7 +49,7 @@ export const AuthContextProvider = ({ children }) => {
                 navigate("/currencies")
             })
             .catch((error) => {
-                var errorMessage = error.message;
+                const errorMessage = error.message;
                 alert(errorMessage, "Please signup");
                 console.log("error", errorMessage);
             });

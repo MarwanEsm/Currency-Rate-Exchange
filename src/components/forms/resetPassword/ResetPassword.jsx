@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Container from "../../layout/container/Container";
+import Form from "react-bootstrap/Form";
 import Button from "../../elements/button/Button";
 import styles from './ResetPassword.module.scss'
 
@@ -17,26 +17,24 @@ const ResetPassword = ({ onPasswordReset }) => {
 
     const invalid = email === "";
 
-    return <div>
-        <div>
-            <Container></Container>
-        </div>
+    return <div className={styles.container}>
+        <Form>
+            <div className={styles.formContainer}>
 
-        <div className={styles.formContainer}>
+                <label>Email</label>
+                <input
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={enterEmail}
+                    autoComplete=""
+                />
 
-            <label>Email</label>
-            <input
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={enterEmail}
-                autoComplete=""
-            />
-
-            <Button onClick={onPasswordReset} disabled={invalid}>
-                Reset Password
-            </Button>
-        </div>
+                <Button onClick={onPasswordReset} disabled={invalid}>
+                    Reset Password
+                </Button>
+            </div>
+        </Form>
     </div>
 
 }

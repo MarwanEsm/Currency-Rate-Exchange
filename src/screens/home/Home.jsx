@@ -9,11 +9,14 @@ import styles from "./Home.module.scss";
 import Modal from "../../components/layout/modal/Modal";
 import SignUp from "../../components/forms/registration/SignUp";
 import Login from "../../components/forms/login/Login";
+import ResetPassword from "../../components/forms/resetPassword/ResetPassword";
 
 
 const Home = () => {
+
     const [showRegistrationModal, setShowRegistrationModal] = useState(false)
     const [showLoginModal, setShowLoginModal] = useState(false)
+    const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false)
 
 
     const navigate = useNavigate()
@@ -34,13 +37,25 @@ const Home = () => {
             {showLoginModal &&
                 <Modal
                     onClose={() => setShowLoginModal(false)}
-                    isOpen={showRegistrationModal}
+                    isOpen={showLoginModal}
                     className={styles.modal}
                 >
-                    <Login />
+                    <Login onPasswordReset={() => {
+                        setShowForgetPasswordModal(true)
+                        setShowLoginModal(false)
+                    }} />
                 </Modal>
             }
 
+            {showForgetPasswordModal &&
+                <Modal
+                    onClose={() => setShowForgetPasswordModal(false)}
+                    isOpen={showForgetPasswordModal}
+                    className={styles.modal}
+                >
+                    <ResetPassword />
+                </Modal>
+            }
             <div className={styles.container}>
                 <Header />
                 <Logo onClick={() => navigate("/currencies")} />

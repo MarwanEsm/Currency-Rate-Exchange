@@ -1,19 +1,29 @@
-.formContainer {
-    position: relative;
+.container {
+    max-height: 100vh;
+    padding: 100px 20px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    height: 100vh;
+    align-items: center;
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 400px;
     padding: 0 5%;
 }
 
-.formContainer input {
+.formContainer input:not([type="checkbox"]) {
     width: 100%;
-    max-width: 400px;
     border-radius: 6px;
-    height: 30px;
+    height: 40px;
     margin-bottom: 15px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.formContainer input[type="checkbox"] {
+    margin-right: 8px;
 }
 
 .formContainer input:focus-visible {
