@@ -30,7 +30,6 @@ export const AuthContextProvider = ({ children }) => {
                     await updateProfile(user, { displayName: firstName });
                     setUser(user);
                     setIsAuthenticated(true);
-                    navigate("/currencies")
                 } catch (error) {
                     console.error("Error updating profile:", error);
                 }
@@ -41,19 +40,20 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     const login = async ({ email, password }) => {
-
-        signInWithEmailAndPassword(email, password)
+        signInWithEmailAndPassword(getAuth(app), email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
                 setUser(user);
-                navigate("/currencies")
+                setIsAuthenticated(true);
+                navigate("/currencies");
             })
             .catch((error) => {
                 const errorMessage = error.message;
                 alert(errorMessage, "Please signup");
-                console.log("error", errorMessage);
+                console.error("Error logging in:", errorMessage);
             });
     };
+
 
     return (
         <AuthContext.Provider value={{ user, register, login, isAuthenticated }}>

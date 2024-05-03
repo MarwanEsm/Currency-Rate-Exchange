@@ -11,13 +11,12 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import ChatScreen from "./ChatForum/ChatScreen";
 
 // import AuthContextProvider from './firebase/FirebaseAuth';
-import ChatContextProvider from "./firebase/chatContext"
 import AuthContextProvider from "./firebase/authContext"
 import CurrenciesList from './screens/currenciesList/CurrenciesList';
 // import CurrenciesContextProvider from "./context/CurrenciesContext";
 import Home from "./screens/home/Home"
 import "./style/global.scss"
-import SignIn from "./screens/sigin/SignIn"
+
 
 
 const App = () => {
@@ -29,7 +28,6 @@ const App = () => {
 
           <Routes>
             <Route exact path="/" element={<Home />} />
-            {/* <Route path='/sign_in' element={<SignIn />} /> */}
             <Route path='/currencies' element={<CurrenciesList />} />
           </Routes>
           {/* <Switch>

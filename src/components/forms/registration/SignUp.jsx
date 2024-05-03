@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import Form from "react-bootstrap/Form";
 import Button from "../../elements/button/Button";
 import styles from "./SignUp.module.scss"
 import { AuthContext } from "../../../firebase/authContext";
@@ -54,9 +53,8 @@ const SignUp = () => {
 
     return <div className={styles.container}>
 
-        <Form>
-            <div className={styles.formContainer}>
-
+        <form onSubmit={handleRegister} method="POST">
+            <div className={styles.formContainer} >
                 <input
                     type="text"
                     placeholder="First Name"
@@ -113,14 +111,13 @@ const SignUp = () => {
 
                 <Button
                     type="submit"
-                    onClick={handleRegister}
                     disabled={isInvalid}
                 >
                     Register
                 </Button>
 
             </div>
-        </Form>
+        </form>
 
     </div>
 }

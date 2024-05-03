@@ -18,9 +18,8 @@ const ResetPassword = ({ onPasswordReset }) => {
     const invalid = email === "";
 
     return <div className={styles.container}>
-        <Form>
+        <form>
             <div className={styles.formContainer}>
-
                 <label>Email</label>
                 <input
                     type="email"
@@ -34,7 +33,7 @@ const ResetPassword = ({ onPasswordReset }) => {
                     Reset Password
                 </Button>
             </div>
-        </Form>
+        </form>
     </div>
 
 }
