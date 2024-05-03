@@ -16,6 +16,7 @@ const CurrenciesList = () => {
     const [toCurrency, setToCurrency] = useState(null)
 
     const [exchangeRates, setExchangeRates] = useState(null);
+    console.log(exchangeRates);
     const [exchangeRate, setExchangeRate] = useState(null)
 
     const [amount, setAmount] = useState(null);
@@ -37,8 +38,11 @@ const CurrenciesList = () => {
         const json = await response.json()
         const ratesList = json.data?.rates
         setExchangeRates(ratesList)
-        const exchangeRate = exchangeRates && toCurrency?.value !== null ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-"
-        setExchangeRate(exchangeRate)
+        setTimeout(() => {
+            const exchangeRate = exchangeRates !== null && toCurrency?.value !== null ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : "-"
+            setExchangeRate(exchangeRate)
+        }, 10000)
+
     };
 
 
@@ -111,7 +115,7 @@ const CurrenciesList = () => {
 
                 <Col lg={4} md={4} sm={6} className={styles.exchangeRateWrapper}>
                     <span>
-                        <label>Exchange Rate : </label>
+                        <label>Exchange Rate </label>
                         <b>{exchangeRate}</b>
                     </span>
                 </Col>

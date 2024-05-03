@@ -57,7 +57,10 @@
 
 .exchangeRateWrapper>span>label {
     font-weight: 600;
+    margin-right: 10px;
+    margin-left: -10px;
 }
+
 
 .exchangeRateWrapper>span {
     font-size: 14px;
@@ -67,6 +70,7 @@
     border-radius: 5px;
     box-shadow: 2px 2px 2px rgb(125, 122, 122);
     display: flex;
+    position: relative;
 }
 
 @media screen and (max-width:570px) {
