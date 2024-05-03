@@ -68,7 +68,8 @@
     color: white;
     background: linear-gradient(to left, #f18900 50%, #3b474d 50%);
     border-radius: 5px;
-    box-shadow: 2px 2px 2px rgb(125, 122, 122);
+    border: 1px solid #f18900;
+    // box-shadow: 2px 2px 2px rgb(125, 122, 122);
     display: flex;
     position: relative;
 }

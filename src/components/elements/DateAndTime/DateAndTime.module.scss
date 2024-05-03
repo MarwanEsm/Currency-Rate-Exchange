@@ -8,11 +8,12 @@
     align-items: center;
 }
 
-.container h2 {
+.container h3 {
     min-width: 100px;
     color: white;
+    margin-bottom: 16px;
 }
 
-.container h2:first-child {
+.container h3:first-child {
     margin-right: 10px;
 }
