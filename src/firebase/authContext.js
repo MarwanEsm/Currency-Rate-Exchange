@@ -1,22 +1,18 @@
+// authContext.js
+
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, app } from "./firebaseConfig"; // Import auth and firestore
-import { getFirestore } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { app } from "./firebaseConfig"; // Import Firebase initialization
 
-export const AuthContext = createContext(); // No need to pass initialContext
+export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
-
-    // State variables
-    const [user, setUser] = useState(null); // Initialize user state to null
+    const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    // History hook
     const navigate = useNavigate();
-    const firestore = getFirestore(app)
 
-    // Effect hook to listen for authentication changes
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
+        const unsubscribe = getAuth(app).onAuthStateChanged(user => {
             if (user) {
                 setUser(user);
                 setIsAuthenticated(true);
@@ -25,44 +21,27 @@ export const AuthContextProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    // Register function
     const register = ({ email, password, firstName, lastName }) => {
-        // auth.createUserWithEmailAndPassword(email, password)
-        //     .then((userCredential) => {
-        //         const user = userCredential.user;
-        //         user.updateProfile({ displayName: firstName })
-        //             .then(() => {
-        //                 setUser(user);
-        //                 setIsAuthenticated(true);
-        //             })
-        //             .catch(error => console.error("Error updating profile:", error));
-        //         firestore.collection("user").doc(user.uid).set({
-        //             firstName: firstName,
-        //             lastName: lastName,
-        //         });
-        //     })
-        //     .catch((error) => {
-        //         console.error("Error registering:", error);
-        //     });
+        createUserWithEmailAndPassword(getAuth(app), email, password)
+            .then(async (userCredential) => {
+                const user = userCredential.user;
+                try {
+                    await updateProfile(user, { displayName: firstName });
+                    setUser(user);
+                    setIsAuthenticated(true);
+                } catch (error) {
+                    console.error("Error updating profile:", error);
+                }
+            })
+            .catch((error) => {
+                console.error("Error registering:", error);
+            });
     };
 
-    // Login function
-    const login = async ({ email, password }) => {
-        try {
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-            console.log(user);
-            setUser(user);
-            navigate("/");
-        } catch (error) {
-            console.error("Error logging in:", error);
-            alert(error.message);
-        }
-    };
+    // Other functions remain the same...
 
     return (
-        <AuthContext.Provider
-            value={{ user, login, register, isAuthenticated }}>
+        <AuthContext.Provider value={{ user, register, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );

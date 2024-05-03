@@ -6,6 +6,7 @@ import { AuthContext } from "../../../firebase/authContext";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+
 const SignUp = () => {
 
     const { register } = useContext(AuthContext);

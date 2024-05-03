@@ -25,21 +25,21 @@ const App = () => {
     <Router>
       <div className="App">
         <AuthContextProvider>
-          <ChatContextProvider>
+          {/* <ChatContextProvider> */}
 
-            <Routes>
-              <Route exact path="/" element={<Home />} />
-              <Route path='/sign_in' element={<SignIn />} />
-              <Route path='/currencies' element={<CurrenciesList />} />
-            </Routes>
-            {/* <Switch>
+          <Routes>
+            <Route exact path="/" element={<Home />} />
+            <Route path='/sign_in' element={<SignIn />} />
+            <Route path='/currencies' element={<CurrenciesList />} />
+          </Routes>
+          {/* <Switch>
           
                 
                 <Route path="/ChatScreen">
                   <ChatScreen />
                 </Route>
               </Switch> */}
-          </ChatContextProvider>
+          {/* </ChatContextProvider> */}
         </AuthContextProvider>
       </div>
     </Router>
