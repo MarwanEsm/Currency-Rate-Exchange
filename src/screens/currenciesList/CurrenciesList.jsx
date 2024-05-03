@@ -7,7 +7,7 @@ import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 
 
 const CurrenciesList = () => {
@@ -16,8 +16,7 @@ const CurrenciesList = () => {
     const [toCurrency, setToCurrency] = useState(null)
 
     const [exchangeRates, setExchangeRates] = useState(null);
-    const [exchangeRate, setExchangeRate] = useState("-")
-
+    const [exchangeRate, setExchangeRate] = useState("0,0")
 
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
@@ -40,30 +39,32 @@ const CurrenciesList = () => {
         setExchangeRates(ratesList)
         const exchangeRate = exchangeRates !== null && toCurrency?.value !== null ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : 0
         setExchangeRate(exchangeRate)
-
     };
 
 
     useEffect(() => {
-        if (exchangeRate === 0) {
-            loadExchangeRate()
+        exchangeRate === 0 && loadExchangeRate()
+        if (exchangeRate !== 0 && exchangeRate !== "0,0" && amount !== null) {
+            onConvert(exchangeRate);
         }
     }, [exchangeRate])
 
 
     useEffect(() => {
-        if (toCurrency !== null) {
-            loadExchangeRate()
-        }
+        toCurrency !== null && loadExchangeRate()
     }, [toCurrency?.value])
-
-
 
 
     const onConvert = () => {
         const result = (amount * exchangeRate).toFixed(2);
-        setResult(result);
+        if (exchangeRate !== "0,0") {
+            setResult(result);
+        }
     };
+
+    useEffect(() => {
+        amount !== null && exchangeRate !== "-" && onConvert()
+    }, [amount, exchangeRate])
 
 
     return <Container>
@@ -129,6 +130,8 @@ const CurrenciesList = () => {
             <Button onClick={onConvert}>
                 {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value}`}
             </Button>
+
+
 
         </div>
     </Container>
