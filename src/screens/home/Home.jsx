@@ -8,15 +8,19 @@ import Container from "../../components/layout/container/Container";
 import styles from "./Home.module.scss";
 import Modal from "../../components/layout/modal/Modal";
 import SignUp from "../../components/forms/registration/SignUp";
+import Login from "../../components/forms/login/Login";
 
 
 const Home = () => {
     const [showRegistrationModal, setShowRegistrationModal] = useState(false)
+    const [showLoginModal, setShowLoginModal] = useState(false)
+
 
     const navigate = useNavigate()
 
     return (
         <Container>
+
             {showRegistrationModal &&
                 <Modal
                     onClose={() => setShowRegistrationModal(false)}
@@ -27,10 +31,20 @@ const Home = () => {
                 </Modal>
             }
 
+            {showLoginModal &&
+                <Modal
+                    onClose={() => setShowLoginModal(false)}
+                    isOpen={showRegistrationModal}
+                    className={styles.modal}
+                >
+                    <Login />
+                </Modal>
+            }
+
             <div className={styles.container}>
                 <Header />
                 <Logo onClick={() => navigate("/currencies")} />
-                <Button onClick={() => navigate("/sign_in")}>Log in</Button>
+                <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
         </Container>

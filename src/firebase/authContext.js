@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "./firebaseConfig"; // Import Firebase initialization
 
 export const AuthContext = createContext();
@@ -21,7 +21,8 @@ export const AuthContextProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    const register = ({ email, password, firstName, lastName }) => {
+    const register = ({ email, password, firstName }) => {
+
         createUserWithEmailAndPassword(getAuth(app), email, password)
             .then(async (userCredential) => {
                 const user = userCredential.user;
@@ -29,6 +30,7 @@ export const AuthContextProvider = ({ children }) => {
                     await updateProfile(user, { displayName: firstName });
                     setUser(user);
                     setIsAuthenticated(true);
+                    navigate("/currencies")
                 } catch (error) {
                     console.error("Error updating profile:", error);
                 }
@@ -38,10 +40,23 @@ export const AuthContextProvider = ({ children }) => {
             });
     };
 
-    // Other functions remain the same...
+    const login = async ({ email, password }) => {
+
+        signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                setUser(user);
+                navigate("/currencies")
+            })
+            .catch((error) => {
+                var errorMessage = error.message;
+                alert(errorMessage, "Please signup");
+                console.log("error", errorMessage);
+            });
+    };
 
     return (
-        <AuthContext.Provider value={{ user, register, isAuthenticated }}>
+        <AuthContext.Provider value={{ user, register, login, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );

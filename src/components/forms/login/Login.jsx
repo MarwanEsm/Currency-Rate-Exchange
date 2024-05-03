@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import Container from "../../layout/container/Container"
 import Button from "../../elements/button/Button";
 import styles from "./Login.module.scss"
 import { Form } from "reactstrap";
@@ -24,9 +23,6 @@ const Login = ({ onPasswordReset, onLogin }) => {
     const invalid = loginCredentials.email === "" || loginCredentials.password === "";
 
     return <div>
-        <div>
-            <Container></Container>
-        </div>
         <Form>
             <div className={styles.formContainer}>
                 <label>Email address</label>
@@ -43,7 +39,7 @@ const Login = ({ onPasswordReset, onLogin }) => {
                 <label>Password</label>
                 <input
                     type="password"
-                    // placeholder="Password"
+                    placeholder="Password"
                     data-ng-init="resp()"
                     name="password"
                     onChange={handelChange}
