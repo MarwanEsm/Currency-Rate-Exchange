@@ -3,17 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 export const currenciesSlice = createSlice({
     name: "currencies",
     initialState: {
-        error: {
-            errorCode: null,
-            message: ""
-        },
-
+        errorCode: null,
     },
     reducers: {
-        setError: (state, action) => {
-            state.error = action.payload;
+        setErrorCode: (state, action) => {
+            state.errorCode = action.payload;
         }
     }
 });
 
-export const { setError } = currenciesSlice.actions; 
+export const { setErrorCode } = currenciesSlice.actions; 

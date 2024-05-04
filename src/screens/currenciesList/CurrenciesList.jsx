@@ -7,6 +7,7 @@ import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 
 
@@ -21,6 +22,9 @@ const CurrenciesList = () => {
 
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
+
+    const errorLog = useSelector((state) => state)
+    console.log(errorLog);
 
     const navigate = useNavigate()
 

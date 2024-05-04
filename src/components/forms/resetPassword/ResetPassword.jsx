@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Form from "react-bootstrap/Form";
 import Button from "../../elements/button/Button";
 import styles from './ResetPassword.module.scss'
 
