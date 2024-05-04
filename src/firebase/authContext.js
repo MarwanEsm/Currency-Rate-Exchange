@@ -2,19 +2,26 @@ import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "./firebaseConfig";
+import { useDispatch } from "react-redux";
+import { setError } from "../redux/currenciesSlice";
 
 const ERRORS = {
     "User already exists": 0,
     "Registration email error": 1,
     "Error updating profile": 2,
-    "Error registering": 3
+    "Error registering": 3,
+    "No user exists": 4,
+    "Could not register": 5
 };
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
+
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    const dispatch = useDispatch()
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,40 +34,17 @@ export const AuthContextProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    const onError = (error, additionalInfo) => {
-        switch (error) {
-            case ERRORS["User already exists"]:
-                console.error("User already exists with email:", additionalInfo);
-                // Handle user already exists error
-                break;
-            case ERRORS["Registration email error"]:
-                console.error("Error with registration email:", additionalInfo);
-                // Handle registration email error
-                break;
-            case ERRORS["Error updating profile"]:
-                console.error("Error updating profile:", additionalInfo);
-                // Handle error updating profile
-                break;
-            case ERRORS["Error registering"]:
-                console.error("Error registering:", additionalInfo);
-                // Handle error registering
-                break;
-            default:
-                console.error("Unknown error occurred:", error, additionalInfo);
-            // Handle unknown error
-        }
-    };
 
     const register = async ({ email, password, firstName }) => {
         // Check if user already exists
         try {
             const existingUser = await getAuth(app).getUserByEmail(email);
             if (existingUser) {
-                onError(ERRORS["User already exists"], existingUser.email);
+                dispatch(setError(ERRORS["User already exists"], existingUser.email))
                 return;
             }
         } catch (error) {
-            onError(ERRORS["Registration email error"], email);
+            dispatch(setError(ERRORS["Registration email error"], email))
         }
 
         // Proceed with user registration
@@ -69,15 +53,15 @@ export const AuthContextProvider = ({ children }) => {
                 const user = userCredential.user;
                 try {
                     await updateProfile(user, { displayName: firstName });
-                    await sendEmailVerification(user); // Send email verification
+                    await sendEmailVerification(user);
                     setUser(user);
                     setIsAuthenticated(true);
                 } catch (error) {
-                    onError(ERRORS["Error updating profile"], error);
+                    dispatch(setError(ERRORS["Error updating profile"], error))
                 }
             })
             .catch((error) => {
-                onError(ERRORS["Error registering"], error);
+                dispatch(setError(ERRORS["Error registering"], error))
             });
     };
 
@@ -86,11 +70,11 @@ export const AuthContextProvider = ({ children }) => {
         try {
             const existingUser = await getAuth(app).getUserByEmail(email);
             if (!existingUser) {
-                onError("No user");
+                dispatch(setError("No user exists"))
                 return;
             }
         } catch (error) {
-            onError("error");
+            dispatch(setError("Could not register", error))
         }
 
         // Proceed with user login
@@ -102,14 +86,12 @@ export const AuthContextProvider = ({ children }) => {
                 navigate("/currencies");
             })
             .catch((error) => {
-                const errorMessage = error.message;
-                alert(errorMessage, "Please signup");
-                console.error("Error logging in:", errorMessage);
+                dispatch(setError("Could not login", error))
             });
     };
 
     return (
-        <AuthContext.Provider value={{ user, register, login, isAuthenticated, onError }}>
+        <AuthContext.Provider value={{ user, register, login, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );
