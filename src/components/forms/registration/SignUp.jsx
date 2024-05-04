@@ -61,7 +61,7 @@ const SignUp = () => {
                     name="firstName"
                     value={state.firstName}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -70,7 +70,7 @@ const SignUp = () => {
                     name="lastName"
                     value={state.lastName}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -79,7 +79,7 @@ const SignUp = () => {
                     name="email"
                     value={state.email}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -88,7 +88,7 @@ const SignUp = () => {
                     name="password"
                     value={state.password}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -97,7 +97,7 @@ const SignUp = () => {
                     name="passwordConfirmation"
                     value={state.passwordConfirmation}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <span>
@@ -109,10 +109,7 @@ const SignUp = () => {
                     Agree to terms and conditions
                 </span>
 
-                <Button
-                    type="submit"
-                    disabled={isInvalid}
-                >
+                <Button type="submit" disabled={isInvalid}>
                     Register
                 </Button>
 

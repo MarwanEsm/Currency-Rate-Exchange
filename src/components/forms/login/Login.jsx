@@ -26,7 +26,7 @@ const Login = ({ onPasswordReset }) => {
 
     return (
         <div className={styles.container}>
-            <form onSubmit={handleLogin} method="POST"> {/* Use POST method */}
+            <form onSubmit={handleLogin} method="POST">
                 <div className={styles.formContainer}>
                     <label>Email address</label>
                     <input
@@ -35,7 +35,7 @@ const Login = ({ onPasswordReset }) => {
                         name="email"
                         onChange={handleChange}
                         value={loginCredentials.email}
-                        autoComplete="off" // Turn off auto-completion
+                        autoComplete="off"
                     />
 
                     <label>Password</label>
@@ -45,7 +45,7 @@ const Login = ({ onPasswordReset }) => {
                         name="password"
                         onChange={handleChange}
                         value={loginCredentials.password}
-                        autoComplete="off" // Turn off auto-completion
+                        autoComplete="off"
                     />
 
                     <Link onClick={onPasswordReset}> Forgot Password ? </Link>

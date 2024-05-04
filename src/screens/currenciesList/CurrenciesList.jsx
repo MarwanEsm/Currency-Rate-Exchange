@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import CurrencySelect from "../../components/elements/currencySelector/CurrencySelect";
 import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
 import Logo from "../../components/elements/Logo/Logo";
 import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
+import { AuthContext } from "../../firebase/authContext";
 import { Row, Col } from 'reactstrap';
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+
 
 
 
@@ -23,8 +24,8 @@ const CurrenciesList = () => {
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
 
-    const errorLog = useSelector((state) => state)
-    console.log(errorLog);
+    const { errorCode, isAuthenticated } = useContext(AuthContext)
+    console.log(isAuthenticated);
 
     const navigate = useNavigate()
 
