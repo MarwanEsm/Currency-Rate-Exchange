@@ -1,14 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Button from "../../elements/button/Button";
 import styles from "./SignUp.module.scss"
-import { AuthContext } from "../../../firebase/authContext";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-const SignUp = () => {
+const SignUp = ({ onRegistration }) => {
 
-    const { register } = useContext(AuthContext);
 
     const [state, setState] = useState({
         firstName: "",
@@ -35,13 +33,7 @@ const SignUp = () => {
     const makeItChecked = () => {
         setState({ ...state, checked: !state.checked });
     };
-    const handleRegister = (event) => {
-        event.preventDefault();
-        register(state);
-        alert(
-            "thank you for submitting your details, we've sent you a confirmation link to your E-mail"
-        );
-    };
+
 
 
     const isInvalid =
@@ -53,7 +45,7 @@ const SignUp = () => {
 
     return <div className={styles.container}>
 
-        <form onSubmit={handleRegister} method="POST">
+        <form onSubmit={() => onRegistration(state)} method="POST">
             <div className={styles.formContainer} >
                 <input
                     type="text"

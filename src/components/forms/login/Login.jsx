@@ -1,6 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Button from "../../elements/button/Button";
-import { AuthContext } from "../../../firebase/authContext";
 import styles from "./Login.module.scss";
 import { Link } from "react-router-dom";
 
@@ -10,7 +9,7 @@ const Login = ({ onPasswordReset, onLogin }) => {
         password: "",
     });
 
-    const { login } = useContext(AuthContext);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;

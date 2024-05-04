@@ -20,8 +20,12 @@ const Home = () => {
     const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false)
 
     const [errorCode, setErrorCode] = useState(null)
+    const [successCode, setSuccessCode] = useState(null)
 
-    const { login } = useContext(AuthContext)
+    const { login, register } = useContext(AuthContext)
+
+    const navigate = useNavigate()
+
 
     const handleLogin = (e, loginCredentials) => {
         e.preventDefault();
@@ -32,7 +36,16 @@ const Home = () => {
             })
     };
 
-    const navigate = useNavigate()
+    const handleRegistration = (e, credential) => {
+        e.preventDefault();
+        register(credential, (message) => {
+            setSuccessCode(message)
+        },
+            (message) => {
+                setErrorCode(message)
+            });
+    };
+
 
     return (
         <Container>
@@ -43,7 +56,7 @@ const Home = () => {
                     isOpen={showRegistrationModal}
                     className={styles.modal}
                 >
-                    <SignUp />
+                    <SignUp onRegistration={(credential) => handleRegistration(credential)} />
                 </Modal>
             }
 
@@ -59,7 +72,6 @@ const Home = () => {
                             setShowLoginModal(false)
                         }}
                         onLogin={(credential) => handleLogin(credential)}
-
                     />
                 </Modal>
             }
