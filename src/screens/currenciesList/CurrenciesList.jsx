@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
+
 const CurrenciesList = () => {
 
     const [fromCurrency, setFromCurrency] = useState(null)
@@ -122,7 +123,7 @@ const CurrenciesList = () => {
                 <Col lg={4} md={4} sm={6} className={styles.exchangeRateWrapper}>
                     <span>
                         <label>Exchange Rate </label>
-                        <b>{exchangeRate}</b>
+                        <b>{exchangeRate !== 0 ? exchangeRate : ""}</b>
                     </span>
                 </Col>
             </Row>

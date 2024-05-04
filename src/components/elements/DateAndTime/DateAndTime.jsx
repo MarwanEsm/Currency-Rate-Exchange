@@ -21,7 +21,7 @@ const CurrentDate = () => {
     const month = months[currentDate.getMonth()];
     const year = currentDate.getFullYear();
 
-    return <h3>{`${date} ${month} ${year}`}</h3>
+    return <h4>{`${date} ${month} ${year}`}</h4>
 
 
 };
@@ -40,10 +40,8 @@ const DateAndTime = () => {
 
     return (
         <div className={styles.container}>
-            <div>
-                <CurrentDate />
-                <h3 className={styles.time}>{date.toLocaleTimeString()}</h3>
-            </div>
+            <CurrentDate />
+            <h4 className={styles.time}>{date.toLocaleTimeString()}</h4>
         </div>
     );
 };

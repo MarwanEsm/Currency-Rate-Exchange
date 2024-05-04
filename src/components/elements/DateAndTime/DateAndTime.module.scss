@@ -2,18 +2,18 @@
     text-align: center;
 }
 
-.container div {
+.container {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.container h3 {
+.container h4 {
     min-width: 100px;
     color: white;
     margin-bottom: 16px;
 }
 
-.container h3:first-child {
+.container h4:first-child {
     margin-right: 10px;
 }

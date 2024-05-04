@@ -19,7 +19,7 @@ const Login = ({ onPasswordReset }) => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        login(loginCredentials);
+        login(loginCredentials)
     };
 
     const invalid = loginCredentials.email === "" || loginCredentials.password === "";
