@@ -4,7 +4,7 @@ import { AuthContext } from "../../../firebase/authContext";
 import styles from "./Login.module.scss";
 import { Link } from "react-router-dom";
 
-const Login = ({ onPasswordReset }) => {
+const Login = ({ onPasswordReset, onLogin }) => {
     const [loginCredentials, setLoginCredentials] = useState({
         email: "",
         password: "",
@@ -17,16 +17,12 @@ const Login = ({ onPasswordReset }) => {
         setLoginCredentials({ ...loginCredentials, [name]: value });
     };
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        login(loginCredentials)
-    };
 
     const invalid = loginCredentials.email === "" || loginCredentials.password === "";
 
     return (
         <div className={styles.container}>
-            <form onSubmit={handleLogin} method="POST">
+            <form onSubmit={() => onLogin(loginCredentials)} method="POST">
                 <div className={styles.formContainer}>
                     <label>Email address</label>
                     <input

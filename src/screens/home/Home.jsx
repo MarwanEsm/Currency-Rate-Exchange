@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/header/Header";
 import Logo from "../../components/elements/Logo/Logo";
@@ -10,6 +10,7 @@ import Modal from "../../components/layout/modal/Modal";
 import SignUp from "../../components/forms/registration/SignUp";
 import Login from "../../components/forms/login/Login";
 import ResetPassword from "../../components/forms/resetPassword/ResetPassword";
+import { AuthContext } from "../../firebase/authContext";
 
 
 const Home = () => {
@@ -18,6 +19,18 @@ const Home = () => {
     const [showLoginModal, setShowLoginModal] = useState(false)
     const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false)
 
+    const [errorCode, setErrorCode] = useState(null)
+
+    const { login } = useContext(AuthContext)
+
+    const handleLogin = (e, loginCredentials) => {
+        e.preventDefault();
+        login(
+            loginCredentials,
+            (errorMessage) => {
+                setErrorCode(errorMessage);
+            })
+    };
 
     const navigate = useNavigate()
 
@@ -40,10 +53,14 @@ const Home = () => {
                     isOpen={showLoginModal}
                     className={styles.modal}
                 >
-                    <Login onPasswordReset={() => {
-                        setShowForgetPasswordModal(true)
-                        setShowLoginModal(false)
-                    }} />
+                    <Login
+                        onPasswordReset={() => {
+                            setShowForgetPasswordModal(true)
+                            setShowLoginModal(false)
+                        }}
+                        onLogin={(credential) => handleLogin(credential)}
+
+                    />
                 </Modal>
             }
 
