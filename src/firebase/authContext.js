@@ -24,8 +24,7 @@ export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
 
     const [user, setUser] = useState(null);
-    // const [successCode, setSuccessCode] = useState(false);
-    // const [errorCode, setErrorCode] = useState(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     const navigate = useNavigate();
 
@@ -33,6 +32,7 @@ export const AuthContextProvider = ({ children }) => {
         const unsubscribe = getAuth(app).onAuthStateChanged(user => {
             if (user) {
                 setUser(user);
+                setIsAuthenticated(true)
             }
         });
         return () => unsubscribe();
@@ -84,6 +84,7 @@ export const AuthContextProvider = ({ children }) => {
             .then((userCredential) => {
                 const user = userCredential.user;
                 setUser(user);
+                setIsAuthenticated(true)
                 navigate("/currencies");
             })
             .catch((error) => {
@@ -92,7 +93,7 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, register, login }}>
+        <AuthContext.Provider value={{ user, register, login, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );

@@ -14,9 +14,6 @@ const SignUp = ({ onRegistration }) => {
         email: "",
         password: "",
         passwordConfirmation: "",
-        country: "",
-        city: "",
-        zip: "",
         checked: false,
     });
 
@@ -35,6 +32,10 @@ const SignUp = ({ onRegistration }) => {
     };
 
 
+    const handleRegistration = (e) => {
+        e.preventDefault();
+        onRegistration(e, state);
+    }
 
     const isInvalid =
         state.firstName === "" ||
@@ -45,7 +46,7 @@ const SignUp = ({ onRegistration }) => {
 
     return <div className={styles.container}>
 
-        <form onSubmit={() => onRegistration(state)} method="POST">
+        <form onSubmit={(e) => handleRegistration(e)} method="POST">
             <div className={styles.formContainer} >
                 <input
                     type="text"

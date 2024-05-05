@@ -21,8 +21,9 @@ const Home = () => {
 
     const [errorCode, setErrorCode] = useState(null)
     const [successCode, setSuccessCode] = useState(null)
+    console.log(successCode);
 
-    const { login, register } = useContext(AuthContext)
+    const { login, register, isAuthenticated } = useContext(AuthContext)
 
     const navigate = useNavigate()
 
@@ -34,6 +35,7 @@ const Home = () => {
             (errorMessage) => {
                 setErrorCode(errorMessage);
             })
+        isAuthenticated && navigate("/currencies")
     };
 
     const handleRegistration = (e, credential) => {
@@ -56,7 +58,7 @@ const Home = () => {
                     isOpen={showRegistrationModal}
                     className={styles.modal}
                 >
-                    <SignUp onRegistration={(credential) => handleRegistration(credential)} />
+                    <SignUp onRegistration={(e, credential) => handleRegistration(e, credential)} />
                 </Modal>
             }
 
