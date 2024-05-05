@@ -60,13 +60,10 @@ export const AuthContextProvider = ({ children }) => {
         catch (error) {
             onRegistrationFailure(ERRORS["Registration failed"])
         }
-
-        // Proceed with user registration
-
     };
 
     const login = async ({ email, password }, onLoginFailure) => {
-        // Check if user is already registered
+
         try {
             const existingUser = await getAuth(app).getUserByEmail(email);
             if (!existingUser) {
@@ -76,7 +73,6 @@ export const AuthContextProvider = ({ children }) => {
             onLoginFailure(ERRORS["Error"])
         }
 
-        // Proceed with user login
         signInWithEmailAndPassword(getAuth(app), email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -88,6 +84,7 @@ export const AuthContextProvider = ({ children }) => {
                 onLoginFailure(ERRORS["Invalid credentials"])
             });
     };
+
 
     return (
         <AuthContext.Provider value={{ user, register, login, isAuthenticated }}>

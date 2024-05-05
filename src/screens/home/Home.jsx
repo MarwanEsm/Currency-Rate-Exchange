@@ -22,7 +22,6 @@ const Home = () => {
     const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false)
 
     const [errorCode, setErrorCode] = useState(null)
-    console.log(errorCode);
     const [successCode, setSuccessCode] = useState(null)
 
     const { login, register, isAuthenticated } = useContext(AuthContext)
