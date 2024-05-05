@@ -10,6 +10,7 @@ import Modal from "../../components/layout/modal/Modal";
 import SignUp from "../../components/forms/registration/SignUp";
 import Login from "../../components/forms/login/Login";
 import ResetPassword from "../../components/forms/resetPassword/ResetPassword";
+import SuccessMessage from "../../components/messages/SuccessMessage";
 import { AuthContext } from "../../firebase/authContext";
 
 
@@ -21,7 +22,6 @@ const Home = () => {
 
     const [errorCode, setErrorCode] = useState(null)
     const [successCode, setSuccessCode] = useState(null)
-    console.log(successCode);
 
     const { login, register, isAuthenticated } = useContext(AuthContext)
 
@@ -52,7 +52,7 @@ const Home = () => {
     return (
         <Container>
 
-            {showRegistrationModal &&
+            {showRegistrationModal && successCode !== 1 &&
                 <Modal
                     onClose={() => setShowRegistrationModal(false)}
                     isOpen={showRegistrationModal}
@@ -85,6 +85,15 @@ const Home = () => {
                     className={styles.modal}
                 >
                     <ResetPassword />
+                </Modal>
+            }
+            {successCode === 1 &&
+                <Modal
+                    onClose={() => { setSuccessCode(null); setShowRegistrationModal(false) }}
+                    isOpen={successCode === 1}
+                    className={styles.modal}
+                >
+                    <SuccessMessage />
                 </Modal>
             }
             <div className={styles.container}>
