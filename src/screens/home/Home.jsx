@@ -10,7 +10,8 @@ import Modal from "../../components/layout/modal/Modal";
 import SignUp from "../../components/forms/registration/SignUp";
 import Login from "../../components/forms/login/Login";
 import ResetPassword from "../../components/forms/resetPassword/ResetPassword";
-import SuccessMessage from "../../components/messages/SuccessMessage";
+import SuccessMessage from "../../components/messages/successMessage/SuccessMessage";
+import ErrorMessage from "../../components/messages/errorMessage/ErrorMessage";
 import { AuthContext } from "../../firebase/authContext";
 
 
@@ -21,6 +22,7 @@ const Home = () => {
     const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false)
 
     const [errorCode, setErrorCode] = useState(null)
+    console.log(errorCode);
     const [successCode, setSuccessCode] = useState(null)
 
     const { login, register, isAuthenticated } = useContext(AuthContext)
@@ -52,7 +54,7 @@ const Home = () => {
     return (
         <Container>
 
-            {showRegistrationModal && successCode !== 1 &&
+            {showRegistrationModal && successCode === null && errorCode === null &&
                 <Modal
                     onClose={() => setShowRegistrationModal(false)}
                     isOpen={showRegistrationModal}
@@ -62,7 +64,8 @@ const Home = () => {
                 </Modal>
             }
 
-            {showLoginModal &&
+            {
+                showLoginModal &&
                 <Modal
                     onClose={() => setShowLoginModal(false)}
                     isOpen={showLoginModal}
@@ -78,7 +81,8 @@ const Home = () => {
                 </Modal>
             }
 
-            {showForgetPasswordModal &&
+            {
+                showForgetPasswordModal &&
                 <Modal
                     onClose={() => setShowForgetPasswordModal(false)}
                     isOpen={showForgetPasswordModal}
@@ -87,7 +91,9 @@ const Home = () => {
                     <ResetPassword />
                 </Modal>
             }
-            {successCode === 1 &&
+
+            {
+                successCode === 1 &&
                 <Modal
                     onClose={() => { setSuccessCode(null); setShowRegistrationModal(false) }}
                     isOpen={successCode === 1}
@@ -96,13 +102,24 @@ const Home = () => {
                     <SuccessMessage />
                 </Modal>
             }
+
+            {
+                errorCode === 1 &&
+                <Modal
+                    onClose={() => { setErrorCode(null); setShowRegistrationModal(false) }}
+                    isOpen={errorCode === 1}
+                    className={styles.modal}
+                >
+                    <ErrorMessage />
+                </Modal>
+            }
             <div className={styles.container}>
                 <Header />
                 <Logo onClick={() => navigate("/currencies")} />
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
-        </Container>
+        </Container >
     );
 }
 

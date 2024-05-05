@@ -40,32 +40,29 @@ export const AuthContextProvider = ({ children }) => {
 
 
     const register = async ({ email, password, firstName }, onRegistrationSuccess, onRegistrationFailure) => {
-
         try {
-            const existingUser = await getAuth(app).getUserByEmail(email);
-            if (existingUser) {
-                onRegistrationFailure(ERRORS["User already exists"], existingUser.email)
-            }
-        } catch (error) {
-            onRegistrationFailure(ERRORS["Error registering"], email)
+            createUserWithEmailAndPassword(getAuth(app), email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    try {
+                        await updateProfile(user, { displayName: firstName });
+                        await sendEmailVerification(user);
+                        setUser(user);
+                        onRegistrationSuccess(SUCCESSES["Registration successful"]);
+                    } catch (error) {
+                        onRegistrationFailure(ERRORS["Error updating profile"])
+                    }
+                })
+                .catch((error) => {
+                    onRegistrationFailure(ERRORS["User already exists"])
+                });
+        }
+        catch (error) {
+            onRegistrationFailure(ERRORS["Registration failed"])
         }
 
         // Proceed with user registration
-        createUserWithEmailAndPassword(getAuth(app), email, password)
-            .then(async (userCredential) => {
-                const user = userCredential.user;
-                try {
-                    await updateProfile(user, { displayName: firstName });
-                    await sendEmailVerification(user);
-                    setUser(user);
-                    onRegistrationSuccess(SUCCESSES["Registration successful"]);
-                } catch (error) {
-                    onRegistrationFailure(ERRORS["Error updating profile"])
-                }
-            })
-            .catch((error) => {
-                onRegistrationFailure(ERRORS["Registration failed"])
-            });
+
     };
 
     const login = async ({ email, password }, onLoginFailure) => {
