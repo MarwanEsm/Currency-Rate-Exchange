@@ -1,32 +1,27 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Button from "../../elements/button/Button";
-import { AuthContext } from "../../../firebase/authContext";
 import styles from "./Login.module.scss";
 import { Link } from "react-router-dom";
 
-const Login = ({ onPasswordReset }) => {
+const Login = ({ onPasswordReset, onLogin }) => {
     const [loginCredentials, setLoginCredentials] = useState({
         email: "",
         password: "",
     });
 
-    const { login } = useContext(AuthContext);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setLoginCredentials({ ...loginCredentials, [name]: value });
     };
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        login(loginCredentials)
-    };
 
     const invalid = loginCredentials.email === "" || loginCredentials.password === "";
 
     return (
         <div className={styles.container}>
-            <form onSubmit={handleLogin} method="POST"> {/* Use POST method */}
+            <form onSubmit={() => onLogin(loginCredentials)} method="POST">
                 <div className={styles.formContainer}>
                     <label>Email address</label>
                     <input
@@ -35,7 +30,7 @@ const Login = ({ onPasswordReset }) => {
                         name="email"
                         onChange={handleChange}
                         value={loginCredentials.email}
-                        autoComplete="off" // Turn off auto-completion
+                        autoComplete="off"
                     />
 
                     <label>Password</label>
@@ -45,7 +40,7 @@ const Login = ({ onPasswordReset }) => {
                         name="password"
                         onChange={handleChange}
                         value={loginCredentials.password}
-                        autoComplete="off" // Turn off auto-completion
+                        autoComplete="off"
                     />
 
                     <Link onClick={onPasswordReset}> Forgot Password ? </Link>

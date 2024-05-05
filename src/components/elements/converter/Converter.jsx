@@ -7,7 +7,7 @@ const Converter = ({ searchedCurrency }) => {
 
     const { exchangeRates } = useContext(CurrenciesContext);
     const [fromCurrency, setFromCurrency] = useState("");
-    const [toCurrency, setToCurrency] = useState();
+    const [toCurrency, setToCurrency] = useState("");
 
 
     const updateInputValue = (event) => {
@@ -23,13 +23,7 @@ const Converter = ({ searchedCurrency }) => {
         setToCurrency(resultValue)
     };
 
-    //it didn't work
-    // function numberWithCommas(x) {
 
-    //   if (x){
-    //   return x.toString().replace(/\B(?=(\d{15})+(?!\d))/g, ",");
-    //   }
-    // }
 
     return (
         <div className={styles.container}>
@@ -38,9 +32,7 @@ const Converter = ({ searchedCurrency }) => {
                 <input
                     type="number"
                     className="form-control"
-                    value={
-              /*parsefloat didn't work*/ fromCurrency /*toFixed(6) does not allow more numbers to be written */
-                    }
+                    value={fromCurrency}
                     onChange={updateInputValue}
                 />
             </div>

@@ -1,0 +1,31 @@
+.container {
+    padding: 30px;
+}
+
+.container p {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+.container label>span {
+    color: black;
+    text-decoration: underline;
+    font-weight: bolder;
+}
+
+
+.container label>span:hover {
+    cursor: pointer;
+}
+
+.container>div {
+    font-size: bolder;
+    font-size: 18px;
+    text-align: center;
+    margin: 30px auto auto auto;
+    border: 2px dotted white;
+    width: fit-content;
+    padding: 5px 10px;
+
+}

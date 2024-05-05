@@ -3,8 +3,7 @@ import Button from "../../elements/button/Button";
 import styles from './ResetPassword.module.scss'
 
 
-//TODO: set a better alert 
-//TODO: add validation for email
+
 const ResetPassword = ({ onPasswordReset }) => {
 
     const [email, setEmail] = useState();
@@ -25,7 +24,7 @@ const ResetPassword = ({ onPasswordReset }) => {
                     placeholder="Enter email"
                     value={email}
                     onChange={enterEmail}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <Button onClick={onPasswordReset} disabled={invalid}>

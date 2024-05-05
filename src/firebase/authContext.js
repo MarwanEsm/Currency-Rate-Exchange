@@ -2,96 +2,89 @@ import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "./firebaseConfig";
-import { useDispatch } from "react-redux";
-import { setErrorCode } from "../redux/currenciesSlice";
+
+
 
 const ERRORS = {
-    "User already exists": 0,
-    "Registration email error": 1,
+    "Error": 0,
+    "User already exists": 1,
     "Error updating profile": 2,
-    "Error registering": 3,
-    "No user exists": 4,
-    "Could not register": 5,
-    "Please sign up first": 6,
-    "Invalid credentials": 7
+    "Registration failed": 3,
+    "Please sign up first": 4,
+    "Invalid credentials": 5
 };
+
+const SUCCESSES = {
+    "Success": 0,
+    "Registration successful": 1
+}
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
 
     const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-    const dispatch = useDispatch()
     const navigate = useNavigate();
 
     useEffect(() => {
         const unsubscribe = getAuth(app).onAuthStateChanged(user => {
             if (user) {
                 setUser(user);
-                setIsAuthenticated(true);
+                setIsAuthenticated(true)
             }
         });
         return () => unsubscribe();
     }, []);
 
 
-    const register = async ({ email, password, firstName }) => {
-        // Check if user already exists
+    const register = async ({ email, password, firstName }, onRegistrationSuccess, onRegistrationFailure) => {
         try {
-            const existingUser = await getAuth(app).getUserByEmail(email);
-            if (existingUser) {
-                dispatch(setErrorCode(ERRORS["User already exists"], existingUser.email))
-                return;
-            }
-        } catch (error) {
-            dispatch(setErrorCode(ERRORS["Registration email error"], email))
+            createUserWithEmailAndPassword(getAuth(app), email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    try {
+                        await updateProfile(user, { displayName: firstName });
+                        await sendEmailVerification(user);
+                        setUser(user);
+                        onRegistrationSuccess(SUCCESSES["Registration successful"]);
+                    } catch (error) {
+                        onRegistrationFailure(ERRORS["Error updating profile"])
+                    }
+                })
+                .catch((error) => {
+                    onRegistrationFailure(ERRORS["User already exists"])
+                });
         }
-
-        // Proceed with user registration
-        createUserWithEmailAndPassword(getAuth(app), email, password)
-            .then(async (userCredential) => {
-                const user = userCredential.user;
-                try {
-                    await updateProfile(user, { displayName: firstName });
-                    await sendEmailVerification(user);
-                    setUser(user);
-                    setIsAuthenticated(true);
-                } catch (error) {
-                    dispatch(setErrorCode(ERRORS["Error updating profile"]))
-                }
-            })
-            .catch((error) => {
-                dispatch(setErrorCode(ERRORS["Error registering"]))
-            });
+        catch (error) {
+            onRegistrationFailure(ERRORS["Registration failed"])
+        }
     };
 
-    const login = async ({ email, password }) => {
-        // Check if user is already registered
+    const login = async ({ email, password }, onLoginFailure) => {
+
         try {
             const existingUser = await getAuth(app).getUserByEmail(email);
             if (!existingUser) {
-                console.log("error");
-                dispatch(setErrorCode(ERRORS["No user exists"]))
-                return;
+                onLoginFailure(ERRORS["Please sign up first"])
             }
         } catch (error) {
-            dispatch(setErrorCode(ERRORS["Please sign up first"]))
+            onLoginFailure(ERRORS["Error"])
         }
 
-        // Proceed with user login
         signInWithEmailAndPassword(getAuth(app), email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
                 setUser(user);
-                setIsAuthenticated(true);
+                setIsAuthenticated(true)
                 navigate("/currencies");
             })
             .catch((error) => {
-                dispatch(setErrorCode(ERRORS["Invalid credentials"]))
+                onLoginFailure(ERRORS["Invalid credentials"])
             });
     };
+
 
     return (
         <AuthContext.Provider value={{ user, register, login, isAuthenticated }}>

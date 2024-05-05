@@ -1,14 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Button from "../../elements/button/Button";
 import styles from "./SignUp.module.scss"
-import { AuthContext } from "../../../firebase/authContext";
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-const SignUp = () => {
+const SignUp = ({ onRegistration }) => {
 
-    const { register } = useContext(AuthContext);
 
     const [state, setState] = useState({
         firstName: "",
@@ -16,9 +14,6 @@ const SignUp = () => {
         email: "",
         password: "",
         passwordConfirmation: "",
-        country: "",
-        city: "",
-        zip: "",
         checked: false,
     });
 
@@ -35,14 +30,12 @@ const SignUp = () => {
     const makeItChecked = () => {
         setState({ ...state, checked: !state.checked });
     };
-    const handleRegister = (event) => {
-        event.preventDefault();
-        register(state);
-        alert(
-            "thank you for submitting your details, we've sent you a confirmation link to your E-mail"
-        );
-    };
 
+
+    const handleRegistration = (e) => {
+        e.preventDefault();
+        onRegistration(e, state);
+    }
 
     const isInvalid =
         state.firstName === "" ||
@@ -53,7 +46,7 @@ const SignUp = () => {
 
     return <div className={styles.container}>
 
-        <form onSubmit={handleRegister} method="POST">
+        <form onSubmit={(e) => handleRegistration(e)} method="POST">
             <div className={styles.formContainer} >
                 <input
                     type="text"
@@ -61,7 +54,7 @@ const SignUp = () => {
                     name="firstName"
                     value={state.firstName}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -70,7 +63,7 @@ const SignUp = () => {
                     name="lastName"
                     value={state.lastName}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -79,7 +72,7 @@ const SignUp = () => {
                     name="email"
                     value={state.email}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -88,7 +81,7 @@ const SignUp = () => {
                     name="password"
                     value={state.password}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <input
@@ -97,7 +90,7 @@ const SignUp = () => {
                     name="passwordConfirmation"
                     value={state.passwordConfirmation}
                     onChange={changeInput}
-                    autoComplete=""
+                    autoComplete="off"
                 />
 
                 <span>
@@ -109,10 +102,7 @@ const SignUp = () => {
                     Agree to terms and conditions
                 </span>
 
-                <Button
-                    type="submit"
-                    disabled={isInvalid}
-                >
+                <Button type="submit" disabled={isInvalid}>
                     Register
                 </Button>
 
