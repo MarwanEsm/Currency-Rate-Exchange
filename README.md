@@ -34,6 +34,3 @@ To run the Currency Exchange Rate App locally, follow these steps:
 
 ### Contributing ###
 Contributions are welcome! If you'd like to contribute to the Currency Exchange Rate App
-
-
-![Marwan's GitHub stats](https://github-readme-stats.vercel.app/api?username=MarwanEsm&show_icons=true&theme=radical)
