@@ -75,7 +75,7 @@ const Home = () => {
                             setShowForgetPasswordModal(true)
                             setShowLoginModal(false)
                         }}
-                        onLogin={(credential) => handleLogin(credential)}
+                        onLogin={(e, credential) => handleLogin(e, credential)}
                     />
                 </Modal>
             }

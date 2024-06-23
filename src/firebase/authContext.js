@@ -20,11 +20,11 @@ const SUCCESSES = {
 }
 
 export const AuthContext = createContext();
-
 export const AuthContextProvider = ({ children }) => {
 
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    console.log(isAuthenticated);
 
     const navigate = useNavigate();
 
@@ -62,28 +62,23 @@ export const AuthContextProvider = ({ children }) => {
         }
     };
 
+
     const login = async ({ email, password }, onLoginFailure) => {
-
-        try {
-            const existingUser = await getAuth(app).getUserByEmail(email);
-            if (!existingUser) {
-                onLoginFailure(ERRORS["Please sign up first"])
-            }
-        } catch (error) {
-            onLoginFailure(ERRORS["Error"])
-        }
-
-        signInWithEmailAndPassword(getAuth(app), email, password)
+        const auth = getAuth(app);
+        signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
+                console.log("User signed in:", user);
                 setUser(user);
-                setIsAuthenticated(true)
+                setIsAuthenticated(true);
                 navigate("/currencies");
             })
             .catch((error) => {
-                onLoginFailure(ERRORS["Invalid credentials"])
+                console.error("Sign-in error:", error);
+                onLoginFailure(ERRORS["Invalid credentials"]);
             });
     };
+
 
 
     return (

@@ -26,6 +26,11 @@
     margin-right: 8px;
 }
 
+
+.formContainer input:focus-visible {
+    outline: none
+}
+
 .formContainer label {
     font-weight: bold;
     color: #333;

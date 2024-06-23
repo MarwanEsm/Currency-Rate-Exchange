@@ -3,21 +3,17 @@ import Button from "../../elements/button/Button";
 import styles from "./Login.module.scss";
 import { Link } from "react-router-dom";
 
-//TODO: Validate the email and password
+// TODO: Validate the email and password
 const Login = ({ onPasswordReset, onLogin }) => {
     const [loginCredentials, setLoginCredentials] = useState({
         email: "",
         password: "",
     });
 
-
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setLoginCredentials({ ...loginCredentials, [name]: value });
     };
-
-
     const invalid = loginCredentials.email === "" || loginCredentials.password === "";
 
     return (
@@ -44,7 +40,7 @@ const Login = ({ onPasswordReset, onLogin }) => {
                         autoComplete="off"
                     />
 
-                    <Link onClick={onPasswordReset}> Forgot Password ? </Link>
+                    <Link onClick={onPasswordReset}> Forgot Password? </Link>
 
                     <Button type="submit" disabled={invalid}>
                         Sign in
