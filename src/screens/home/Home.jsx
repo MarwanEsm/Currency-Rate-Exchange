@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/header/Header";
-import Logo from "../../components/elements/Logo/Logo";
+import Logo from "../../components/elements/logo/Logo";
 import Button from "../../components/elements/button/Button"
 import Link from "../../components/elements/link/Link";
 import Container from "../../components/layout/container/Container";

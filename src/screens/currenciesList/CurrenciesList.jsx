@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import CurrencySelect from "../../components/elements/currencySelector/CurrencySelect";
 import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
-import Logo from "../../components/elements/Logo/Logo";
+import Logo from "../../components/elements/logo/Logo";
 import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
 import { AuthContext } from "../../firebase/authContext";
