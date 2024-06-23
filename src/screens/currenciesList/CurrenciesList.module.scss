@@ -59,7 +59,11 @@
     font-weight: 600;
     margin-right: 10px;
     margin-left: -10px;
-    text-align: center;
+}
+
+.exchangeRateWrapper span {
+    display: flex;
+    justify-content: center;
 }
 
 
