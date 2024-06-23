@@ -3,6 +3,7 @@ import Button from "../../elements/button/Button";
 import styles from "./Login.module.scss";
 import { Link } from "react-router-dom";
 
+//TODO: Validate the email and password
 const Login = ({ onPasswordReset, onLogin }) => {
     const [loginCredentials, setLoginCredentials] = useState({
         email: "",
