@@ -5,11 +5,9 @@ import Headline from "../../components/elements/headline/Headline";
 import Logo from "../../components/elements/logo/Logo";
 import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
-import { AuthContext } from "../../firebase/authContext";
 import { Row, Col } from 'reactstrap';
 import { useNavigate } from "react-router-dom";
-
-
+import { usePrevious } from "../../utils/utils"
 
 
 
@@ -23,8 +21,6 @@ const CurrenciesList = () => {
 
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
-
-    // const { errorCode, isAuthenticated } = useContext(AuthContext)
 
     const navigate = useNavigate()
 
@@ -133,7 +129,7 @@ const CurrenciesList = () => {
             </Row>
 
             <Button onClick={onConvert}>
-                {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value}`}
+                {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value !== undefined ? toCurrency?.value : ""}`}
             </Button>
 
 
