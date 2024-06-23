@@ -25,7 +25,6 @@ const CurrenciesList = () => {
     const [result, setResult] = useState(null);
 
     const { errorCode, isAuthenticated } = useContext(AuthContext)
-    console.log(isAuthenticated);
 
     const navigate = useNavigate()
 
