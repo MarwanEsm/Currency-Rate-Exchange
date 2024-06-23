@@ -7,7 +7,6 @@ import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
 import { useNavigate } from "react-router-dom";
-import { usePrevious } from "../../utils/utils"
 
 
 
