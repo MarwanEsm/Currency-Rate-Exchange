@@ -14,7 +14,6 @@ import SuccessMessage from "../../components/messages/successMessage/SuccessMess
 import ErrorMessage from "../../components/messages/errorMessage/ErrorMessage";
 import { AuthContext } from "../../firebase/authContext";
 
-
 const Home = () => {
 
     const [showRegistrationModal, setShowRegistrationModal] = useState(false)
@@ -27,7 +26,6 @@ const Home = () => {
     const { login, register, isAuthenticated } = useContext(AuthContext)
 
     const navigate = useNavigate()
-
 
     const handleLogin = (e, loginCredentials) => {
         e.preventDefault();
