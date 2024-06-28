@@ -1,7 +1,5 @@
 import styles from "./ErrorMessage.module.scss"
 import { useIsDesktop } from "../../../utils/service"
-import { Row, Col } from "reactstrap"
-
 
 const ErrorMessage = ({ onPasswordForget }) => {
 

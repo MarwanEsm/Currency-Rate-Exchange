@@ -50,7 +50,6 @@ const Home = () => {
 
     return (
         <Container>
-
             {showRegistrationModal && successCode === null && errorCode === null &&
                 <Modal
                     onClose={() => setShowRegistrationModal(false)}
