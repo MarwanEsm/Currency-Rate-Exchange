@@ -27,14 +27,16 @@ const Home = () => {
 
     const navigate = useNavigate()
 
-    const handleLogin = (e, loginCredentials) => {
-        e.preventDefault();
+    const handleLogin = (loginCredentials) => {
         login(
             loginCredentials,
             (errorMessage) => {
                 setErrorCode(errorMessage);
+            }).then(authentication => {
+                if (isAuthenticated) {
+                    navigate("/currencies")
+                }
             })
-        isAuthenticated && navigate("/currencies")
     };
 
     const handleRegistration = (e, credential) => {
@@ -68,11 +70,12 @@ const Home = () => {
                     className={styles.modal}
                 >
                     <Login
-                        onPasswordReset={() => {
-                            setShowForgetPasswordModal(true)
-                            setShowLoginModal(false)
-                        }}
-                        onLogin={(e, credential) => handleLogin(e, credential)}
+                        // onPasswordReset={() => {
+                        //     setShowForgetPasswordModal(true)
+                        //     setShowLoginModal(false)
+                        // }}
+                        // onLogin={(e, credential) => handleLogin(e, credential)}
+                        onLogin={(e, credentials) => handleLogin(e, credentials)}
                     />
                 </Modal>
             }
