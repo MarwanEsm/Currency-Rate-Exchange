@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import styles from "./Modal.module.scss"
+import { useIsDesktop } from "../../../utils/service"
+import classNames from "classnames";
 
 const Modal = ({ isOpen, onClose, children }) => {
+
+    const isDesktop = useIsDesktop()
     useEffect(() => {
         const handleEscape = (event) => {
             if (event.keyCode === 27) {
@@ -33,7 +37,7 @@ const Modal = ({ isOpen, onClose, children }) => {
     return (
         <>
             {isOpen && (
-                <div className={styles.modal_overlay} onClick={handleOverlayClick}>
+                <div className={classNames(isDesktop ? styles.modal_overlay : styles.mobile)} onClick={handleOverlayClick}>
                     <div className={styles.modal}>
                         <button className={styles.close_btn} onClick={handleClose}>
                             &times;
