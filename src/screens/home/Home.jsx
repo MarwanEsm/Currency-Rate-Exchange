@@ -22,7 +22,7 @@ const Home = () => {
 
     const [errorCode, setErrorCode] = useState(null)
     const [successCode, setSuccessCode] = useState(null)
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+
 
     const { login, register, isAuthenticated } = useContext(AuthContext)
 
@@ -36,7 +36,6 @@ const Home = () => {
             }).then(authentication => {
                 if (isAuthenticated) {
                     navigate("/currencies")
-                    setIsLoggedIn(true)
                 }
             })
     };
@@ -119,7 +118,7 @@ const Home = () => {
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
-            {isLoggedIn && <Button>Log-out</Button>}
+
         </Container >
     );
 }

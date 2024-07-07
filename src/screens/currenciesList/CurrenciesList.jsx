@@ -8,7 +8,7 @@ import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../firebase/authContext";
-import { getAuth, signOut } from "firebase/auth";
+
 
 
 const CurrenciesList = () => {
@@ -23,9 +23,7 @@ const CurrenciesList = () => {
     const [result, setResult] = useState(null);
 
 
-    const { isAuthenticated } = useContext(AuthContext)
-    console.log(isAuthenticated);
-
+    const { logout, isAuthenticated } = useContext(AuthContext)
 
     const navigate = useNavigate()
 
@@ -74,13 +72,17 @@ const CurrenciesList = () => {
     };
 
 
+
     const handleLogout = () => {
-        const auth = getAuth();
-        signOut(auth).then(() => {
-            console.log("sign out success")
-        }).catch((error) => {
-            console.log("sign out error")
-        });
+        try {
+            logout().then(() => {
+                if (!isAuthenticated) {
+                    navigate("/")
+                }
+            })
+        } catch (error) {
+            throw new Error()
+        }
     }
 
     return <Container>
