@@ -23,18 +23,21 @@ const Home = () => {
     const [errorCode, setErrorCode] = useState(null)
     const [successCode, setSuccessCode] = useState(null)
 
+
     const { login, register, isAuthenticated } = useContext(AuthContext)
 
     const navigate = useNavigate()
 
-    const handleLogin = (e, loginCredentials) => {
-        e.preventDefault();
+    const handleLogin = (loginCredentials) => {
         login(
             loginCredentials,
             (errorMessage) => {
                 setErrorCode(errorMessage);
+            }).then(authentication => {
+                if (isAuthenticated) {
+                    navigate("/currencies")
+                }
             })
-        isAuthenticated && navigate("/currencies")
     };
 
     const handleRegistration = (e, credential) => {
@@ -72,7 +75,7 @@ const Home = () => {
                             setShowForgetPasswordModal(true)
                             setShowLoginModal(false)
                         }}
-                        onLogin={(e, credential) => handleLogin(e, credential)}
+                        onLogin={(e, credentials) => handleLogin(e, credentials)}
                     />
                 </Modal>
             }
@@ -115,6 +118,7 @@ const Home = () => {
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
+
         </Container >
     );
 }

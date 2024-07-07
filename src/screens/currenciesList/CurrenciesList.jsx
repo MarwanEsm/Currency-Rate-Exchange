@@ -7,6 +7,7 @@ import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../firebase/authContext";
 
 
 
@@ -20,6 +21,9 @@ const CurrenciesList = () => {
 
     const [amount, setAmount] = useState(null);
     const [result, setResult] = useState(null);
+
+
+    const { logout, isAuthenticated } = useContext(AuthContext)
 
     const navigate = useNavigate()
 
@@ -55,6 +59,11 @@ const CurrenciesList = () => {
     }, [toCurrency?.value])
 
 
+    useEffect(() => {
+        amount !== null && exchangeRate !== "-" && onConvert()
+    }, [amount, exchangeRate])
+
+
     const onConvert = () => {
         const result = (amount * exchangeRate).toFixed(2);
         if (exchangeRate !== "0,0") {
@@ -62,10 +71,19 @@ const CurrenciesList = () => {
         }
     };
 
-    useEffect(() => {
-        amount !== null && exchangeRate !== "-" && onConvert()
-    }, [amount, exchangeRate])
 
+
+    const handleLogout = () => {
+        try {
+            logout().then(() => {
+                if (!isAuthenticated) {
+                    navigate("/")
+                }
+            })
+        } catch (error) {
+            throw new Error()
+        }
+    }
 
     return <Container>
         <div className={styles.listContainer}>
@@ -130,9 +148,7 @@ const CurrenciesList = () => {
             <Button onClick={onConvert}>
                 {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value !== undefined ? toCurrency?.value : ""}`}
             </Button>
-
-
-
+            {isAuthenticated && <Button onClick={() => handleLogout()}>Log out</Button>}
         </div>
     </Container>
 }

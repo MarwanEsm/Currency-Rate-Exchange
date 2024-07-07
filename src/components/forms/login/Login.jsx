@@ -16,37 +16,41 @@ const Login = ({ onPasswordReset, onLogin }) => {
     };
     const invalid = loginCredentials.email === "" || loginCredentials.password === "";
 
+    const handleSubmit = (e) => {
+        console.log(e);
+    }
+
     return (
         <div className={styles.container}>
-            <form onSubmit={() => onLogin(loginCredentials)} method="POST">
-                <div className={styles.formContainer}>
-                    <label>Email address</label>
-                    <input
-                        type="email"
-                        placeholder="example: jo@gmail.com"
-                        name="email"
-                        onChange={handleChange}
-                        value={loginCredentials.email}
-                        autoComplete="off"
-                    />
+            {/* <form > */}
+            <div className={styles.formContainer}>
+                <label>Email address</label>
+                <input
+                    type="email"
+                    placeholder="example: jo@gmail.com"
+                    name="email"
+                    onChange={handleChange}
+                    value={loginCredentials.email}
+                    autoComplete="off"
+                />
 
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        name="password"
-                        onChange={handleChange}
-                        value={loginCredentials.password}
-                        autoComplete="off"
-                    />
+                <label>Password</label>
+                <input
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    onChange={handleChange}
+                    value={loginCredentials.password}
+                    autoComplete="off"
+                />
 
-                    <Link onClick={onPasswordReset}> Forgot Password? </Link>
+                <Link onClick={onPasswordReset}> Forgot Password? </Link>
 
-                    <Button type="submit" disabled={invalid}>
-                        Sign in
-                    </Button>
-                </div>
-            </form>
+                <Button type="submit" disabled={invalid} onClick={() => onLogin(loginCredentials)}>
+                    Sign in
+                </Button>
+            </div>
+            {/* </form> */}
         </div>
     );
 };
