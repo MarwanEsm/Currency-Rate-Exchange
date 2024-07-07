@@ -72,11 +72,10 @@ const Home = () => {
                     className={styles.modal}
                 >
                     <Login
-                        // onPasswordReset={() => {
-                        //     setShowForgetPasswordModal(true)
-                        //     setShowLoginModal(false)
-                        // }}
-                        // onLogin={(e, credential) => handleLogin(e, credential)}
+                        onPasswordReset={() => {
+                            setShowForgetPasswordModal(true)
+                            setShowLoginModal(false)
+                        }}
                         onLogin={(e, credentials) => handleLogin(e, credentials)}
                     />
                 </Modal>

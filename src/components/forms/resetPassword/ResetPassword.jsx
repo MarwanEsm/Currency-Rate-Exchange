@@ -18,7 +18,6 @@ const ResetPassword = ({ onPasswordReset }) => {
     return <div className={styles.container}>
         <form>
             <div className={styles.formContainer}>
-                <label>Email</label>
                 <input
                     type="email"
                     placeholder="Enter email"
