@@ -22,8 +22,6 @@ const CurrentDate = () => {
     const year = currentDate.getFullYear();
 
     return <h4>{`${date} ${month} ${year}`}</h4>
-
-
 };
 
 const DateAndTime = () => {

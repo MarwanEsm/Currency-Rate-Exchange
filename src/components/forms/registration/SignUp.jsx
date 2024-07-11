@@ -4,9 +4,7 @@ import styles from "./SignUp.module.scss"
 import "reactjs-popup/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
 const SignUp = ({ onRegistration }) => {
-
 
     const [state, setState] = useState({
         firstName: "",

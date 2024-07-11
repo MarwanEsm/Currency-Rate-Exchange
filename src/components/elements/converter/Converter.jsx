@@ -23,8 +23,6 @@ const Converter = ({ searchedCurrency }) => {
         setToCurrency(resultValue)
     };
 
-
-
     return (
         <div className={styles.container}>
 

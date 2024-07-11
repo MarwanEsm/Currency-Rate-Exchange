@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import Button from "../../elements/button/Button";
 import styles from './ResetPassword.module.scss'
 
-
-
 const ResetPassword = ({ onPasswordReset }) => {
 
     const [email, setEmail] = useState();
