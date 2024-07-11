@@ -16,13 +16,8 @@ const Login = ({ onPasswordReset, onLogin }) => {
     };
     const invalid = loginCredentials.email === "" || loginCredentials.password === "";
 
-    const handleSubmit = (e) => {
-        console.log(e);
-    }
-
     return (
         <div className={styles.container}>
-            {/* <form > */}
             <div className={styles.formContainer}>
                 <label>Email address</label>
                 <input
@@ -50,7 +45,6 @@ const Login = ({ onPasswordReset, onLogin }) => {
                     Sign in
                 </Button>
             </div>
-            {/* </form> */}
         </div>
     );
 };
