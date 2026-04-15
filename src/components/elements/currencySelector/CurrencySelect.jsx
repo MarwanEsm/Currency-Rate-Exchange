@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./CurrencySelect.module.scss";
-import AsyncSelect from "react-select";
+import Select from "react-select";
 import axios from "axios";
 
 const CurrencySelect = ({ onCurrencySelect, url, placeholder, value }) => {
@@ -40,7 +40,7 @@ const CurrencySelect = ({ onCurrencySelect, url, placeholder, value }) => {
 
     return (
         <div className={styles.container}>
-            <AsyncSelect
+            <Select
                 options={options}
                 onChange={onCurrencySelect}
                 className={styles.select}

@@ -85,6 +85,7 @@ const CurrenciesList = () => {
                             setAmount("");
                             setHasConverted(false);
                         }}
+                        value={fromCurrency}
                     />
                 </Col>
 
