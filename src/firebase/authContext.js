@@ -63,16 +63,17 @@ export const AuthContextProvider = ({ children }) => {
 
     const login = async ({ email, password }, onLoginFailure) => {
         const auth = getAuth(app);
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                setUser(user);
-                setIsAuthenticated(true);
-                router.push("/currencies");
-            })
-            .catch((error) => {
-                onLoginFailure(ERRORS["Invalid credentials"]);
-            });
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const loggedInUser = userCredential.user;
+            setUser(loggedInUser);
+            setIsAuthenticated(true);
+            router.push("/currencies");
+            return loggedInUser;
+        } catch (error) {
+            onLoginFailure(ERRORS["Invalid credentials"]);
+            return null;
+        }
     };
 
     const logout = async () => {

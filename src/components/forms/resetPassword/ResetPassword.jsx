@@ -4,14 +4,14 @@ import styles from './ResetPassword.module.scss'
 
 const ResetPassword = ({ onPasswordReset }) => {
 
-    const [email, setEmail] = useState();
+    const [email, setEmail] = useState("");
 
     const enterEmail = (event) => {
         const enteredEmail = event.target.value;
         setEmail(enteredEmail);
     };
 
-    const invalid = email === "";
+    const invalid = email.trim() === "";
 
     return <div className={styles.container}>
         <form>

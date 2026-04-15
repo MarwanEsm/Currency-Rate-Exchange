@@ -24,20 +24,16 @@ const Home = () => {
     const [successCode, setSuccessCode] = useState(null)
 
 
-    const { login, register, isAuthenticated } = useContext(AuthContext)
+    const { login, register } = useContext(AuthContext)
 
     const router = useRouter()
 
-    const handleLogin = (loginCredentials) => {
-        login(
+    const handleLogin = async (loginCredentials) => {
+        await login(
             loginCredentials,
             (errorMessage) => {
                 setErrorCode(errorMessage);
-            }).then(authentication => {
-                if (isAuthenticated) {
-                    router.push("/currencies")
-                }
-            })
+            });
     };
 
     const handleRegistration = (e, credential) => {
@@ -75,7 +71,7 @@ const Home = () => {
                             setShowForgetPasswordModal(true)
                             setShowLoginModal(false)
                         }}
-                        onLogin={(e, credentials) => handleLogin(e, credentials)}
+                        onLogin={handleLogin}
                     />
                 </Modal>
             }
@@ -109,7 +105,12 @@ const Home = () => {
                     isOpen={errorCode === 1}
                     className={styles.modal}
                 >
-                    <ErrorMessage />
+                    <ErrorMessage onPasswordForget={() => {
+                        setErrorCode(null);
+                        setShowRegistrationModal(false);
+                        setShowLoginModal(false);
+                        setShowForgetPasswordModal(true);
+                    }} />
                 </Modal>
             }
             <div className={styles.container}>

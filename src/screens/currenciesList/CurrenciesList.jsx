@@ -41,7 +41,7 @@ const CurrenciesList = () => {
         const json = await response.json()
         const ratesList = json.data?.rates
         setExchangeRates(ratesList)
-        const exchangeRate = exchangeRates !== null && toCurrency?.value !== null ? parseFloat(exchangeRates[toCurrency?.value]).toFixed(4) : 0
+        const exchangeRate = ratesList !== null && toCurrency?.value !== null ? parseFloat(ratesList[toCurrency?.value]).toFixed(4) : 0
         setExchangeRate(exchangeRate)
     };
 
