@@ -17,6 +17,18 @@ const SUCCESSES = {
     "Registration successful": 1
 }
 
+const getRegistrationErrorCode = (error) => {
+    switch (error?.code) {
+        case "auth/email-already-in-use":
+            return ERRORS["User already exists"];
+        case "auth/invalid-email":
+        case "auth/weak-password":
+            return ERRORS["Registration failed"];
+        default:
+            return ERRORS["Error"];
+    }
+};
+
 export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
 
@@ -40,24 +52,19 @@ export const AuthContextProvider = ({ children }) => {
 
     const register = async ({ email, password, firstName }, onRegistrationSuccess, onRegistrationFailure) => {
         try {
-            createUserWithEmailAndPassword(getAuth(app), email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    try {
-                        await updateProfile(user, { displayName: firstName });
-                        await sendEmailVerification(user);
-                        setUser(user);
-                        setIsAuthenticated(true);
-                        onRegistrationSuccess(SUCCESSES["Registration successful"]);
-                    } catch (error) {
-                        onRegistrationFailure(ERRORS["Error updating profile"]);
-                    }
-                })
-                .catch((error) => {
-                    onRegistrationFailure(ERRORS["User already exists"]);
-                });
+            const userCredential = await createUserWithEmailAndPassword(getAuth(app), email, password);
+            const registeredUser = userCredential.user;
+            try {
+                await updateProfile(registeredUser, { displayName: firstName });
+                await sendEmailVerification(registeredUser);
+                setUser(registeredUser);
+                setIsAuthenticated(true);
+                onRegistrationSuccess(SUCCESSES["Registration successful"]);
+            } catch (error) {
+                onRegistrationFailure(ERRORS["Error updating profile"]);
+            }
         } catch (error) {
-            onRegistrationFailure(ERRORS["Registration failed"]);
+            onRegistrationFailure(getRegistrationErrorCode(error));
         }
     };
 

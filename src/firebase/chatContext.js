@@ -44,10 +44,11 @@ export const ChatContextProvider = ({ children }) => {
 
     // Function to write a new message to Firestore
     const writeMessages = async (body) => {
+        const firstName = user?.displayName || user?.email || "Anonymous";
         try {
             await addDoc(collection(db, "messages"), { // Use collection() and addDoc() to add a new message
                 body,
-                firstName: user.displayName,
+                firstName,
                 timestamp: new Date().toLocaleString(),
             });
             getMessages(); // Refresh messages after writing

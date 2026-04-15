@@ -6,21 +6,34 @@ import axios from "axios";
 const CurrencySelect = ({ onCurrencySelect, url, placeholder, value }) => {
     const [options, setOptions] = useState(null);
 
-    const loadCurrencies = () => {
-        axios.get(url)
+    const loadCurrencies = async (signal, onSuccess) => {
+        await axios.get(url, { signal })
             .then(response => {
                 if (response.data) {
-                    setOptions(response.data.data.map(currency => ({ value: currency.id, label: currency.name })));
+                    onSuccess(response.data.data.map(currency => ({ value: currency.id, label: currency.name })));
                 }
             })
             .catch(error => {
+                if (error?.name === "CanceledError" || error?.code === "ERR_CANCELED") return;
                 console.error("Error fetching currencies:", error);
             });
     };
 
     useEffect(() => {
-        loadCurrencies();
-    }, []);
+        let isMounted = true;
+        const controller = new AbortController();
+
+        loadCurrencies(controller.signal, (loadedOptions) => {
+            if (isMounted) {
+                setOptions(loadedOptions);
+            }
+        });
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        };
+    }, [url]);
 
     return (
         <div className={styles.container}>

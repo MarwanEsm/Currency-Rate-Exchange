@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
 import CurrencySelect from "../../components/elements/currencySelector/CurrencySelect";
 import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
@@ -17,10 +17,10 @@ const CurrenciesList = () => {
     const [toCurrency, setToCurrency] = useState(null)
 
     const [exchangeRates, setExchangeRates] = useState(null);
-    const [exchangeRate, setExchangeRate] = useState("0,0")
-
-    const [amount, setAmount] = useState(null);
-    const [result, setResult] = useState(null);
+    const [amount, setAmount] = useState("");
+    const [hasConverted, setHasConverted] = useState(false);
+    const isMountedRef = useRef(true);
+    const exchangeRateRequestRef = useRef(0);
 
 
     const { logout, isAuthenticated } = useContext(AuthContext)
@@ -37,51 +37,68 @@ const CurrenciesList = () => {
     };
 
     const loadExchangeRate = async () => {
-        const response = await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency?.value}`)
-        const json = await response.json()
-        const ratesList = json.data?.rates
-        setExchangeRates(ratesList)
-        const exchangeRate = ratesList !== null && toCurrency?.value !== null ? parseFloat(ratesList[toCurrency?.value]).toFixed(4) : 0
-        setExchangeRate(exchangeRate)
+        if (!toCurrency?.value) {
+            setExchangeRates(null);
+            return;
+        }
+
+        const requestId = ++exchangeRateRequestRef.current;
+
+        try {
+            const response = await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency.value}`)
+            const json = await response.json()
+
+            if (!isMountedRef.current || requestId !== exchangeRateRequestRef.current) return;
+
+            const ratesList = json.data?.rates ?? null;
+            setExchangeRates(ratesList);
+        } catch (error) {
+            if (!isMountedRef.current || requestId !== exchangeRateRequestRef.current) return;
+            setExchangeRates(null);
+        }
     };
 
+    const numericRate = useMemo(() => {
+        const rawRate = exchangeRates?.[toCurrency?.value];
+        const parsedRate = Number.parseFloat(rawRate);
+        return Number.isFinite(parsedRate) ? parsedRate : null;
+    }, [exchangeRates, toCurrency?.value]);
+
+    const exchangeRate = useMemo(() => {
+        return numericRate === null ? "" : numericRate.toFixed(4);
+    }, [numericRate]);
+
+    const numericAmount = useMemo(() => {
+        const parsedAmount = Number(amount);
+        return Number.isFinite(parsedAmount) ? parsedAmount : null;
+    }, [amount]);
+
+    const convertedAmount = useMemo(() => {
+        if (numericAmount === null || numericRate === null) return null;
+        return (numericAmount * numericRate).toFixed(2);
+    }, [numericAmount, numericRate]);
 
     useEffect(() => {
-        exchangeRate === 0 && loadExchangeRate()
-        if (exchangeRate !== 0 && exchangeRate !== "0,0" && amount !== null) {
-            onConvert(exchangeRate);
+        if (toCurrency !== null) {
+            loadExchangeRate();
         }
-    }, [exchangeRate])
-
-
-    useEffect(() => {
-        toCurrency !== null && loadExchangeRate()
     }, [toCurrency?.value])
 
-
     useEffect(() => {
-        amount !== null && exchangeRate !== "-" && onConvert()
-    }, [amount, exchangeRate])
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
-
-    const onConvert = () => {
-        const result = (amount * exchangeRate).toFixed(2);
-        if (exchangeRate !== "0,0") {
-            setResult(result);
-        }
-    };
+    const onConvert = () => setHasConverted(true);
 
 
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         try {
-            logout().then(() => {
-                if (!isAuthenticated) {
-                    router.push("/")
-                }
-            })
+            await logout();
         } catch (error) {
-            throw new Error()
+            console.error("logout failed", error);
         }
     }
 
@@ -107,7 +124,9 @@ const CurrenciesList = () => {
                         onCurrencySelect={(currency) => {
                             setFromCurrency(currency)
                             setToCurrency(null)
-                            setExchangeRate(null)
+                            setAmount("");
+                            setHasConverted(false);
+                            setExchangeRates(null);
                         }}
                     />
                 </Col>
@@ -116,7 +135,10 @@ const CurrenciesList = () => {
                     <CurrencySelect
                         url={"https://api.coinbase.com/v2/currencies"}
                         placeholder={"To Currency"}
-                        onCurrencySelect={(currency) => setToCurrency(currency)}
+                        onCurrencySelect={(currency) => {
+                            setToCurrency(currency);
+                            setHasConverted(false);
+                        }}
                         value={toCurrency}
                     />
                 </Col>
@@ -132,7 +154,10 @@ const CurrenciesList = () => {
                         type="text"
                         placeholder="Amount"
                         value={numberWithCommas(amount)}
-                        onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
+                        onChange={(e) => {
+                            setAmount(e.target.value.replace(/\D/g, ''));
+                            setHasConverted(false);
+                        }}
                     />
                 </Col>
 
@@ -140,15 +165,17 @@ const CurrenciesList = () => {
                 <Col lg={4} md={4} sm={6} className={styles.exchangeRateWrapper}>
                     <span>
                         <label>Exchange Rate </label>
-                        <b>{exchangeRate !== 0 ? exchangeRate : ""}</b>
+                        <b>{exchangeRate}</b>
                     </span>
                 </Col>
             </Row>
 
             <Button onClick={onConvert}>
-                {result === null ? "Convert" : numberWithCommas(result) + " " + `${toCurrency?.value !== undefined ? toCurrency?.value : ""}`}
+                {hasConverted && convertedAmount !== null
+                    ? numberWithCommas(convertedAmount) + " " + `${toCurrency?.value !== undefined ? toCurrency?.value : ""}`
+                    : "Convert"}
             </Button>
-            {isAuthenticated && <Button onClick={() => handleLogout()}>Log out</Button>}
+            {isAuthenticated && <Button onClick={handleLogout}>Log out</Button>}
         </div>
     </Container>
 }
