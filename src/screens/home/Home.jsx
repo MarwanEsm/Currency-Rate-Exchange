@@ -33,6 +33,7 @@ const Home = () => {
             loginCredentials,
             (errorMessage) => {
                 setErrorCode(errorMessage);
+                setShowLoginModal(false);
             });
     };
 
@@ -108,13 +109,19 @@ const Home = () => {
             }
 
             {
-                errorCode === 1 &&
+                errorCode !== null &&
                 <Modal
-                    onClose={() => { setErrorCode(null); setShowRegistrationModal(false) }}
-                    isOpen={errorCode === 1}
+                    onClose={() => {
+                        const isLoginError = errorCode === 5 || errorCode === 0;
+                        setErrorCode(null);
+                        setShowRegistrationModal(false);
+                        setShowForgetPasswordModal(false);
+                        if (isLoginError) setShowLoginModal(true);
+                    }}
+                    isOpen={errorCode !== null}
                     className={styles.modal}
                 >
-                    <ErrorMessage onPasswordForget={() => {
+                    <ErrorMessage errorCode={errorCode} onPasswordForget={() => {
                         setErrorCode(null);
                         setShowRegistrationModal(false);
                         setShowLoginModal(false);
