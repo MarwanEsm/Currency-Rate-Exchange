@@ -50,10 +50,10 @@ const ErrorMessage = ({ errorCode = AUTH_ERROR_CODES.UNKNOWN, onPasswordResetReq
             <p>{content.mobile}</p>
             {content.showPasswordReset && (
                 <label>Forgot your password?
-                    <button type="button" className={styles.inlineAction} onClick={() => onPasswordResetRequest?.()}>&nbsp; Reset it here</button>.
+                    <button type="button" className={styles.inlineAction} onClick={() => onPasswordResetRequest?.()}>&nbsp;Reset it here</button>.
                 </label>
             )}
-            <div>Thank you!</div>
+            <div>Please try again.</div>
         </div>
 
     }
@@ -61,11 +61,11 @@ const ErrorMessage = ({ errorCode = AUTH_ERROR_CODES.UNKNOWN, onPasswordResetReq
     return <div className={styles.container}>
         <p>{content.desktop}</p>
         {content.showPasswordReset && (
-            <label>If you&apos;ve forgotten your password, you can reset it using the
-                <button type="button" className={styles.inlineAction} onClick={() => onPasswordResetRequest?.()}>Forgot Password</button> option.
+            <label>If you&apos;ve forgotten your password, use the
+                <button type="button" className={styles.inlineAction} onClick={() => onPasswordResetRequest?.()}>Forgot password</button> option.
             </label>
         )}
-        <div>Thank you!</div>
+        <div>Please try again.</div>
     </div>
 
 

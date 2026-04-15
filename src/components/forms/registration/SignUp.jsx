@@ -98,10 +98,10 @@ const SignUp = ({ onRegistration }) => {
                         checked={state.checked}
                         type="checkbox"
                     />
-                    Agree to terms and conditions
+                    Agree to the terms and conditions
                 </span>
 
-                <Button type="submit" disabled={isInvalid}>
+                <Button type="submit" fullWidth disabled={isInvalid}>
                     Register
                 </Button>
 

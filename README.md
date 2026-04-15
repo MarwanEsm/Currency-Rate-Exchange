@@ -53,4 +53,5 @@ This project is a Next.js web application for:
 - `src/components/`: reusable UI building blocks.
 - `src/firebase/`: Firebase config and auth context.
 - `src/utils/`: shared hooks and responsive helpers.
+- `src/services/exchangeRateProvider.js`: reusable provider client for exchange-rate requests, normalization, and typed error handling.
 - `functions/`: Firebase Cloud Functions workspace.

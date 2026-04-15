@@ -10,10 +10,11 @@
 
 .inlineAction {
     color: black;
-    font-weight: bolder;
+    font-weight: 700;
     border: 0;
     background: transparent;
     padding: 0;
+    text-decoration: underline;
 }
 
 
@@ -22,7 +23,7 @@
 }
 
 .container>div {
-    font-size: bolder;
+    font-weight: 700;
     font-size: 18px;
     text-align: center;
     margin: 30px auto auto auto;

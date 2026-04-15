@@ -1,13 +1,11 @@
 .button {
     margin-top: 20px;
-    background: linear-gradient(to left, #f18900 50%, #3b474d 50%);
-    color: white;
     padding: 12px 24px;
     border-radius: 10px;
     font-size: 1rem;
     font-weight: bold;
     border: none;
-    transition: background-color 0.3s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     display: block;
     margin: auto;
     cursor: pointer;
@@ -15,8 +13,6 @@
     &:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        background: linear-gradient(to right, #f18900 50%, #3b474d 50%);
-        color: #fff;
     }
 
     &.disabled {
@@ -25,4 +21,28 @@
         cursor: not-allowed;
         box-shadow: none;
     }
+}
+
+.primary {
+    background: linear-gradient(to left, #f18900 50%, #3b474d 50%);
+    color: #fff;
+
+    &:hover {
+        background: linear-gradient(to right, #f18900 50%, #3b474d 50%);
+    }
+}
+
+.secondary {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+    }
+}
+
+.fullWidth {
+    width: 100%;
 }

@@ -86,7 +86,7 @@ const ResetPassword = ({ onPasswordReset }) => {
                     {statusMessage}
                 </p>
 
-                <Button type="submit" disabled={invalid}>
+                <Button type="submit" fullWidth disabled={invalid}>
                     {isSubmitting ? "Sending..." : "Reset Password"}
                 </Button>
             </div>

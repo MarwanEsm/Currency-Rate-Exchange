@@ -132,9 +132,9 @@ const CurrenciesList = () => {
                     ? numberWithCommas(convertedAmount) + " " + `${toCurrency?.value !== undefined ? toCurrency?.value : ""}`
                     : "Convert"}
             </Button>
-            {isAuthenticated && <Button onClick={handleLogout}>Log out</Button>}
+            {isAuthenticated && <Button variant="secondary" onClick={handleLogout}>Log out</Button>}
         </div>
-    </Container>
-}
+    </Container>;
+};
 
 export default CurrenciesList;

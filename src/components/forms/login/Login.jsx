@@ -21,11 +21,11 @@ const Login = ({ onPasswordReset, onLogin }) => {
                 <label>Email address</label>
                 <input
                     type="email"
-                    placeholder="example: jo@gmail.com"
+                    placeholder="name@example.com"
                     name="email"
                     onChange={handleChange}
                     value={loginCredentials.email}
-                    autoComplete="off"
+                    autoComplete="email"
                 />
 
                 <label>Password</label>
@@ -35,15 +35,15 @@ const Login = ({ onPasswordReset, onLogin }) => {
                     name="password"
                     onChange={handleChange}
                     value={loginCredentials.password}
-                    autoComplete="off"
+                    autoComplete="current-password"
                 />
 
                 <button type="button" className={styles.linkLike} onClick={onPasswordReset}>
-                    Forgot Password?
+                    Forgot password?
                 </button>
 
-                <Button type="submit" disabled={invalid} onClick={() => onLogin(loginCredentials)}>
-                    Sign in
+                <Button type="submit" fullWidth disabled={invalid} onClick={() => onLogin(loginCredentials)}>
+                    Log in
                 </Button>
             </div>
         </div>

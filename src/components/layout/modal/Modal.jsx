@@ -3,7 +3,7 @@ import styles from "./Modal.module.scss";
 import { useIsDesktop } from "@/utils/service";
 import classNames from "classnames";
 
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children, title = "Dialog" }) => {
 
     const isDesktop = useIsDesktop();
     useEffect(() => {
@@ -24,6 +24,15 @@ const Modal = ({ isOpen, onClose, children }) => {
         };
     }, [isOpen, onClose]);
 
+    useEffect(() => {
+        if (!isOpen) return undefined;
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = originalOverflow;
+        };
+    }, [isOpen]);
+
     const handleClose = () => {
         onClose();
     };
@@ -38,8 +47,8 @@ const Modal = ({ isOpen, onClose, children }) => {
         <>
             {isOpen && (
                 <div className={classNames(isDesktop ? styles.modal_overlay : styles.mobile)} onClick={handleOverlayClick}>
-                    <div className={styles.modal}>
-                        <button className={styles.close_btn} onClick={handleClose}>
+                    <div className={styles.modal} role="dialog" aria-modal="true" aria-label={title}>
+                        <button type="button" className={styles.close_btn} onClick={handleClose} aria-label="Close dialog">
                             &times;
                         </button>
                         <div className={styles.modal_content}>{children}</div>

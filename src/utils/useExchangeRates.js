@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getExchangeRates } from "@/services/exchangeRateProvider";
 
 const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
     const [exchangeRatesSnapshot, setExchangeRatesSnapshot] = useState(null);
+    const [providerError, setProviderError] = useState(null);
     const requestIdRef = useRef(0);
 
     useEffect(() => {
@@ -18,20 +20,18 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
         const fetchExchangeRates = async () => {
             const requestId = ++requestIdRef.current;
             try {
-                const response = await fetch(
-                    `https://api.coinbase.com/v2/exchange-rates?currency=${fromCurrencyCode}`,
-                    { signal: controller.signal },
-                );
-                const json = await response.json();
+                setProviderError(null);
+                const normalizedPayload = await getExchangeRates(fromCurrencyCode, controller.signal);
 
                 if (!isMounted || requestId !== requestIdRef.current) return;
                 setExchangeRatesSnapshot({
-                    baseCurrencyCode: fromCurrencyCode,
-                    rates: json.data?.rates ?? null,
+                    baseCurrencyCode: normalizedPayload.base,
+                    rates: normalizedPayload.rates,
                 });
             } catch (error) {
                 if (error?.name === "AbortError") return;
                 if (!isMounted || requestId !== requestIdRef.current) return;
+                setProviderError(error);
                 setExchangeRatesSnapshot({
                     baseCurrencyCode: fromCurrencyCode,
                     rates: null,
@@ -59,7 +59,7 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
         return Number.isFinite(parsedRate) ? parsedRate : null;
     }, [exchangeRates, toCurrencyCode]);
 
-    return { exchangeRates, numericRate };
+    return { exchangeRates, numericRate, providerError };
 };
 
 export default useExchangeRates;

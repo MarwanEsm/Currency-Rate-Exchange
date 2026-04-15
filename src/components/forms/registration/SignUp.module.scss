@@ -39,17 +39,7 @@
 
 
 .formContainer button {
-    width: 100%;
-    border: none;
-    border-radius: 6px;
-    color: #fff;
-    cursor: pointer;
-    margin-top: 40px;
-}
-
-.formContainer button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+    margin-top: 20px;
 }
 
 .formContainer span {

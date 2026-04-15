@@ -63,6 +63,7 @@ const Home = () => {
                 <Modal
                     onClose={() => setShowRegistrationModal(false)}
                     isOpen={showRegistrationModal}
+                    title="Create account"
                     className={styles.modal}
                 >
                     <SignUp onRegistration={(e, credential) => handleRegistration(e, credential)} />
@@ -74,6 +75,7 @@ const Home = () => {
                 <Modal
                     onClose={() => setShowLoginModal(false)}
                     isOpen={showLoginModal}
+                    title="Log in"
                     className={styles.modal}
                 >
                     <Login
@@ -91,6 +93,7 @@ const Home = () => {
                 <Modal
                     onClose={() => setShowForgotPasswordModal(false)}
                     isOpen={showForgotPasswordModal}
+                    title="Reset password"
                     className={styles.modal}
                 >
                     <ResetPassword onPasswordReset={handlePasswordReset} />
@@ -102,6 +105,7 @@ const Home = () => {
                 <Modal
                     onClose={() => { setSuccessCode(null); setShowRegistrationModal(false); }}
                     isOpen={successCode === AUTH_SUCCESS_CODES.REGISTRATION_SUCCESSFUL}
+                    title="Registration successful"
                     className={styles.modal}
                 >
                     <SuccessMessage />
@@ -119,6 +123,7 @@ const Home = () => {
                         if (isLoginError) setShowLoginModal(true);
                     }}
                     isOpen={errorCode !== null}
+                    title="Authentication error"
                     className={styles.modal}
                 >
                     <ErrorMessage errorCode={errorCode} onPasswordResetRequest={() => {
