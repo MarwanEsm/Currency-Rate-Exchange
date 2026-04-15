@@ -3,7 +3,7 @@ import styles from "./CurrencySelect.module.scss";
 import Select from "react-select";
 import axios from "axios";
 
-const CurrencySelect = ({ onCurrencySelect, url, placeholder, value, disabledValue, "aria-label": ariaLabel }) => {
+const CurrencySelect = ({ onCurrencySelect, url, placeholder, value, disabledValue, inputId, label }) => {
     const [options, setOptions] = useState([]);
 
     useEffect(() => {
@@ -40,6 +40,9 @@ const CurrencySelect = ({ onCurrencySelect, url, placeholder, value, disabledVal
 
     return (
         <div className={styles.container}>
+            {label && inputId && (
+                <label htmlFor={inputId} className={styles.srOnly}>{label}</label>
+            )}
             <Select
                 options={options}
                 onChange={onCurrencySelect}
@@ -49,7 +52,7 @@ const CurrencySelect = ({ onCurrencySelect, url, placeholder, value, disabledVal
                 menuPortalTarget={typeof window !== "undefined" ? document.body : null}
                 value={value}
                 menuPosition="fixed"
-                aria-label={ariaLabel}
+                inputId={inputId}
             />
         </div>
     );

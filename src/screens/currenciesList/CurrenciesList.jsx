@@ -99,7 +99,8 @@ const CurrenciesList = () => {
                             setHasConverted(false);
                         }}
                         value={fromCurrency}
-                        aria-label="Select source currency"
+                        inputId="from-currency"
+                        label="Select source currency"
                     />
                 </Col>
 
@@ -113,7 +114,8 @@ const CurrenciesList = () => {
                         }}
                         value={toCurrency}
                         disabledValue={fromCurrency?.value}
-                        aria-label="Select target currency"
+                        inputId="to-currency"
+                        label="Select target currency"
                     />
                 </Col>
             </Row>
