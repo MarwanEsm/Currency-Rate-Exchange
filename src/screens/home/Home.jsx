@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 import Header from "../../components/layout/header/Header";
 import Logo from "../../components/elements/logo/Logo";
 import Button from "../../components/elements/button/Button"
@@ -26,7 +26,7 @@ const Home = () => {
 
     const { login, register, isAuthenticated } = useContext(AuthContext)
 
-    const navigate = useNavigate()
+    const router = useRouter()
 
     const handleLogin = (loginCredentials) => {
         login(
@@ -35,7 +35,7 @@ const Home = () => {
                 setErrorCode(errorMessage);
             }).then(authentication => {
                 if (isAuthenticated) {
-                    navigate("/currencies")
+                    router.push("/currencies")
                 }
             })
     };
@@ -114,7 +114,7 @@ const Home = () => {
             }
             <div className={styles.container}>
                 <Header />
-                <Logo onClick={() => navigate("/currencies")} />
+                <Logo onClick={() => router.push("/currencies")} />
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>

@@ -29,7 +29,7 @@ const CurrencySelect = ({ onCurrencySelect, url, placeholder, value }) => {
                 onChange={onCurrencySelect}
                 className={styles.select}
                 placeholder={placeholder}
-                menuPortalTarget={document.body}
+                menuPortalTarget={typeof window !== "undefined" ? document.body : null}
                 value={value}
                 menuPosition="fixed"
             />

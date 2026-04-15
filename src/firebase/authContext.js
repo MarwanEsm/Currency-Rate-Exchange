@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, signOut, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "./firebaseConfig";
 
@@ -23,7 +23,7 @@ export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         const unsubscribe = getAuth(app).onAuthStateChanged(user => {
@@ -68,7 +68,7 @@ export const AuthContextProvider = ({ children }) => {
                 const user = userCredential.user;
                 setUser(user);
                 setIsAuthenticated(true);
-                navigate("/currencies");
+                router.push("/currencies");
             })
             .catch((error) => {
                 onLoginFailure(ERRORS["Invalid credentials"]);
@@ -81,7 +81,7 @@ export const AuthContextProvider = ({ children }) => {
             await signOut(auth);
             setUser(null);
             setIsAuthenticated(false);
-            navigate("/");
+            router.push("/");
         } catch (error) {
             console.log("sign out error", error);
         }

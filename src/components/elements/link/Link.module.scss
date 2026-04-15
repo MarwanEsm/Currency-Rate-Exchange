@@ -14,15 +14,18 @@
     font-size: 14px;
 }
 
-.container a {
+.linkLike {
     font-size: 13px;
     text-decoration: none;
     display: inline-block;
     position: relative;
-    color: white
+    color: white;
+    border: 0;
+    background: transparent;
+    padding: 0;
 }
 
-.container a::before {
+.linkLike::before {
     content: "";
     width: 100%;
     height: 2px;
@@ -33,6 +36,6 @@
     transition: width 0.3s ease;
 }
 
-.container a:hover::before {
+.linkLike:hover::before {
     width: 0;
 }

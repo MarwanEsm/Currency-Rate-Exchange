@@ -1,12 +1,15 @@
 import React from "react";
+import Image from "next/image";
 import Currency from "../../../assets/Currency.png";
 import styles from "./Logo.module.scss"
 
 
 const Logo = ({ onClick }) =>
-    <img
+    <Image
         src={Currency}
         alt="Currency-Exchange"
+        width={150}
+        height={150}
         className={styles.image}
         onClick={onClick}
     />

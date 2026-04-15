@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Button from "../../elements/button/Button";
 import styles from "./Login.module.scss";
-import { Link } from "react-router-dom";
 
 // TODO: Validate the email and password
 const Login = ({ onPasswordReset, onLogin }) => {
@@ -39,7 +38,9 @@ const Login = ({ onPasswordReset, onLogin }) => {
                     autoComplete="off"
                 />
 
-                <Link onClick={onPasswordReset}> Forgot Password? </Link>
+                <button type="button" className={styles.linkLike} onClick={onPasswordReset}>
+                    Forgot Password?
+                </button>
 
                 <Button type="submit" disabled={invalid} onClick={() => onLogin(loginCredentials)}>
                     Sign in

@@ -6,7 +6,7 @@ import Logo from "../../components/elements/logo/Logo";
 import styles from "./CurrenciesList.module.scss";
 import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 import { AuthContext } from "../../firebase/authContext";
 
 
@@ -25,7 +25,7 @@ const CurrenciesList = () => {
 
     const { logout, isAuthenticated } = useContext(AuthContext)
 
-    const navigate = useNavigate()
+    const router = useRouter()
 
     const numberWithCommas = (x) => {
         if (!x) return "";
@@ -77,7 +77,7 @@ const CurrenciesList = () => {
         try {
             logout().then(() => {
                 if (!isAuthenticated) {
-                    navigate("/")
+                    router.push("/")
                 }
             })
         } catch (error) {
@@ -96,7 +96,7 @@ const CurrenciesList = () => {
                 </Col>
             </Row>
 
-            <Logo onClick={() => navigate("/")} />
+            <Logo onClick={() => router.push("/")} />
 
             <Row className="justify-content-center">
 

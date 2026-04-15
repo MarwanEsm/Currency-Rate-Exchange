@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./DateAndTime.module.scss";
 
-const CurrentDate = () => {
+const CurrentDate = ({ date }) => {
     const months = [
         "January",
         "February",
@@ -16,18 +16,19 @@ const CurrentDate = () => {
         "November",
         "December",
     ];
-    const currentDate = new Date();
-    const date = currentDate.getDate();
-    const month = months[currentDate.getMonth()];
-    const year = currentDate.getFullYear();
+    if (!date) return <h4>&nbsp;</h4>;
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
 
-    return <h4>{`${date} ${month} ${year}`}</h4>
+    return <h4>{`${day} ${month} ${year}`}</h4>
 };
 
 const DateAndTime = () => {
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(null);
 
     useEffect(() => {
+        setDate(new Date());
         const timerID = setInterval(() => tick(), 1000);
         return () => clearInterval(timerID);
     }, []);
@@ -38,8 +39,8 @@ const DateAndTime = () => {
 
     return (
         <div className={styles.container}>
-            <CurrentDate />
-            <h4 className={styles.time}>{date.toLocaleTimeString()}</h4>
+            <CurrentDate date={date} />
+            <h4 className={styles.time}>{date ? date.toLocaleTimeString() : "\u00A0"}</h4>
         </div>
     );
 };

@@ -36,12 +36,14 @@
     margin-bottom: 4px;
 }
 
-.formContainer a {
+.linkLike {
     font-size: 14px;
     text-decoration: underline;
     padding-top: 10px;
     color: #eeeeee;
     font-weight: bolder;
+    border: 0;
+    background: transparent;
 }
 
 .formContainer button {
