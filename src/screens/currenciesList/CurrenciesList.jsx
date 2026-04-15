@@ -19,7 +19,7 @@ const CurrenciesList = () => {
 
     const [amount, setAmount] = useState("");
     const [hasConverted, setHasConverted] = useState(false);
-    const { numericRate } = useExchangeRates(toCurrency?.value);
+    const { numericRate } = useExchangeRates(fromCurrency?.value, toCurrency?.value);
 
     const { logout, isAuthenticated } = useContext(AuthContext)
 

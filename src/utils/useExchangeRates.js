@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const useExchangeRates = (toCurrencyCode) => {
+const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
     const [exchangeRates, setExchangeRates] = useState(null);
     const requestIdRef = useRef(0);
 
@@ -8,7 +8,7 @@ const useExchangeRates = (toCurrencyCode) => {
         let isMounted = true;
         const controller = new AbortController();
 
-        if (!toCurrencyCode) {
+        if (!fromCurrencyCode) {
             setExchangeRates(null);
             return () => {
                 isMounted = false;
@@ -20,7 +20,7 @@ const useExchangeRates = (toCurrencyCode) => {
             const requestId = ++requestIdRef.current;
             try {
                 const response = await fetch(
-                    `https://api.coinbase.com/v2/exchange-rates?currency=${toCurrencyCode}`,
+                    `https://api.coinbase.com/v2/exchange-rates?currency=${fromCurrencyCode}`,
                     { signal: controller.signal },
                 );
                 const json = await response.json();
@@ -40,7 +40,7 @@ const useExchangeRates = (toCurrencyCode) => {
             isMounted = false;
             controller.abort();
         };
-    }, [toCurrencyCode]);
+    }, [fromCurrencyCode]);
 
     const numericRate = useMemo(() => {
         const rawRate = exchangeRates?.[toCurrencyCode];
