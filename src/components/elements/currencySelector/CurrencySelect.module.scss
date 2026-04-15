@@ -15,8 +15,9 @@
         border-color: #f18900;
     }
 
-    &:focus-visible {
-        outline: none;
+    &:focus-within {
+        border-color: #2684ff;
+        box-shadow: 0 0 0 1px #2684ff;
     }
 
     .react-select__control {

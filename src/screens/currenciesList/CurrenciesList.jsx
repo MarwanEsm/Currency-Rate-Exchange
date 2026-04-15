@@ -9,8 +9,19 @@ import { Row, Col } from 'reactstrap';
 import { useRouter } from "next/router";
 import { AuthContext } from "../../firebase/authContext";
 import useExchangeRates from "../../utils/useExchangeRates";
+import { EXCHANGE_RATE_ERROR_CODES } from "../../services/exchangeRateProvider";
 
+const PROVIDER_ERROR_MESSAGES = {
+    [EXCHANGE_RATE_ERROR_CODES.NETWORK]: "Unable to reach the exchange rate provider. Please check your connection and try again.",
+    [EXCHANGE_RATE_ERROR_CODES.HTTP]: "The exchange rate service is temporarily unavailable. Please try again later.",
+    [EXCHANGE_RATE_ERROR_CODES.PARSE]: "Received unexpected data from the exchange rate provider.",
+    [EXCHANGE_RATE_ERROR_CODES.INVALID_PAYLOAD]: "Received unexpected data from the exchange rate provider.",
+};
 
+const getProviderErrorMessage = (error) => {
+    if (!error) return null;
+    return PROVIDER_ERROR_MESSAGES[error.code] ?? "Unable to load exchange rates. Please try again.";
+};
 
 const CurrenciesList = () => {
 
@@ -19,7 +30,7 @@ const CurrenciesList = () => {
 
     const [amount, setAmount] = useState("");
     const [hasConverted, setHasConverted] = useState(false);
-    const { numericRate } = useExchangeRates(fromCurrency?.value, toCurrency?.value);
+    const { numericRate, providerError } = useExchangeRates(fromCurrency?.value, toCurrency?.value);
 
     const { logout, isAuthenticated } = useContext(AuthContext)
 
@@ -50,7 +61,7 @@ const CurrenciesList = () => {
 
     const onConvert = () => setHasConverted(true);
 
-
+    const isConvertDisabled = !!providerError || numericRate === null;
 
     const handleLogout = async () => {
         try {
@@ -59,6 +70,8 @@ const CurrenciesList = () => {
             console.error("logout failed", error);
         }
     }
+
+    const providerErrorMessage = getProviderErrorMessage(providerError);
 
     return <Container>
         <div className={styles.listContainer}>
@@ -86,6 +99,7 @@ const CurrenciesList = () => {
                             setHasConverted(false);
                         }}
                         value={fromCurrency}
+                        aria-label="Select source currency"
                     />
                 </Col>
 
@@ -98,6 +112,8 @@ const CurrenciesList = () => {
                             setHasConverted(false);
                         }}
                         value={toCurrency}
+                        disabledValue={fromCurrency?.value}
+                        aria-label="Select target currency"
                     />
                 </Col>
             </Row>
@@ -108,7 +124,9 @@ const CurrenciesList = () => {
 
                 <Col lg={4} md={4} sm={6} className={styles.inputWrapper}>
                     <strong>{fromCurrency?.value}</strong>
+                    <label htmlFor="conversion-amount" className={styles.srOnly}>Amount</label>
                     <input
+                        id="conversion-amount"
                         type="text"
                         placeholder="Amount"
                         value={numberWithCommas(amount)}
@@ -122,13 +140,19 @@ const CurrenciesList = () => {
 
                 <Col lg={4} md={4} sm={6} className={styles.exchangeRateWrapper}>
                     <span>
-                        <label>Exchange Rate </label>
+                        <span className={styles.exchangeRateLabel}>Exchange Rate </span>
                         <b>{exchangeRate}</b>
                     </span>
                 </Col>
             </Row>
 
-            <Button onClick={onConvert}>
+            {providerErrorMessage && (
+                <div className={styles.providerError} role="alert" aria-live="polite">
+                    {providerErrorMessage}
+                </div>
+            )}
+
+            <Button onClick={onConvert} disabled={isConvertDisabled}>
                 {hasConverted && convertedAmount !== null
                     ? numberWithCommas(convertedAmount) + " " + `${toCurrency?.value !== undefined ? toCurrency?.value : ""}`
                     : "Convert"}
