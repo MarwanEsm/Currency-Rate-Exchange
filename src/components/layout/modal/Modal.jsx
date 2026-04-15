@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import styles from "./Modal.module.scss"
-import { useIsDesktop } from "../../../utils/service"
+import styles from "./Modal.module.scss";
+import { useIsDesktop } from "@/utils/service";
 import classNames from "classnames";
 
 const Modal = ({ isOpen, onClose, children }) => {
 
-    const isDesktop = useIsDesktop()
+    const isDesktop = useIsDesktop();
     useEffect(() => {
         const handleEscape = (event) => {
             if (event.key === "Escape") {

@@ -1,31 +1,29 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, signOut, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { app } from "./firebaseConfig";
+import { app } from "@/firebase/firebaseConfig";
 
-const ERRORS = {
-    "Error": 0,
-    "User already exists": 1,
-    "Error updating profile": 2,
-    "Registration failed": 3,
-    "Please sign up first": 4,
-    "Invalid credentials": 5
+export const AUTH_ERROR_CODES = {
+    UNKNOWN: "unknown_error",
+    USER_ALREADY_EXISTS: "user_already_exists",
+    PROFILE_UPDATE_FAILED: "profile_update_failed",
+    REGISTRATION_FAILED: "registration_failed",
+    INVALID_CREDENTIALS: "invalid_credentials",
 };
 
-const SUCCESSES = {
-    "Success": 0,
-    "Registration successful": 1
-}
+export const AUTH_SUCCESS_CODES = {
+    REGISTRATION_SUCCESSFUL: "registration_successful",
+};
 
 const getRegistrationErrorCode = (error) => {
     switch (error?.code) {
         case "auth/email-already-in-use":
-            return ERRORS["User already exists"];
+            return AUTH_ERROR_CODES.USER_ALREADY_EXISTS;
         case "auth/invalid-email":
         case "auth/weak-password":
-            return ERRORS["Registration failed"];
+            return AUTH_ERROR_CODES.REGISTRATION_FAILED;
         default:
-            return ERRORS["Error"];
+            return AUTH_ERROR_CODES.UNKNOWN;
     }
 };
 
@@ -35,9 +33,9 @@ const getLoginErrorCode = (error) => {
         case "auth/invalid-credential":
         case "auth/wrong-password":
         case "auth/user-not-found":
-            return ERRORS["Invalid credentials"];
+            return AUTH_ERROR_CODES.INVALID_CREDENTIALS;
         default:
-            return ERRORS["Error"];
+            return AUTH_ERROR_CODES.UNKNOWN;
     }
 };
 
@@ -70,10 +68,10 @@ export const AuthContextProvider = ({ children }) => {
             await sendEmailVerification(registeredUser);
             setUser(registeredUser);
             setIsAuthenticated(true);
-            onRegistrationSuccess(SUCCESSES["Registration successful"]);
+            onRegistrationSuccess(AUTH_SUCCESS_CODES.REGISTRATION_SUCCESSFUL);
         } catch (error) {
             const errorCode = error?.code === "auth/user-token-expired"
-                ? ERRORS["Error updating profile"]
+                ? AUTH_ERROR_CODES.PROFILE_UPDATE_FAILED
                 : getRegistrationErrorCode(error);
             onRegistrationFailure(errorCode);
         }

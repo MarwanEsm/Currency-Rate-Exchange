@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import Button from "../../elements/button/Button";
-import styles from "./SignUp.module.scss"
-import "reactjs-popup/dist/index.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import styles from "./SignUp.module.scss";
 
 const SignUp = ({ onRegistration }) => {
 
@@ -32,7 +30,7 @@ const SignUp = ({ onRegistration }) => {
     const handleRegistration = (e) => {
         e.preventDefault();
         onRegistration(e, state);
-    }
+    };
 
     const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email.trim());
 
@@ -111,7 +109,7 @@ const SignUp = ({ onRegistration }) => {
         </form>
 
     </div>
-}
+};
 
 
 

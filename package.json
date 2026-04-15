@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@reduxjs/toolkit": "^2.2.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -11,29 +10,27 @@
     "bootstrap": "^5.3.3",
     "classnames": "^2.5.1",
     "firebase": "^10.11.0",
-    "lodash": "^4.17.21",
     "next": "^16.0.0",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0",
-    "react-redux": "^9.1.2",
     "react-select": "^5.8.0",
-    "reactjs-popup": "^2.0.6",
     "reactstrap": "^9.2.2",
-    "redux": "^5.0.1",
-    "sass": "^1.75.0",
-    "web-vitals": "^2.1.4"
+    "sass": "^1.75.0"
   },
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
     "@eslint/eslintrc": "^3.3.5",
+    "es-abstract": "^1.23.3",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.3"
+    "eslint-config-next": "^16.2.3",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0"
   }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
-    const [exchangeRates, setExchangeRates] = useState(null);
+    const [exchangeRatesSnapshot, setExchangeRatesSnapshot] = useState(null);
     const requestIdRef = useRef(0);
 
     useEffect(() => {
@@ -9,7 +9,6 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
         const controller = new AbortController();
 
         if (!fromCurrencyCode) {
-            setExchangeRates(null);
             return () => {
                 isMounted = false;
                 controller.abort();
@@ -26,11 +25,17 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
                 const json = await response.json();
 
                 if (!isMounted || requestId !== requestIdRef.current) return;
-                setExchangeRates(json.data?.rates ?? null);
+                setExchangeRatesSnapshot({
+                    baseCurrencyCode: fromCurrencyCode,
+                    rates: json.data?.rates ?? null,
+                });
             } catch (error) {
                 if (error?.name === "AbortError") return;
                 if (!isMounted || requestId !== requestIdRef.current) return;
-                setExchangeRates(null);
+                setExchangeRatesSnapshot({
+                    baseCurrencyCode: fromCurrencyCode,
+                    rates: null,
+                });
             }
         };
 
@@ -41,6 +46,12 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
             controller.abort();
         };
     }, [fromCurrencyCode]);
+
+    const exchangeRates = useMemo(() => {
+        if (!fromCurrencyCode) return null;
+        if (exchangeRatesSnapshot?.baseCurrencyCode !== fromCurrencyCode) return null;
+        return exchangeRatesSnapshot?.rates ?? null;
+    }, [exchangeRatesSnapshot, fromCurrencyCode]);
 
     const numericRate = useMemo(() => {
         const rawRate = exchangeRates?.[toCurrencyCode];

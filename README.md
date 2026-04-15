@@ -1,37 +1,56 @@
-# Currency Exchange Rate App #
+# Currency Exchange Rate App
 
-The Currency Exchange Rate App is a web application that allows users to quickly and easily convert between different currencies and view current exchange rates.
+This project is a Next.js web application for:
 
-## Features ##
-* Currency Conversion: Convert between different currencies using real-time exchange rates.
-* View Exchange Rates: See current exchange rates for various currency pairs.
-* Simple and Intuitive Interface: User-friendly interface makes it easy to perform currency conversions.
+- Viewing real-time currency exchange rates.
+- Converting amounts between currencies.
+- Managing user authentication with Firebase.
 
-## Technologies Used ##
+## Features
 
-* React: The app is built using the React JavaScript library for building user interfaces.
-* Axios: Axios is used for making HTTP requests to fetch exchange rate data from an external API.
-* CSS Modules: CSS Modules are used for styling the components, providing scoped styles and preventing style conflicts.
-* API: The app fetches exchange rate data from an external API (Coinbase API).
+- Currency conversion using live exchange rate data.
+- Pair-based rate display for selected currencies.
+- Email/password authentication and password reset flows.
+- Responsive UI with CSS modules.
 
-## Getting Started ##
-To run the Currency Exchange Rate App locally, follow these steps:
+## Tech Stack
 
-## Clone the repository: ##
+- Next.js and React.
+- Firebase Authentication.
+- Coinbase exchange-rate API.
+- SCSS modules and Reactstrap.
+- ESLint for code quality checks.
 
-* git clone https://github.com/MarwanEsm/currency-exchange-rate-app.git
-* cd currency-exchange-rate-app
-* Install dependencies: npm install
-* Create env file: copy `.env.example` to `.env.local` and fill Firebase values
-* Start the development server: npm run dev
-* Open your web browser and navigate to http://localhost:3000 to view the app.
+## Getting Started
 
-## Usage ###
+1. Clone the repository:
+   - `git clone https://github.com/MarwanEsm/currency-exchange-rate-app.git`
+   - `cd currency-exchange-rate-app`
+2. Install dependencies: `npm install`
+3. Create env file:
+   - Copy `.env.example` to `.env.local`
+   - Fill in Firebase values
+4. Start development server: `npm run dev`
+5. Open `http://localhost:3000`
 
-* Choose the currency you want to convert from and to.
-* Enter the amount you want to convert.
-* The app will display the converted amount based on the current exchange rate.
-* You can also view the current exchange rates for various currency pairs.
+## Development Standards
 
-### Contributing ###
-Contributions are welcome! If you'd like to contribute to the Currency Exchange Rate App
+- Use `@/` path alias for imports from `src`.
+- Keep component files in PascalCase and named exports/constants in UPPER_SNAKE_CASE where appropriate.
+- Prefer `async/await` over mixed `.then/.catch` flow for readability.
+- Use explicit, descriptive error codes for UI state mapping.
+- Keep user-facing failure handling deterministic (not log-only).
+
+## Validation Commands
+
+- Lint: `npm run lint`
+- Build: `npm run build`
+
+## Project Structure
+
+- `pages/`: route entry points.
+- `src/screens/`: page-level screen containers.
+- `src/components/`: reusable UI building blocks.
+- `src/firebase/`: Firebase config and auth context.
+- `src/utils/`: shared hooks and responsive helpers.
+- `functions/`: Firebase Cloud Functions workspace.

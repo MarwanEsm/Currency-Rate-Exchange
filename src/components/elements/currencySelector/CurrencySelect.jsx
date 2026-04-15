@@ -1,33 +1,36 @@
 import React, { useEffect, useState } from "react";
-import styles from "./CurrencySelect.module.scss"
+import styles from "./CurrencySelect.module.scss";
 import AsyncSelect from "react-select";
 import axios from "axios";
 
 const CurrencySelect = ({ onCurrencySelect, url, placeholder, value }) => {
-    const [options, setOptions] = useState(null);
-
-    const loadCurrencies = async (signal, onSuccess) => {
-        await axios.get(url, { signal })
-            .then(response => {
-                if (response.data) {
-                    onSuccess(response.data.data.map(currency => ({ value: currency.id, label: currency.name })));
-                }
-            })
-            .catch(error => {
-                if (error?.name === "CanceledError" || error?.code === "ERR_CANCELED") return;
-                console.error("Error fetching currencies:", error);
-            });
-    };
+    const [options, setOptions] = useState([]);
 
     useEffect(() => {
-        let isMounted = true;
         const controller = new AbortController();
+        let isMounted = true;
 
-        loadCurrencies(controller.signal, (loadedOptions) => {
-            if (isMounted) {
-                setOptions(loadedOptions);
+        const loadCurrencies = async () => {
+            try {
+                const response = await axios.get(url, { signal: controller.signal });
+                const mappedOptions = response?.data?.data?.map((currency) => ({
+                    value: currency.id,
+                    label: currency.name,
+                })) ?? [];
+
+                if (isMounted) {
+                    setOptions(mappedOptions);
+                }
+            } catch (error) {
+                if (error?.name === "CanceledError" || error?.code === "ERR_CANCELED") return;
+                if (isMounted) {
+                    setOptions([]);
+                }
+                console.error("Error fetching currencies:", error);
             }
-        });
+        };
+
+        loadCurrencies();
 
         return () => {
             isMounted = false;
@@ -38,7 +41,7 @@ const CurrencySelect = ({ onCurrencySelect, url, placeholder, value }) => {
     return (
         <div className={styles.container}>
             <AsyncSelect
-                options={options !== null ? options : []}
+                options={options}
                 onChange={onCurrencySelect}
                 className={styles.select}
                 placeholder={placeholder}

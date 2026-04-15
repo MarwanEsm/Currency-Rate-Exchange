@@ -25,17 +25,14 @@ const CurrentDate = ({ date }) => {
 };
 
 const DateAndTime = () => {
-    const [date, setDate] = useState(null);
+    const [date, setDate] = useState(() => new Date());
 
     useEffect(() => {
-        setDate(new Date());
-        const timerID = setInterval(() => tick(), 1000);
+        const timerID = setInterval(() => {
+            setDate(new Date());
+        }, 1000);
         return () => clearInterval(timerID);
     }, []);
-
-    const tick = () => {
-        setDate(new Date());
-    };
 
     return (
         <div className={styles.container}>
