@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import CurrencySelect from "../../components/elements/currencySelector/CurrencySelect";
 import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
@@ -8,6 +8,7 @@ import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
 import { useRouter } from "next/router";
 import { AuthContext } from "../../firebase/authContext";
+import useExchangeRates from "../../utils/useExchangeRates";
 
 
 
@@ -16,12 +17,9 @@ const CurrenciesList = () => {
     const [fromCurrency, setFromCurrency] = useState(null)
     const [toCurrency, setToCurrency] = useState(null)
 
-    const [exchangeRates, setExchangeRates] = useState(null);
     const [amount, setAmount] = useState("");
     const [hasConverted, setHasConverted] = useState(false);
-    const isMountedRef = useRef(true);
-    const exchangeRateRequestRef = useRef(0);
-
+    const { numericRate } = useExchangeRates(toCurrency?.value);
 
     const { logout, isAuthenticated } = useContext(AuthContext)
 
@@ -36,34 +34,6 @@ const CurrenciesList = () => {
         return x;
     };
 
-    const loadExchangeRate = async () => {
-        if (!toCurrency?.value) {
-            setExchangeRates(null);
-            return;
-        }
-
-        const requestId = ++exchangeRateRequestRef.current;
-
-        try {
-            const response = await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${toCurrency.value}`)
-            const json = await response.json()
-
-            if (!isMountedRef.current || requestId !== exchangeRateRequestRef.current) return;
-
-            const ratesList = json.data?.rates ?? null;
-            setExchangeRates(ratesList);
-        } catch (error) {
-            if (!isMountedRef.current || requestId !== exchangeRateRequestRef.current) return;
-            setExchangeRates(null);
-        }
-    };
-
-    const numericRate = useMemo(() => {
-        const rawRate = exchangeRates?.[toCurrency?.value];
-        const parsedRate = Number.parseFloat(rawRate);
-        return Number.isFinite(parsedRate) ? parsedRate : null;
-    }, [exchangeRates, toCurrency?.value]);
-
     const exchangeRate = useMemo(() => {
         return numericRate === null ? "" : numericRate.toFixed(4);
     }, [numericRate]);
@@ -77,18 +47,6 @@ const CurrenciesList = () => {
         if (numericAmount === null || numericRate === null) return null;
         return (numericAmount * numericRate).toFixed(2);
     }, [numericAmount, numericRate]);
-
-    useEffect(() => {
-        if (toCurrency !== null) {
-            loadExchangeRate();
-        }
-    }, [toCurrency?.value])
-
-    useEffect(() => {
-        return () => {
-            isMountedRef.current = false;
-        };
-    }, []);
 
     const onConvert = () => setHasConverted(true);
 
@@ -126,7 +84,6 @@ const CurrenciesList = () => {
                             setToCurrency(null)
                             setAmount("");
                             setHasConverted(false);
-                            setExchangeRates(null);
                         }}
                     />
                 </Col>
