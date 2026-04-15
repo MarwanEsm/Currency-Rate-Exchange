@@ -24,7 +24,7 @@ const Home = () => {
     const [successCode, setSuccessCode] = useState(null)
 
 
-    const { login, register } = useContext(AuthContext)
+    const { login, register, resetPassword } = useContext(AuthContext)
 
     const router = useRouter()
 
@@ -44,6 +44,15 @@ const Home = () => {
             (message) => {
                 setErrorCode(message)
             });
+    };
+
+    const handlePasswordReset = async (email) => {
+        const hasResetPassword = await resetPassword(email);
+        if (hasResetPassword) {
+            setShowForgetPasswordModal(false);
+            setShowLoginModal(true);
+        }
+        return hasResetPassword;
     };
 
 
@@ -83,7 +92,7 @@ const Home = () => {
                     isOpen={showForgetPasswordModal}
                     className={styles.modal}
                 >
-                    <ResetPassword />
+                    <ResetPassword onPasswordReset={handlePasswordReset} />
                 </Modal>
             }
 

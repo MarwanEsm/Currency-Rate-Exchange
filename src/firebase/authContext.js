@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, signOut, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, signOut, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { app } from "./firebaseConfig";
 
 const ERRORS = {
@@ -106,8 +106,19 @@ export const AuthContextProvider = ({ children }) => {
         }
     };
 
+    const resetPassword = async (email) => {
+        const auth = getAuth(app);
+        try {
+            await sendPasswordResetEmail(auth, email);
+            return true;
+        } catch (error) {
+            console.error("password reset error", error);
+            return false;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, register, login, logout, isAuthenticated }}>
+        <AuthContext.Provider value={{ user, register, login, logout, resetPassword, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );
