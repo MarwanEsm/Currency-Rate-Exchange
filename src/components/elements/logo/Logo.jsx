@@ -10,6 +10,7 @@ const Logo = ({ onClick }) =>
         alt="Currency-Exchange"
         width={150}
         height={150}
+        loading="eager"
         className={styles.image}
         onClick={onClick}
     />

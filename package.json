@@ -28,9 +28,12 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.16.7"
+    "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
+    "@eslint/eslintrc": "^3.3.5",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.3"
   }
 }
