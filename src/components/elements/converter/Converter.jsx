@@ -1,47 +1,55 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Button from "../button/Button";
-import { CurrenciesContext } from "../../../context/CurrenciesContext";
+import useExchangeRates from "../../../utils/useExchangeRates";
 import styles from "./Converter.module.scss"
 
-const Converter = ({ searchedCurrency }) => {
-
-    const { exchangeRates } = useContext(CurrenciesContext);
-    const [fromCurrency, setFromCurrency] = useState("");
-    const [toCurrency, setToCurrency] = useState("");
-
+const Converter = ({ searchedCurrency, fromCurrencyCode = "USD" }) => {
+    const [fromAmount, setFromAmount] = useState("");
+    const [convertedAmount, setConvertedAmount] = useState("");
+    const { numericRate } = useExchangeRates(fromCurrencyCode, searchedCurrency);
 
     const updateInputValue = (event) => {
-        const inValue = event.target.value;
-        const newInValue = inValue.toLocaleString();
-        setFromCurrency(newInValue);
+        setFromAmount(event.target.value);
     };
-
 
     const convert = () => {
-        const selectedRate = exchangeRates.rates[searchedCurrency];
-        const resultValue = fromCurrency * selectedRate;
-        setToCurrency(resultValue)
+        const amount = Number.parseFloat(fromAmount);
+        if (!Number.isFinite(amount) || numericRate === null) {
+            setConvertedAmount("");
+            return;
+        }
+
+        setConvertedAmount((amount * numericRate).toFixed(2));
     };
+
+    const isConvertDisabled =
+        fromAmount.trim() === "" || searchedCurrency === null || searchedCurrency === undefined || numericRate === null;
 
     return (
         <div className={styles.container}>
 
             <div className="input-group">
+                <label htmlFor="converter-amount-input">Amount to convert</label>
                 <input
+                    id="converter-amount-input"
                     type="number"
                     className="form-control"
-                    value={fromCurrency}
+                    value={fromAmount}
                     onChange={updateInputValue}
+                    min="0"
+                    step="0.01"
+                    inputMode="decimal"
+                    aria-describedby="converter-result"
                 />
             </div>
 
-            <Button type="convert" onClick={convert}>
+            <Button type="button" onClick={convert} disabled={isConvertDisabled}>
                 Convert
             </Button>
 
 
             <div className="input-group">
-                <p>{toCurrency}</p>
+                <p id="converter-result" role="status" aria-live="polite">{convertedAmount}</p>
             </div>
         </div>
 

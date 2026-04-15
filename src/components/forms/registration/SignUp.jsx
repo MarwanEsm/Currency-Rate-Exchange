@@ -17,7 +17,6 @@ const SignUp = ({ onRegistration }) => {
 
     const changeInput = (event) => {
         const value = event.target.value;
-        event.preventDefault();
 
         setState({
             ...state,
@@ -35,10 +34,14 @@ const SignUp = ({ onRegistration }) => {
         onRegistration(e, state);
     }
 
+    const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email.trim());
+
     const isInvalid =
-        state.firstName === "" ||
-        state.lastName === "" ||
-        state.password === "" ||
+        state.firstName.trim() === "" ||
+        state.lastName.trim() === "" ||
+        state.email.trim() === "" ||
+        emailIsValid === false ||
+        state.password.trim() === "" ||
         state.passwordConfirmation !== state.password ||
         state.checked === false;
 
@@ -52,7 +55,7 @@ const SignUp = ({ onRegistration }) => {
                     name="firstName"
                     value={state.firstName}
                     onChange={changeInput}
-                    autoComplete="off"
+                    autoComplete="given-name"
                 />
 
                 <input
@@ -61,7 +64,7 @@ const SignUp = ({ onRegistration }) => {
                     name="lastName"
                     value={state.lastName}
                     onChange={changeInput}
-                    autoComplete="off"
+                    autoComplete="family-name"
                 />
 
                 <input
@@ -70,7 +73,7 @@ const SignUp = ({ onRegistration }) => {
                     name="email"
                     value={state.email}
                     onChange={changeInput}
-                    autoComplete="off"
+                    autoComplete="email"
                 />
 
                 <input
@@ -79,7 +82,7 @@ const SignUp = ({ onRegistration }) => {
                     name="password"
                     value={state.password}
                     onChange={changeInput}
-                    autoComplete="off"
+                    autoComplete="new-password"
                 />
 
                 <input
@@ -88,13 +91,13 @@ const SignUp = ({ onRegistration }) => {
                     name="passwordConfirmation"
                     value={state.passwordConfirmation}
                     onChange={changeInput}
-                    autoComplete="off"
+                    autoComplete="new-password"
                 />
 
                 <span>
                     <input
-                        onClick={makeItChecked}
-                        defaultChecked={state.checked}
+                        onChange={makeItChecked}
+                        checked={state.checked}
                         type="checkbox"
                     />
                     Agree to terms and conditions
