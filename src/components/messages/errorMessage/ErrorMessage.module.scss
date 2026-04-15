@@ -8,13 +8,16 @@
 }
 
 
-.container label>span {
+.inlineAction {
     color: black;
     font-weight: bolder;
+    border: 0;
+    background: transparent;
+    padding: 0;
 }
 
 
-.container label>span:hover {
+.inlineAction:hover {
     cursor: pointer;
 }
 

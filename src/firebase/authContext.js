@@ -29,6 +29,18 @@ const getRegistrationErrorCode = (error) => {
     }
 };
 
+const getLoginErrorCode = (error) => {
+    switch (error?.code) {
+        case "auth/invalid-email":
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+            return ERRORS["Invalid credentials"];
+        default:
+            return ERRORS["Error"];
+    }
+};
+
 export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
 
@@ -54,17 +66,16 @@ export const AuthContextProvider = ({ children }) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(getAuth(app), email, password);
             const registeredUser = userCredential.user;
-            try {
-                await updateProfile(registeredUser, { displayName: firstName });
-                await sendEmailVerification(registeredUser);
-                setUser(registeredUser);
-                setIsAuthenticated(true);
-                onRegistrationSuccess(SUCCESSES["Registration successful"]);
-            } catch (error) {
-                onRegistrationFailure(ERRORS["Error updating profile"]);
-            }
+            await updateProfile(registeredUser, { displayName: firstName });
+            await sendEmailVerification(registeredUser);
+            setUser(registeredUser);
+            setIsAuthenticated(true);
+            onRegistrationSuccess(SUCCESSES["Registration successful"]);
         } catch (error) {
-            onRegistrationFailure(getRegistrationErrorCode(error));
+            const errorCode = error?.code === "auth/user-token-expired"
+                ? ERRORS["Error updating profile"]
+                : getRegistrationErrorCode(error);
+            onRegistrationFailure(errorCode);
         }
     };
 
@@ -78,7 +89,7 @@ export const AuthContextProvider = ({ children }) => {
             router.push("/currencies");
             return loggedInUser;
         } catch (error) {
-            onLoginFailure(ERRORS["Invalid credentials"]);
+            onLoginFailure(getLoginErrorCode(error));
             return null;
         }
     };
@@ -91,7 +102,7 @@ export const AuthContextProvider = ({ children }) => {
             setIsAuthenticated(false);
             router.push("/");
         } catch (error) {
-            console.log("sign out error", error);
+            console.error("sign out error", error);
         }
     };
 

@@ -22,6 +22,7 @@ To run the Currency Exchange Rate App locally, follow these steps:
 * git clone https://github.com/MarwanEsm/currency-exchange-rate-app.git
 * cd currency-exchange-rate-app
 * Install dependencies: npm install
+* Create env file: copy `.env.example` to `.env.local` and fill Firebase values
 * Start the development server: npm run dev
 * Open your web browser and navigate to http://localhost:3000 to view the app.
 

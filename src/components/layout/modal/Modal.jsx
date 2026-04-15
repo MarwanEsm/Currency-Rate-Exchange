@@ -8,7 +8,7 @@ const Modal = ({ isOpen, onClose, children }) => {
     const isDesktop = useIsDesktop()
     useEffect(() => {
         const handleEscape = (event) => {
-            if (event.keyCode === 27) {
+            if (event.key === "Escape") {
                 onClose();
             }
         };

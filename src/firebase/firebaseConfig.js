@@ -2,14 +2,31 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
+const requiredFirebaseEnvVars = [
+    "NEXT_PUBLIC_FIREBASE_API_KEY",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+    "NEXT_PUBLIC_FIREBASE_APP_ID",
+];
+
+const missingFirebaseEnvVars = requiredFirebaseEnvVars.filter((envVarName) => !process.env[envVarName]);
+if (missingFirebaseEnvVars.length > 0) {
+    console.warn(
+        `Missing Firebase environment variables: ${missingFirebaseEnvVars.join(", ")}. ` +
+        "Add them in your .env.local file.",
+    );
+}
+
 const firebaseConfig = {
-    apiKey: "AIzaSyDwk-mGmYP_dQdUwKPXcbZcSs0uUs4mXUg",
-    authDomain: "currency-exchange-d9615.firebaseapp.com",
-    projectId: "currency-exchange-d9615",
-    storageBucket: "currency-exchange-d9615.appspot.com",
-    messagingSenderId: "677786325381",
-    appId: "1:677786325381:web:2427f2543b7c7dd61e74ec",
-    measurementId: "G-992H5MPSFR"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "",
 };
 
 
