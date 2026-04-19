@@ -163,9 +163,14 @@ const CurrenciesList = () => {
         }
         if (formattedRate !== null) {
             return (
-                <b className={styles.rateFigure}>
-                    1 {fromCurrency.value} = {formattedRate} {toCurrency.value}
-                </b>
+                <>
+                    <b className={styles.rateFigure}>
+                        1 {fromCurrency.value} = {formattedRate} {toCurrency.value}
+                    </b>
+                    {fetchedAtLabel ? (
+                        <span className={styles.rateUpdatedLabel}>Rates updated {fetchedAtLabel}</span>
+                    ) : null}
+                </>
             );
         }
         return (

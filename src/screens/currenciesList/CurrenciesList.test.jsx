@@ -157,6 +157,7 @@ describe("CurrenciesList", () => {
         await userEvent.click(await screen.findByText("Euro"));
 
         expect(await screen.findByText(/1 USD = 0[,.]912345 EUR/)).toBeInTheDocument();
+        expect(screen.getByText(/rates updated/i)).toBeInTheDocument();
         expect(screen.queryByText(/^As of/i)).not.toBeInTheDocument();
         expect(screen.getByRole("group", { name: /as of/i })).toBeInTheDocument();
     });

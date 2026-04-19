@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getExchangeRates } from "@/services/exchangeRateProvider";
+import {
+    invalidateExchangeRatesCache,
+    readExchangeRatesCache,
+    writeExchangeRatesCache,
+} from "@/utils/exchangeRatesCache";
 
 const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
     const [exchangeRatesSnapshot, setExchangeRatesSnapshot] = useState(null);
@@ -9,8 +14,11 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
     const requestIdRef = useRef(0);
 
     const retryRates = useCallback(() => {
+        if (fromCurrencyCode) {
+            invalidateExchangeRatesCache(fromCurrencyCode);
+        }
         setRetryToken((prev) => prev + 1);
-    }, []);
+    }, [fromCurrencyCode]);
 
     useEffect(() => {
         let isMounted = true;
@@ -25,6 +33,22 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
         }
 
         const requestId = ++requestIdRef.current;
+
+        const cachedPayload = readExchangeRatesCache(fromCurrencyCode);
+        if (cachedPayload) {
+            setProviderError(null);
+            setExchangeRatesSnapshot({
+                baseCurrencyCode: cachedPayload.base,
+                rates: cachedPayload.rates,
+                fetchedAt: cachedPayload.fetchedAt,
+            });
+            setIsLoading(false);
+            return () => {
+                isMounted = false;
+                controller.abort();
+            };
+        }
+
         setProviderError(null);
         setIsLoading(true);
 
@@ -33,6 +57,7 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
                 const normalizedPayload = await getExchangeRates(fromCurrencyCode, controller.signal);
 
                 if (!isMounted || requestId !== requestIdRef.current) return;
+                writeExchangeRatesCache(fromCurrencyCode, normalizedPayload);
                 setExchangeRatesSnapshot({
                     baseCurrencyCode: normalizedPayload.base,
                     rates: normalizedPayload.rates,
