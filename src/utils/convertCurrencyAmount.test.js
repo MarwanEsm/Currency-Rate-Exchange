@@ -59,4 +59,12 @@ describe("convertAmountWithRate", () => {
         expect(convertAmountWithRate(1, NaN)).toBeNull();
         expect(convertAmountWithRate(1, null)).toBeNull();
     });
+
+    it("treats zero amount as a valid conversion", () => {
+        expect(convertAmountWithRate(0, 1.234567)).toBe(0);
+    });
+
+    it("returns null when the product is not finite", () => {
+        expect(convertAmountWithRate(Number.MAX_VALUE, Number.MAX_VALUE)).toBeNull();
+    });
 });
