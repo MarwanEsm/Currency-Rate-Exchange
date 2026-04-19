@@ -12,6 +12,7 @@ import {
     KYC_VERIFICATION_STATUS,
     resetComplianceAuditLogForTests,
 } from "./fiatToCryptoCompliance";
+import { validateCryptoTransferDestination } from "./fiatToCryptoTransfer";
 import {
     FIAT_TO_CRYPTO_ORDER_STATUS,
     isFiatToCryptoOrderTransitionAllowed,
@@ -41,6 +42,13 @@ describe("fiatToCrypto operations E2E (FCX-18)", () => {
         it("validates draft, passes KYC at creation, and allows paid → purchasing with AML/sanctions cleared", () => {
             const draft = validOrderDraft();
             expect(validateFiatToCryptoOrderDraft(draft)).toEqual([]);
+
+            const payout = validateCryptoTransferDestination({
+                targetAssetCode: draft.targetAssetCode,
+                network: draft.network,
+                walletAddress: draft.walletAddress,
+            });
+            expect(payout.ok).toBe(true);
 
             const kyc = evaluateKycGateForOrderCreation(
                 { kycVerificationStatus: KYC_VERIFICATION_STATUS.VERIFIED },

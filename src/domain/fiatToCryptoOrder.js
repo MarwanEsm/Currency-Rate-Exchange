@@ -37,6 +37,12 @@
  * `fiatToCryptoCompliance.js`. Before `paid` → `purchasing`, call `evaluateAmlSanctionsGateForPurchasing`
  * or `evaluateFiatToCryptoOrderTransitionWithCompliance` so AML/sanctions and KYC-at-execution
  * rules are enforced and audit entries are emitted.
+ *
+ * ## Crypto payout (FCX-21)
+ *
+ * Before `transferring`, validate destination with `validateCryptoTransferDestination` in
+ * `fiatToCryptoTransfer.js`. After broadcast, persist `transferTxHash`, `transferCanonicalNetwork`,
+ * and `transferTxBroadcastAt` for order details and support.
  */
 
 export const FIAT_TO_CRYPTO_ORDER_STATUS = {
@@ -191,6 +197,10 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   failedAt?: string,
  *   createdByUserId?: string,
  *   lastUpdatedBy?: string,
+ *   transferTxHash?: string,
+ *   transferCanonicalNetwork?: string,
+ *   transferTxBroadcastAt?: string,
+ *   transferTxConfirmedAt?: string,
  * }} FiatToCryptoOrder
  *
  * Field notes:
@@ -199,6 +209,8 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  * - `walletAddress` is the customer destination for `targetAssetCode` (plus optional `network`).
  * - Audit: `createdAt` / `updatedAt` ISO 8601; optional milestone timestamps mirror status history.
  * - `failureCode` / `failureMessage` should be set when entering `failed` for supportability.
+ * - **Transfer tracking (FCX-21):** `transferTxHash` is the broadcast id (e.g. txid); `transferCanonicalNetwork`
+ *   matches `CRYPTO_TRANSFER_NETWORK_ID` values; `transferTxBroadcastAt` / `transferTxConfirmedAt` are ISO timestamps.
  */
 
 const WALLET_ADDRESS_MIN_LEN = 8;

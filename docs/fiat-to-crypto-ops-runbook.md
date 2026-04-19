@@ -88,4 +88,5 @@ Operational guidance for safely running fiat-to-crypto flows aligned with `src/d
 |-------|---------|
 | `src/domain/fiatToCryptoOrder.js` | Statuses, transitions, draft validation |
 | `src/domain/fiatToCryptoCompliance.js` | KYC / AML / sanctions gates and audit entries |
+| `src/domain/fiatToCryptoTransfer.js` | Payout network config, address validation, tx hash fields, failure policy (FCX-21) |
 | `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated happy path, failure path, edge cases |
