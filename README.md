@@ -102,6 +102,7 @@ The main UI is implemented in **`src/screens/currenciesList/CurrenciesList.jsx`*
 
 - Lint: `npm run lint`
 - Tests: `npm test`
+- Fiat-to-crypto domain E2E-style tests: `npm run test:e2e`
 - Build: `npm run build`
 
 ## Project Structure
@@ -112,4 +113,6 @@ The main UI is implemented in **`src/screens/currenciesList/CurrenciesList.jsx`*
 - `src/firebase/`: Firebase config and auth context.
 - `src/utils/`: shared hooks, conversion helpers, exchange-rate cache, and responsive helpers.
 - `src/services/exchangeRateProvider.js`: reusable provider client for exchange-rate requests, normalization, and typed error handling.
+- `src/domain/`: fiat-to-crypto order lifecycle, compliance gates, and FCX-18 E2E-style tests.
+- `docs/fiat-to-crypto-ops-runbook.md`: operations runbook and go-live checklist (FCX-18).
 - `functions/`: Firebase Cloud Functions workspace.
