@@ -30,6 +30,13 @@
  * Use `validateFiatToCryptoOrderDraft` for required-field checks on create/submit payloads.
  * Stricter per-asset or per-chain rules (e.g. memo tag, contract address whitelist) should be
  * layered by the payment and custody integrations that consume this model.
+ *
+ * ## Compliance (FCX-19)
+ *
+ * Before persisting a **new** order (`submitted`), call `evaluateKycGateForOrderCreation` from
+ * `fiatToCryptoCompliance.js`. Before `paid` → `purchasing`, call `evaluateAmlSanctionsGateForPurchasing`
+ * or `evaluateFiatToCryptoOrderTransitionWithCompliance` so AML/sanctions and KYC-at-execution
+ * rules are enforced and audit entries are emitted.
  */
 
 export const FIAT_TO_CRYPTO_ORDER_STATUS = {
