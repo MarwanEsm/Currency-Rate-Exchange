@@ -1,4 +1,9 @@
-import { convertAmountWithRate, parseDigitsAmount } from "./convertCurrencyAmount";
+import {
+    convertAmountWithRate,
+    formatWholeAmountForDisplay,
+    parseDigitsAmount,
+    sanitizeAmountDigitString,
+} from "./convertCurrencyAmount";
 
 describe("parseDigitsAmount", () => {
     it("returns null for empty input so it is not treated as zero", () => {
@@ -16,6 +21,30 @@ describe("parseDigitsAmount", () => {
         expect(parseDigitsAmount("-1")).toBeNull();
         expect(parseDigitsAmount("12.5")).toBeNull();
         expect(parseDigitsAmount("1e6")).toBeNull();
+    });
+});
+
+describe("sanitizeAmountDigitString", () => {
+    it("strips non-digits and caps length", () => {
+        expect(sanitizeAmountDigitString("12a34")).toBe("1234");
+        expect(sanitizeAmountDigitString("1-2")).toBe("12");
+        expect(sanitizeAmountDigitString("x")).toBe("");
+        const long = "9".repeat(30);
+        expect(sanitizeAmountDigitString(long).length).toBe(15);
+    });
+});
+
+describe("formatWholeAmountForDisplay", () => {
+    it("returns empty for invalid or empty input", () => {
+        expect(formatWholeAmountForDisplay("")).toBe("");
+        expect(formatWholeAmountForDisplay("  ")).toBe("");
+    });
+
+    it("groups whole numbers without changing the underlying digit string used for math", () => {
+        const formatted = formatWholeAmountForDisplay("1000");
+        expect(formatted).toMatch(/000/);
+        expect(formatted.length).toBeGreaterThanOrEqual(4);
+        expect(parseDigitsAmount("1000")).toBe(1000);
     });
 });
 

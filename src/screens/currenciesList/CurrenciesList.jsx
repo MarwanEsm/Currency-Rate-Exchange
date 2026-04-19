@@ -9,7 +9,12 @@ import { Row, Col } from 'reactstrap';
 import { useRouter } from "next/router";
 import { AuthContext } from "../../firebase/authContext";
 import useExchangeRates from "../../utils/useExchangeRates";
-import { convertAmountWithRate, parseDigitsAmount } from "../../utils/convertCurrencyAmount";
+import {
+    convertAmountWithRate,
+    formatWholeAmountForDisplay,
+    parseDigitsAmount,
+    sanitizeAmountDigitString,
+} from "../../utils/convertCurrencyAmount";
 import { EXCHANGE_RATE_ERROR_CODES } from "../../services/exchangeRateProvider";
 
 const PROVIDER_ERROR_MESSAGES = {
@@ -31,30 +36,25 @@ const CurrenciesList = () => {
 
     const [amount, setAmount] = useState("");
     const [hasConverted, setHasConverted] = useState(false);
+    const [amountTouched, setAmountTouched] = useState(false);
+    const [convertInvalidAttempt, setConvertInvalidAttempt] = useState(false);
     const { numericRate, providerError, isLoading, fetchedAt } = useExchangeRates(
         fromCurrency?.value,
         toCurrency?.value,
     );
 
+    /* eslint-disable react-hooks/set-state-in-effect -- defensive reset when source and target match */
     useEffect(() => {
         if (fromCurrency && toCurrency && fromCurrency.value === toCurrency.value) {
             setToCurrency(null);
             setHasConverted(false);
         }
     }, [fromCurrency, toCurrency]);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     const { logout, isAuthenticated } = useContext(AuthContext)
 
     const router = useRouter()
-
-    const numberWithCommas = (x) => {
-        if (!x) return "";
-        x = x.toString();
-        var pattern = /(-?\d+)(\d{3})/;
-        while (pattern.test(x))
-            x = x.replace(pattern, "$1,$2");
-        return x;
-    };
 
     const numericAmount = useMemo(() => parseDigitsAmount(amount), [amount]);
 
@@ -71,17 +71,43 @@ const CurrenciesList = () => {
         }).format(convertedValue);
     }, [convertedValue]);
 
+    const providerErrorMessage = getProviderErrorMessage(providerError);
+    const duplicateCurrencySelection =
+        Boolean(fromCurrency && toCurrency && fromCurrency.value === toCurrency.value);
+    const showPair = Boolean(fromCurrency && toCurrency);
+
+    const amountValidationMessage = useMemo(() => {
+        if (!showPair || providerErrorMessage || isLoading || numericRate === null) return null;
+        if (numericAmount !== null) return null;
+        if (amount !== "") return null;
+        if (amountTouched || convertInvalidAttempt) {
+            return "Enter a whole number amount. Decimals and minus signs are not allowed.";
+        }
+        return null;
+    }, [
+        showPair,
+        providerErrorMessage,
+        isLoading,
+        numericRate,
+        numericAmount,
+        amount,
+        amountTouched,
+        convertInvalidAttempt,
+    ]);
+
     const onConvert = () => {
-        if (convertedValue === null) return;
+        if (!showPair || !!providerError || isLoading || numericRate === null) return;
+        if (convertedValue === null) {
+            setConvertInvalidAttempt(true);
+            setHasConverted(false);
+            return;
+        }
+        setConvertInvalidAttempt(false);
         setHasConverted(true);
     };
 
     const isConvertDisabled =
-        !!providerError ||
-        isLoading ||
-        numericRate === null ||
-        numericAmount === null ||
-        convertedValue === null;
+        !showPair || !!providerError || isLoading || numericRate === null;
 
     const handleLogout = async () => {
         try {
@@ -89,12 +115,7 @@ const CurrenciesList = () => {
         } catch (error) {
             console.error("logout failed", error);
         }
-    }
-
-    const providerErrorMessage = getProviderErrorMessage(providerError);
-    const duplicateCurrencySelection =
-        Boolean(fromCurrency && toCurrency && fromCurrency.value === toCurrency.value);
-    const showPair = Boolean(fromCurrency && toCurrency);
+    };
 
     const formattedRate = useMemo(() => {
         if (numericRate === null) return null;
@@ -178,6 +199,8 @@ const CurrenciesList = () => {
                             setToCurrency(null)
                             setAmount("");
                             setHasConverted(false);
+                            setAmountTouched(false);
+                            setConvertInvalidAttempt(false);
                         }}
                         value={fromCurrency}
                         inputId="from-currency"
@@ -192,6 +215,7 @@ const CurrenciesList = () => {
                         onCurrencySelect={(currency) => {
                             setToCurrency(currency);
                             setHasConverted(false);
+                            setConvertInvalidAttempt(false);
                         }}
                         value={toCurrency}
                         disabledValue={fromCurrency?.value}
@@ -215,12 +239,28 @@ const CurrenciesList = () => {
                         pattern="[0-9]*"
                         autoComplete="off"
                         placeholder="Amount"
-                        value={numberWithCommas(amount)}
+                        value={formatWholeAmountForDisplay(amount)}
+                        aria-invalid={amountValidationMessage ? "true" : "false"}
+                        aria-describedby={
+                            amountValidationMessage ? "amount-validation-message" : undefined
+                        }
                         onChange={(e) => {
-                            setAmount(e.target.value.replace(/\D/g, ''));
+                            setAmount(sanitizeAmountDigitString(e.target.value));
                             setHasConverted(false);
+                            setConvertInvalidAttempt(false);
                         }}
+                        onBlur={() => setAmountTouched(true)}
                     />
+                    {amountValidationMessage ? (
+                        <div
+                            id="amount-validation-message"
+                            className={styles.amountValidationMessage}
+                            role="status"
+                            aria-live="polite"
+                        >
+                            {amountValidationMessage}
+                        </div>
+                    ) : null}
                 </Col>
 
 

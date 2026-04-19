@@ -57,6 +57,22 @@
     outline-offset: -1px;
 }
 
+.inputWrapper>input[aria-invalid="true"] {
+    border-color: #dc3545;
+}
+
+.amountValidationMessage {
+    margin-top: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #fff8e6;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 5px;
+    text-align: center;
+}
+
 .exchangeRatePanel {
     display: flex;
     flex-direction: column;

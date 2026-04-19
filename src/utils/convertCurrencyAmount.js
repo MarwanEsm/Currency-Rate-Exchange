@@ -1,3 +1,30 @@
+/** Maximum digits stored for the whole-number amount field (avoids unsafe Number precision). */
+export const MAX_AMOUNT_DIGITS = 15;
+
+/**
+ * Keeps only digits and caps length so pasted text cannot break calculations.
+ *
+ * @param {string} raw
+ * @returns {string}
+ */
+export const sanitizeAmountDigitString = (raw) => String(raw ?? "").replace(/\D/g, "").slice(0, MAX_AMOUNT_DIGITS);
+
+/**
+ * Formats a digits-only whole number for display (grouping separators). Does not change stored `amount`.
+ *
+ * @param {string} digitString
+ * @returns {string}
+ */
+export const formatWholeAmountForDisplay = (digitString) => {
+    if (digitString === null || digitString === undefined || digitString === "") return "";
+    const trimmed = String(digitString).trim();
+    if (trimmed === "") return "";
+    if (!/^\d+$/.test(trimmed)) return "";
+    const n = Number(trimmed);
+    if (!Number.isFinite(n)) return "";
+    return new Intl.NumberFormat(undefined, { maximumFractionDigits: 0, useGrouping: true }).format(n);
+};
+
 /**
  * Parses a digits-only amount string from the conversion field.
  * Empty or non-finite values return null so they are never confused with 0.

@@ -113,7 +113,7 @@ describe("CurrenciesList", () => {
         expect(screen.getByRole("group", { name: /as of/i })).toBeInTheDocument();
     });
 
-    it("keeps Convert disabled when no amount is entered", async () => {
+    it("shows a friendly amount validation message when Convert is pressed with no amount", async () => {
         mockUseExchangeRates.mockImplementation((from, to) => {
             if (from === "USD" && to === "EUR") {
                 return {
@@ -133,7 +133,13 @@ describe("CurrenciesList", () => {
         await userEvent.click(screen.getByLabelText("Select target currency"));
         await userEvent.click(await screen.findByText("Euro"));
 
-        expect(screen.getByRole("button", { name: "Convert" })).toBeDisabled();
+        expect(screen.getByRole("button", { name: "Convert" })).not.toBeDisabled();
+        await userEvent.click(screen.getByRole("button", { name: "Convert" }));
+
+        expect(
+            await screen.findByText(/enter a whole number amount/i),
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText("Amount")).toHaveAttribute("aria-invalid", "true");
     });
 
     it("shows a rounded two-decimal converted total after Convert", async () => {
