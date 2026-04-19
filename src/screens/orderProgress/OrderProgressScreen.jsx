@@ -67,9 +67,14 @@ const OrderProgressScreen = () => {
     return (
         <Container>
             <div className={styles.wrap}>
-                <button type="button" className={styles.back} onClick={() => router.push("/")}>
-                    ← Home
-                </button>
+                <div className={styles.topNav}>
+                    <button type="button" className={styles.back} onClick={() => router.push("/")}>
+                        ← Home
+                    </button>
+                    <button type="button" className={styles.back} onClick={() => router.push("/orders/new")}>
+                        New request
+                    </button>
+                </div>
                 <Headline size={2}>Purchase status</Headline>
                 <p className={styles.lead}>
                     Demo view for FCX-20: timeline, notification hooks, failure guidance, and delivery summary.

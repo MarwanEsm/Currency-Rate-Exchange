@@ -144,6 +144,13 @@ const Home = () => {
                 >
                     Purchase status (demo)
                 </button>
+                <button
+                    type="button"
+                    className={styles.progressLink}
+                    onClick={() => router.push("/orders/new")}
+                >
+                    New fiat-to-crypto request
+                </button>
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
