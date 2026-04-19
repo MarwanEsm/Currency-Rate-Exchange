@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useContext, useMemo, useEffect } from "react";
 import CurrencySelect from "../../components/elements/currencySelector/CurrencySelect";
 import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
@@ -31,6 +31,13 @@ const CurrenciesList = () => {
     const [amount, setAmount] = useState("");
     const [hasConverted, setHasConverted] = useState(false);
     const { numericRate, providerError } = useExchangeRates(fromCurrency?.value, toCurrency?.value);
+
+    useEffect(() => {
+        if (fromCurrency && toCurrency && fromCurrency.value === toCurrency.value) {
+            setToCurrency(null);
+            setHasConverted(false);
+        }
+    }, [fromCurrency, toCurrency]);
 
     const { logout, isAuthenticated } = useContext(AuthContext)
 
@@ -72,6 +79,9 @@ const CurrenciesList = () => {
     }
 
     const providerErrorMessage = getProviderErrorMessage(providerError);
+    const duplicateCurrencySelection =
+        Boolean(fromCurrency && toCurrency && fromCurrency.value === toCurrency.value);
+    const rateDisplay = exchangeRate !== "" ? exchangeRate : "—";
 
     return <Container>
         <div className={styles.listContainer}>
@@ -141,16 +151,29 @@ const CurrenciesList = () => {
 
 
                 <Col lg={4} md={4} sm={6} className={styles.exchangeRateWrapper}>
-                    <span>
-                        <span className={styles.exchangeRateLabel}>Exchange Rate </span>
-                        <b>{exchangeRate}</b>
-                    </span>
+                    <div
+                        className={styles.exchangeRatePanel}
+                        role="group"
+                        aria-labelledby="exchange-rate-label"
+                    >
+                        <span id="exchange-rate-label" className={styles.exchangeRateLabel}>
+                            Exchange Rate
+                        </span>
+                        <span className={styles.exchangeRateValue} aria-live="polite">
+                            <b>{rateDisplay}</b>
+                        </span>
+                    </div>
+                    {providerErrorMessage && (
+                        <div className={styles.providerError} role="alert">
+                            {providerErrorMessage}
+                        </div>
+                    )}
                 </Col>
             </Row>
 
-            {providerErrorMessage && (
-                <div className={styles.providerError} role="alert" aria-live="polite">
-                    {providerErrorMessage}
+            {duplicateCurrencySelection && (
+                <div className={styles.duplicateCurrencyMessage} role="alert">
+                    Source and target currencies must be different. Choose another target currency.
                 </div>
             )}
 

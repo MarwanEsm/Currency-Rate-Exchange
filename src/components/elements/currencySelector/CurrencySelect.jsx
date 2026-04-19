@@ -1,10 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./CurrencySelect.module.scss";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import axios from "axios";
+
+const defaultStringFilter = createFilter({ stringify: (option) => `${option.label} ${option.value}` });
 
 const CurrencySelect = ({ onCurrencySelect, url, placeholder, value, disabledValue, inputId, label }) => {
     const [options, setOptions] = useState([]);
+
+    const filterOption = useMemo(() => {
+        if (!disabledValue) return undefined;
+        return (option, rawInput) => {
+            if (option.value === disabledValue) return false;
+            return defaultStringFilter(option, rawInput);
+        };
+    }, [disabledValue]);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -47,6 +57,7 @@ const CurrencySelect = ({ onCurrencySelect, url, placeholder, value, disabledVal
                 options={options}
                 onChange={onCurrencySelect}
                 isOptionDisabled={disabledValue ? (option) => option.value === disabledValue : undefined}
+                filterOption={filterOption}
                 className={styles.select}
                 placeholder={placeholder}
                 menuPortalTarget={typeof window !== "undefined" ? document.body : null}
