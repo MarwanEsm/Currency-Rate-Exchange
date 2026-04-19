@@ -1,11 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getExchangeRates } from "@/services/exchangeRateProvider";
 
 const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
     const [exchangeRatesSnapshot, setExchangeRatesSnapshot] = useState(null);
     const [providerError, setProviderError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [retryToken, setRetryToken] = useState(0);
     const requestIdRef = useRef(0);
+
+    const retryRates = useCallback(() => {
+        setRetryToken((prev) => prev + 1);
+    }, []);
 
     useEffect(() => {
         let isMounted = true;
@@ -54,7 +59,7 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
             isMounted = false;
             controller.abort();
         };
-    }, [fromCurrencyCode]);
+    }, [fromCurrencyCode, retryToken]);
 
     const exchangeRates = useMemo(() => {
         if (!fromCurrencyCode) return null;
@@ -75,7 +80,7 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode) => {
         return exchangeRatesSnapshot.fetchedAt ?? null;
     }, [exchangeRatesSnapshot, fromCurrencyCode]);
 
-    return { exchangeRates, numericRate, providerError, isLoading, fetchedAt };
+    return { exchangeRates, numericRate, providerError, isLoading, fetchedAt, retryRates };
 };
 
 export default useExchangeRates;

@@ -38,7 +38,7 @@ const CurrenciesList = () => {
     const [hasConverted, setHasConverted] = useState(false);
     const [amountTouched, setAmountTouched] = useState(false);
     const [convertInvalidAttempt, setConvertInvalidAttempt] = useState(false);
-    const { numericRate, providerError, isLoading, fetchedAt } = useExchangeRates(
+    const { numericRate, providerError, isLoading, fetchedAt, retryRates } = useExchangeRates(
         fromCurrency?.value,
         toCurrency?.value,
     );
@@ -282,7 +282,15 @@ const CurrenciesList = () => {
                     </div>
                     {providerErrorMessage && (
                         <div className={styles.providerError} role="alert">
-                            {providerErrorMessage}
+                            <span>{providerErrorMessage}</span>
+                            <button
+                                type="button"
+                                className={styles.retryButton}
+                                onClick={retryRates}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Retrying..." : "Retry"}
+                            </button>
                         </div>
                     )}
                 </Col>

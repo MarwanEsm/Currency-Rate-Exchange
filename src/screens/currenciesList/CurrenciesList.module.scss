@@ -191,6 +191,26 @@
     border-radius: 5px;
     font-size: 14px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.retryButton {
+    border: 1px solid currentColor;
+    border-radius: 5px;
+    background: transparent;
+    color: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    cursor: pointer;
+}
+
+.retryButton:disabled {
+    opacity: 0.65;
+    cursor: default;
 }
 
 .duplicateCurrencyMessage {

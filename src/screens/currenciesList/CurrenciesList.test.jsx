@@ -16,6 +16,7 @@ jest.mock("axios");
 import CurrenciesList from "./CurrenciesList";
 
 const mockUseExchangeRates = jest.fn();
+const retryRatesMock = jest.fn();
 
 jest.mock("@/utils/useExchangeRates", () => ({
     __esModule: true,
@@ -42,6 +43,7 @@ describe("CurrenciesList", () => {
             providerError: null,
             isLoading: false,
             fetchedAt: null,
+            retryRates: retryRatesMock,
         });
     });
 
@@ -65,9 +67,16 @@ describe("CurrenciesList", () => {
                     providerError: { code: EXCHANGE_RATE_ERROR_CODES.NETWORK },
                     isLoading: false,
                     fetchedAt: null,
+                    retryRates: retryRatesMock,
                 };
             }
-            return { numericRate: null, providerError: null, isLoading: false, fetchedAt: null };
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                retryRates: retryRatesMock,
+            };
         });
 
         render(<CurrenciesList />);
@@ -87,6 +96,38 @@ describe("CurrenciesList", () => {
         ).toBeInTheDocument();
     });
 
+    it("provides retry affordance and calls retry action on click", async () => {
+        mockUseExchangeRates.mockImplementation((from, to) => {
+            if (from && to) {
+                return {
+                    numericRate: null,
+                    providerError: { code: EXCHANGE_RATE_ERROR_CODES.NETWORK },
+                    isLoading: false,
+                    fetchedAt: null,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                retryRates: retryRatesMock,
+            };
+        });
+
+        render(<CurrenciesList />);
+
+        await userEvent.click(await screen.findByLabelText("Select source currency"));
+        await userEvent.click(await screen.findByText("US Dollar"));
+        await userEvent.click(screen.getByLabelText("Select target currency"));
+        await userEvent.click(await screen.findByText("Euro"));
+
+        await userEvent.click(await screen.findByRole("button", { name: "Retry" }));
+
+        expect(retryRatesMock).toHaveBeenCalledTimes(1);
+    });
+
     it("shows a formatted pair rate and last-updated time when data is ready", async () => {
         mockUseExchangeRates.mockImplementation((from, to) => {
             if (from === "USD" && to === "EUR") {
@@ -95,9 +136,16 @@ describe("CurrenciesList", () => {
                     providerError: null,
                     isLoading: false,
                     fetchedAt: "2026-04-19T14:00:00.000Z",
+                    retryRates: retryRatesMock,
                 };
             }
-            return { numericRate: null, providerError: null, isLoading: false, fetchedAt: null };
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                retryRates: retryRatesMock,
+            };
         });
 
         render(<CurrenciesList />);
@@ -121,9 +169,16 @@ describe("CurrenciesList", () => {
                     providerError: null,
                     isLoading: false,
                     fetchedAt: null,
+                    retryRates: retryRatesMock,
                 };
             }
-            return { numericRate: null, providerError: null, isLoading: false, fetchedAt: null };
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                retryRates: retryRatesMock,
+            };
         });
 
         render(<CurrenciesList />);
@@ -150,9 +205,16 @@ describe("CurrenciesList", () => {
                     providerError: null,
                     isLoading: false,
                     fetchedAt: null,
+                    retryRates: retryRatesMock,
                 };
             }
-            return { numericRate: null, providerError: null, isLoading: false, fetchedAt: null };
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                retryRates: retryRatesMock,
+            };
         });
 
         render(<CurrenciesList />);
