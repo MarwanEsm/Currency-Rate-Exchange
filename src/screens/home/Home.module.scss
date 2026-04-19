@@ -11,6 +11,19 @@
     margin-top: 60px;
 }
 
+.progressLink {
+    display: block;
+    margin: 1rem auto 0;
+    padding: 0.35rem 0.75rem;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.88);
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
 .container h2 {
     margin-bottom: 40px;
 }

@@ -1,0 +1,128 @@
+.wrap {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+}
+
+.back {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.35rem 0;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.lead {
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.5;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 12rem;
+
+    span {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+.select,
+.input {
+    padding: 0.45rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.section {
+    margin-bottom: 2rem;
+}
+
+.sectionTitle {
+    font-size: 1.1rem;
+    margin: 0 0 0.75rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.list {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.55;
+}
+
+.code {
+    font-size: 0.85em;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.alert {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 107, 107, 0.45);
+    background: rgba(255, 80, 80, 0.08);
+    margin-bottom: 2rem;
+}
+
+.nextLabel {
+    font-weight: 600;
+    margin: 1rem 0 0.35rem;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.numbered {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.55;
+}
+
+.success {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    border: 1px solid rgba(61, 220, 132, 0.4);
+    background: rgba(61, 220, 132, 0.08);
+}
+
+.delivered {
+    font-size: 1.05rem;
+    margin: 0.25rem 0 0.75rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.tx {
+    margin: 0;
+}
+
+.txLabel {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 0.25rem;
+}
+
+.footnote {
+    margin: 0.75rem 0 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.65);
+}

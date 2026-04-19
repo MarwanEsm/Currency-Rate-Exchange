@@ -1,0 +1,58 @@
+.timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 32rem;
+}
+
+.item {
+    position: relative;
+    padding: 0 0 1.25rem 2rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.15);
+
+    &:last-child {
+        border-left-color: transparent;
+        padding-bottom: 0;
+    }
+}
+
+.marker {
+    position: absolute;
+    left: -0.4rem;
+    top: 0.15rem;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.item[data-variant="done"] .marker {
+    background: #3ddc84;
+}
+
+.item[data-variant="active"] .marker {
+    background: #6eb5ff;
+}
+
+.item[data-variant="error"] .marker {
+    background: #ff6b6b;
+}
+
+.body {
+    margin-top: -0.1rem;
+}
+
+.title {
+    display: block;
+    font-weight: 600;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.description {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.72);
+}

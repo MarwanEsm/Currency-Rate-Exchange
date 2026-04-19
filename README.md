@@ -113,6 +113,7 @@ The main UI is implemented in **`src/screens/currenciesList/CurrenciesList.jsx`*
 - `src/firebase/`: Firebase config and auth context.
 - `src/utils/`: shared hooks, conversion helpers, exchange-rate cache, and responsive helpers.
 - `src/services/exchangeRateProvider.js`: reusable provider client for exchange-rate requests, normalization, and typed error handling.
-- `src/domain/`: fiat-to-crypto order lifecycle, compliance gates, secure transfer validation (FCX-21), and FCX-18 E2E-style tests.
+- `src/domain/`: fiat-to-crypto order lifecycle, compliance gates, secure transfer validation (FCX-21), user progress/notifications (FCX-20), and FCX-18 E2E-style tests.
+- `pages/orders/progress.jsx`: demo **purchase status** view (timeline, notifications, failure guidance, delivery summary).
 - `docs/fiat-to-crypto-ops-runbook.md`: operations runbook and go-live checklist (FCX-18).
 - `functions/`: Firebase Cloud Functions workspace.

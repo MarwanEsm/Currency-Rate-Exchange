@@ -43,6 +43,11 @@
  * Before `transferring`, validate destination with `validateCryptoTransferDestination` in
  * `fiatToCryptoTransfer.js`. After broadcast, persist `transferTxHash`, `transferCanonicalNetwork`,
  * and `transferTxBroadcastAt` for order details and support.
+ *
+ * ## User progress & notifications (FCX-20)
+ *
+ * See `fiatToCryptoOrderProgress.js` for timelines, notification trigger keys, failure copy, and
+ * completed-order delivery summaries for the user-facing experience.
  */
 
 export const FIAT_TO_CRYPTO_ORDER_STATUS = {
@@ -201,6 +206,8 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   transferCanonicalNetwork?: string,
  *   transferTxBroadcastAt?: string,
  *   transferTxConfirmedAt?: string,
+ *   deliveredAssetAmount?: string,
+ *   deliveredAssetCode?: string,
  * }} FiatToCryptoOrder
  *
  * Field notes:
@@ -211,6 +218,7 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  * - `failureCode` / `failureMessage` should be set when entering `failed` for supportability.
  * - **Transfer tracking (FCX-21):** `transferTxHash` is the broadcast id (e.g. txid); `transferCanonicalNetwork`
  *   matches `CRYPTO_TRANSFER_NETWORK_ID` values; `transferTxBroadcastAt` / `transferTxConfirmedAt` are ISO timestamps.
+ * - **User progress (FCX-20):** `deliveredAssetAmount` / `deliveredAssetCode` populate the completed-state summary alongside `transferTxHash`.
  */
 
 const WALLET_ADDRESS_MIN_LEN = 8;

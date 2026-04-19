@@ -137,6 +137,13 @@ const Home = () => {
             <div className={styles.container}>
                 <Header />
                 <Logo onClick={() => router.push("/currencies")} />
+                <button
+                    type="button"
+                    className={styles.progressLink}
+                    onClick={() => router.push("/orders/progress")}
+                >
+                    Purchase status (demo)
+                </button>
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
