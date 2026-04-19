@@ -2,9 +2,16 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 /* Rest of your CSS styles */
 
+html {
+    height: 100%;
+}
+
 body {
+    min-height: 100%;
+    margin: 0;
     font-family: 'Poppins', sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 

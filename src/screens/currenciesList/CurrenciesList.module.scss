@@ -58,27 +58,77 @@
 }
 
 .exchangeRatePanel {
-    font-size: 14px;
-    padding: 10px 20px;
-    color: white;
-    background: linear-gradient(to left, #f18900 50%, #3b474d 50%);
-    border-radius: 5px;
-    border: 1px solid #f18900;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 7px;
+    border: 1px solid #f18900;
+    border-radius: 5px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: white;
+    text-align: center;
+    background: linear-gradient(to left, #f18900 50%, #3b474d 50%);
     gap: 8px;
     position: relative;
 }
 
-.exchangeRateLabel {
-    font-weight: 600;
+.exchangeRateTitle {
+    display: block;
+    width: 100%;
     margin: 0;
+    font-weight: 600;
+    text-align: center;
 }
 
 .exchangeRateValue {
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+    width: 100%;
+}
+
+.rateFigure {
+    display: block;
+    width: 100%;
+    font-size: 1.05em;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.rateMeta {
+    display: block;
+    width: 100%;
+    font-size: 0.85em;
+    font-weight: 500;
+    opacity: 0.95;
+    text-align: center;
+}
+
+.rateLoading,
+.rateUnavailable,
+.rateHint {
+    display: block;
+    width: 100%;
+    max-width: 260px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.95em;
+    font-weight: 500;
+    line-height: 1.35;
+    text-align: center;
+}
+
+.rateUnavailable {
+    color: #ffe8e8;
 }
 
 .exchangeRateWrapper {
@@ -86,6 +136,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
+    text-align: center;
 }
 
 @media screen and (max-width:570px) {

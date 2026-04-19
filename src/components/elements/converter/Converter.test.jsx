@@ -15,6 +15,6 @@ describe("Converter", () => {
         fireEvent.change(screen.getByLabelText("Amount to convert"), { target: { value: "10" } });
         fireEvent.click(screen.getByRole("button", { name: "Convert" }));
 
-        expect(screen.getByRole("status")).toHaveTextContent("20.00");
+        expect(screen.getByRole("status")).toHaveTextContent(/20[.,]00/);
     });
 });

@@ -9,6 +9,7 @@ import { Row, Col } from 'reactstrap';
 import { useRouter } from "next/router";
 import { AuthContext } from "../../firebase/authContext";
 import useExchangeRates from "../../utils/useExchangeRates";
+import { convertAmountWithRate, parseDigitsAmount } from "../../utils/convertCurrencyAmount";
 import { EXCHANGE_RATE_ERROR_CODES } from "../../services/exchangeRateProvider";
 
 const PROVIDER_ERROR_MESSAGES = {
@@ -30,7 +31,10 @@ const CurrenciesList = () => {
 
     const [amount, setAmount] = useState("");
     const [hasConverted, setHasConverted] = useState(false);
-    const { numericRate, providerError } = useExchangeRates(fromCurrency?.value, toCurrency?.value);
+    const { numericRate, providerError, isLoading, fetchedAt } = useExchangeRates(
+        fromCurrency?.value,
+        toCurrency?.value,
+    );
 
     useEffect(() => {
         if (fromCurrency && toCurrency && fromCurrency.value === toCurrency.value) {
@@ -52,23 +56,32 @@ const CurrenciesList = () => {
         return x;
     };
 
-    const exchangeRate = useMemo(() => {
-        return numericRate === null ? "" : numericRate.toFixed(4);
-    }, [numericRate]);
+    const numericAmount = useMemo(() => parseDigitsAmount(amount), [amount]);
 
-    const numericAmount = useMemo(() => {
-        const parsedAmount = Number(amount);
-        return Number.isFinite(parsedAmount) ? parsedAmount : null;
-    }, [amount]);
-
-    const convertedAmount = useMemo(() => {
+    const convertedValue = useMemo(() => {
         if (numericAmount === null || numericRate === null) return null;
-        return (numericAmount * numericRate).toFixed(2);
+        return convertAmountWithRate(numericAmount, numericRate);
     }, [numericAmount, numericRate]);
 
-    const onConvert = () => setHasConverted(true);
+    const formattedConverted = useMemo(() => {
+        if (convertedValue === null) return null;
+        return new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(convertedValue);
+    }, [convertedValue]);
 
-    const isConvertDisabled = !!providerError || numericRate === null;
+    const onConvert = () => {
+        if (convertedValue === null) return;
+        setHasConverted(true);
+    };
+
+    const isConvertDisabled =
+        !!providerError ||
+        isLoading ||
+        numericRate === null ||
+        numericAmount === null ||
+        convertedValue === null;
 
     const handleLogout = async () => {
         try {
@@ -81,7 +94,65 @@ const CurrenciesList = () => {
     const providerErrorMessage = getProviderErrorMessage(providerError);
     const duplicateCurrencySelection =
         Boolean(fromCurrency && toCurrency && fromCurrency.value === toCurrency.value);
-    const rateDisplay = exchangeRate !== "" ? exchangeRate : "—";
+    const showPair = Boolean(fromCurrency && toCurrency);
+
+    const formattedRate = useMemo(() => {
+        if (numericRate === null) return null;
+        return new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+        }).format(numericRate);
+    }, [numericRate]);
+
+    const fetchedAtLabel = useMemo(() => {
+        if (!fetchedAt) return null;
+        const parsed = new Date(fetchedAt);
+        if (Number.isNaN(parsed.getTime())) return null;
+        return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(parsed);
+    }, [fetchedAt]);
+
+    const exchangeRateGroupAriaLabel = useMemo(() => {
+        if (!showPair) return "Exchange rate";
+        if (providerErrorMessage) return "Exchange rate unavailable.";
+        if (isLoading) return "Loading exchange rate";
+        if (formattedRate !== null && fromCurrency && toCurrency) {
+            const line = `1 ${fromCurrency.value} = ${formattedRate} ${toCurrency.value}`;
+            return fetchedAtLabel ? `${line}, as of ${fetchedAtLabel}` : line;
+        }
+        return "Exchange rate unavailable for this pair.";
+    }, [
+        showPair,
+        providerErrorMessage,
+        isLoading,
+        formattedRate,
+        fromCurrency,
+        toCurrency,
+        fetchedAtLabel,
+    ]);
+
+    const renderExchangeRatePanelBody = () => {
+        if (!showPair) {
+            return <span className={styles.exchangeRateTitle}>Exchange rate</span>;
+        }
+        if (providerErrorMessage) {
+            return <b className={styles.rateFigure}>—</b>;
+        }
+        if (isLoading) {
+            return <span className={styles.rateLoading}>Loading…</span>;
+        }
+        if (formattedRate !== null) {
+            return (
+                <b className={styles.rateFigure}>
+                    1 {fromCurrency.value} = {formattedRate} {toCurrency.value}
+                </b>
+            );
+        }
+        return (
+            <span className={styles.rateUnavailable}>
+                Rate unavailable for this pair.
+            </span>
+        );
+    };
 
     return <Container>
         <div className={styles.listContainer}>
@@ -140,6 +211,9 @@ const CurrenciesList = () => {
                     <input
                         id="conversion-amount"
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        autoComplete="off"
                         placeholder="Amount"
                         value={numberWithCommas(amount)}
                         onChange={(e) => {
@@ -150,17 +224,20 @@ const CurrenciesList = () => {
                 </Col>
 
 
-                <Col lg={4} md={4} sm={6} className={styles.exchangeRateWrapper}>
+                <Col
+                    lg={4}
+                    md={4}
+                    sm={6}
+                    className={`${styles.exchangeRateWrapper} text-center`}
+                >
                     <div
                         className={styles.exchangeRatePanel}
                         role="group"
-                        aria-labelledby="exchange-rate-label"
+                        aria-label={exchangeRateGroupAriaLabel}
+                        aria-busy={showPair && isLoading && !providerErrorMessage ? true : undefined}
                     >
-                        <span id="exchange-rate-label" className={styles.exchangeRateLabel}>
-                            Exchange Rate
-                        </span>
                         <span className={styles.exchangeRateValue} aria-live="polite">
-                            <b>{rateDisplay}</b>
+                            {renderExchangeRatePanelBody()}
                         </span>
                     </div>
                     {providerErrorMessage && (
@@ -178,8 +255,8 @@ const CurrenciesList = () => {
             )}
 
             <Button onClick={onConvert} disabled={isConvertDisabled}>
-                {hasConverted && convertedAmount !== null
-                    ? numberWithCommas(convertedAmount) + " " + `${toCurrency?.value !== undefined ? toCurrency?.value : ""}`
+                {hasConverted && formattedConverted !== null
+                    ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
                     : "Convert"}
             </Button>
             {isAuthenticated && <Button variant="secondary" onClick={handleLogout}>Log out</Button>}

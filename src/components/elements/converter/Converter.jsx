@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "../button/Button";
 import useExchangeRates from "../../../utils/useExchangeRates";
+import { convertAmountWithRate } from "../../../utils/convertCurrencyAmount";
 import styles from "./Converter.module.scss"
 
 const Converter = ({ searchedCurrency, fromCurrencyCode = "USD" }) => {
@@ -14,12 +15,23 @@ const Converter = ({ searchedCurrency, fromCurrencyCode = "USD" }) => {
 
     const convert = () => {
         const amount = Number.parseFloat(fromAmount);
-        if (!Number.isFinite(amount) || numericRate === null) {
+        if (!Number.isFinite(amount) || amount < 0 || numericRate === null) {
             setConvertedAmount("");
             return;
         }
 
-        setConvertedAmount((amount * numericRate).toFixed(2));
+        const value = convertAmountWithRate(amount, numericRate);
+        if (value === null) {
+            setConvertedAmount("");
+            return;
+        }
+
+        setConvertedAmount(
+            new Intl.NumberFormat(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(value),
+        );
     };
 
     const isConvertDisabled =
