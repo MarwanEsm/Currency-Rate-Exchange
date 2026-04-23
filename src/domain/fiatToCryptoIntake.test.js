@@ -70,4 +70,61 @@ describe("fiatToCryptoIntake (FCX-25)", () => {
         });
         expect(n?.fiatAmount).toBe("200");
     });
+
+    it("threads exchangeRate + commissionConfig through validation (FCX-22)", () => {
+        const r = validateFiatToCryptoIntakePayload({
+            ...validBody(),
+            exchangeRate: "0.00002",
+            commissionConfig: { type: "fixed", fixedFiat: "1.00" },
+        });
+        expect(r.ok).toBe(true);
+        if (!r.ok) return;
+        expect(r.normalized.exchangeRate).toBe("0.00002");
+        expect(r.normalized.commissionConfig).toEqual({ type: "fixed", fixedFiat: "1.00" });
+    });
+
+    it("rejects an invalid commissionConfig in the payload (FCX-22)", () => {
+        const r = validateFiatToCryptoIntakePayload({
+            ...validBody(),
+            commissionConfig: { type: "fixed" },
+        });
+        expect(r.ok).toBe(false);
+    });
+
+    it("rejects a non-positive exchangeRate (FCX-22)", () => {
+        const r = validateFiatToCryptoIntakePayload({
+            ...validBody(),
+            exchangeRate: "0",
+        });
+        expect(r.ok).toBe(false);
+    });
+
+    it("persists pricing fields on a submitted order when exchangeRate is supplied (FCX-22)", () => {
+        const v = validateFiatToCryptoIntakePayload({
+            ...validBody(),
+            exchangeRate: "0.00002",
+        });
+        expect(v.ok).toBe(true);
+        if (!v.ok) return;
+        const order = buildSubmittedFiatToCryptoOrder(v.normalized, "ord-priced", {
+            computedAt: "2026-04-23T12:00:00.000Z",
+        });
+        expect(order.grossFiatAmount).toBe("150.00");
+        expect(order.feeFiatAmount).toBe("2.75");
+        expect(order.netFiatAmount).toBe("147.25");
+        expect(order.netCryptoAmount).toBe("0.00294500");
+        expect(order.netCryptoAssetCode).toBe("BTC");
+        expect(order.exchangeRateApplied).toBe("0.00002");
+        expect(order.commissionConfigSnapshot).toBeDefined();
+        expect(order.pricingComputedAt).toBe("2026-04-23T12:00:00.000Z");
+    });
+
+    it("omits pricing fields on a submitted order when no exchangeRate is supplied", () => {
+        const v = validateFiatToCryptoIntakePayload(validBody());
+        expect(v.ok).toBe(true);
+        if (!v.ok) return;
+        const order = buildSubmittedFiatToCryptoOrder(v.normalized, "ord-unpriced");
+        expect(order.netCryptoAmount).toBeUndefined();
+        expect(order.feeFiatAmount).toBeUndefined();
+    });
 });

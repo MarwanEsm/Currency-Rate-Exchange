@@ -208,6 +208,15 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   transferTxConfirmedAt?: string,
  *   deliveredAssetAmount?: string,
  *   deliveredAssetCode?: string,
+ *   grossFiatAmount?: string,
+ *   feeFiatAmount?: string,
+ *   netFiatAmount?: string,
+ *   exchangeRateApplied?: string,
+ *   netCryptoAmount?: string,
+ *   netCryptoAssetCode?: string,
+ *   commissionConfigSnapshot?: import("./fiatToCryptoPricing.js").CommissionConfig,
+ *   pricingComputedAt?: string,
+ *   pricingWarnings?: ReadonlyArray<string>,
  * }} FiatToCryptoOrder
  *
  * Field notes:
@@ -219,6 +228,10 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  * - **Transfer tracking (FCX-21):** `transferTxHash` is the broadcast id (e.g. txid); `transferCanonicalNetwork`
  *   matches `CRYPTO_TRANSFER_NETWORK_ID` values; `transferTxBroadcastAt` / `transferTxConfirmedAt` are ISO timestamps.
  * - **User progress (FCX-20):** `deliveredAssetAmount` / `deliveredAssetCode` populate the completed-state summary alongside `transferTxHash`.
+ * - **Pricing (FCX-22):** `grossFiatAmount`, `feeFiatAmount`, `netFiatAmount`, `netCryptoAmount`,
+ *   `exchangeRateApplied`, and `commissionConfigSnapshot` persist the authoritative quote. These are
+ *   populated at intake when an exchange rate is supplied and refreshed when the admin approves the
+ *   order with a locked rate. `pricingWarnings` surfaces machine-readable flags (e.g. `net_crypto_below_dust_threshold`).
  */
 
 const WALLET_ADDRESS_MIN_LEN = 8;

@@ -5,6 +5,7 @@ import Headline from "@/components/elements/headline/Headline";
 import { AuthContext } from "@/firebase/authContext";
 import { ADMIN_ROLE, ADMIN_PERMISSION, hasAdminPermission } from "@/domain/adminPermissions";
 import { ADMIN_DECISION } from "@/domain/fiatToCryptoAdminQueue";
+import { DEFAULT_COMMISSION_CONFIG } from "@/domain/fiatToCryptoPricing";
 import styles from "./AdminOrderQueueScreen.module.scss";
 
 const ROLE_OPTIONS = Object.values(ADMIN_ROLE);
@@ -14,6 +15,17 @@ const buildAdminHeaders = (adminUserId, roles) => ({
     "x-admin-user-id": adminUserId,
     "x-admin-roles": roles.join(","),
 });
+
+const describeCommissionConfig = (config) => {
+    if (!config) return "—";
+    const parts = [];
+    if (config.type === "fixed" || config.type === "hybrid") parts.push(`fixed ${config.fixedFiat}`);
+    if (config.type === "percentage" || config.type === "hybrid")
+        parts.push(`${(config.percentageBps / 100).toFixed(2)}%`);
+    if (config.minFiat) parts.push(`min ${config.minFiat}`);
+    if (config.maxFiat) parts.push(`max ${config.maxFiat}`);
+    return parts.join(" + ") || config.type;
+};
 
 const AdminOrderQueueScreen = () => {
     const router = useRouter();
@@ -29,6 +41,11 @@ const AdminOrderQueueScreen = () => {
     const [decisionBusy, setDecisionBusy] = useState(false);
     const [decisionError, setDecisionError] = useState(null);
     const [decisionBanner, setDecisionBanner] = useState(null);
+
+    const [exchangeRate, setExchangeRate] = useState("");
+    const [quote, setQuote] = useState(null);
+    const [quoteError, setQuoteError] = useState(null);
+    const [quoteBusy, setQuoteBusy] = useState(false);
 
     const canView = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.VIEW_ORDER_QUEUE), [roles]);
     const canDecide = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.DECIDE_ORDER_APPROVAL), [roles]);
@@ -68,32 +85,80 @@ const AdminOrderQueueScreen = () => {
         loadQueue();
     }, [loadQueue]);
 
+    const resetDecisionPanel = () => {
+        setQuote(null);
+        setQuoteError(null);
+        setExchangeRate("");
+        setReason("");
+        setDecisionError(null);
+    };
+
+    const fetchPreview = async (orderId) => {
+        if (!orderId || !exchangeRate || !canView) return;
+        setQuoteBusy(true);
+        setQuoteError(null);
+        try {
+            const res = await fetch(`/api/fiat-to-crypto/admin/orders/${encodeURIComponent(orderId)}/pricing`, {
+                method: "POST",
+                headers: buildAdminHeaders(adminUserId, roles),
+                body: JSON.stringify({ exchangeRate, commissionConfig: DEFAULT_COMMISSION_CONFIG }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                setQuoteError(
+                    data.message || (Array.isArray(data.messages) ? data.messages.join("; ") : data.error) || "Preview failed.",
+                );
+                setQuote(null);
+                return;
+            }
+            setQuote(data.quote);
+        } catch {
+            setQuoteError("Network error. Please retry.");
+        } finally {
+            setQuoteBusy(false);
+        }
+    };
+
     const submitDecision = async (decision) => {
         if (!activeOrderId || !canDecide || reason.trim().length < 3) {
             setDecisionError("A reason of at least 3 characters is required.");
             return;
         }
+        if (decision === ADMIN_DECISION.APPROVE && !exchangeRate) {
+            setDecisionError("Enter an exchange rate (positive decimal) before approving.");
+            return;
+        }
         setDecisionBusy(true);
         setDecisionError(null);
         try {
+            const payload = { decision, reason };
+            if (decision === ADMIN_DECISION.APPROVE) {
+                payload.exchangeRate = exchangeRate;
+                payload.commissionConfig = DEFAULT_COMMISSION_CONFIG;
+            }
             const res = await fetch(`/api/fiat-to-crypto/admin/orders/${encodeURIComponent(activeOrderId)}/decision`, {
                 method: "POST",
                 headers: buildAdminHeaders(adminUserId, roles),
-                body: JSON.stringify({ decision, reason }),
+                body: JSON.stringify(payload),
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
                 const compliance = Array.isArray(data.complianceReasonCodes) ? ` (${data.complianceReasonCodes.join(", ")})` : "";
-                setDecisionError((data.message || data.error || "Decision failed.") + compliance);
+                const messages = Array.isArray(data.messages) ? ` — ${data.messages.join("; ")}` : "";
+                setDecisionError((data.message || data.error || "Decision failed.") + compliance + messages);
                 return;
             }
             setDecisionBanner({
                 decision: data.decision,
                 orderId: data.order?.id,
                 newStatus: data.order?.status,
+                netCryptoAmount: data.order?.netCryptoAmount,
+                netCryptoAssetCode: data.order?.netCryptoAssetCode,
+                feeFiatAmount: data.order?.feeFiatAmount,
+                fiatCurrency: data.order?.fiatCurrency,
             });
-            setReason("");
             setActiveOrderId(null);
+            resetDecisionPanel();
             await loadQueue();
         } catch {
             setDecisionError("Network error. Please retry.");
@@ -116,8 +181,9 @@ const AdminOrderQueueScreen = () => {
 
                 <Headline size={2}>Admin: pending approvals</Headline>
                 <p className={styles.lead}>
-                    Lists fiat-to-crypto orders in <strong>paid</strong> awaiting review (FCX-26). Approve to move
-                    toward <strong>purchasing</strong>, or reject with a reason to mark <strong>failed</strong>.
+                    Lists fiat-to-crypto orders in <strong>paid</strong> awaiting review (FCX-26). Preview the
+                    commission &amp; net-crypto quote (FCX-22) before approving; rejecting marks the order{" "}
+                    <strong>failed</strong> with your reason.
                 </p>
 
                 {!isAuthenticated && (
@@ -160,7 +226,18 @@ const AdminOrderQueueScreen = () => {
                     <div className={styles.banner} role="status">
                         Decision <strong>{decisionBanner.decision}</strong> applied to order{" "}
                         <code className={styles.code}>{decisionBanner.orderId}</code> — now{" "}
-                        <strong>{decisionBanner.newStatus}</strong>.
+                        <strong>{decisionBanner.newStatus}</strong>
+                        {decisionBanner.netCryptoAmount ? (
+                            <>
+                                {" "}· net payout{" "}
+                                <strong>
+                                    {decisionBanner.netCryptoAmount} {decisionBanner.netCryptoAssetCode}
+                                </strong>{" "}
+                                (fee {decisionBanner.feeFiatAmount} {decisionBanner.fiatCurrency}).
+                            </>
+                        ) : (
+                            "."
+                        )}
                     </div>
                 )}
 
@@ -181,6 +258,10 @@ const AdminOrderQueueScreen = () => {
                         <ul className={styles.list}>
                             {orders.map((order) => {
                                 const isActive = activeOrderId === order.id;
+                                const persistedQuote =
+                                    order.netCryptoAmount && order.feeFiatAmount
+                                        ? `${order.netFiatAmount} ${order.fiatCurrency} net (fee ${order.feeFiatAmount}) → ${order.netCryptoAmount} ${order.netCryptoAssetCode} @ ${order.exchangeRateApplied}`
+                                        : null;
                                 return (
                                     <li key={order.id} className={styles.orderCard}>
                                         <div className={styles.orderHead}>
@@ -194,14 +275,25 @@ const AdminOrderQueueScreen = () => {
                                             <span>Network: {order.network ?? "auto"}</span>
                                             <span>Submitted: {order.submittedAt ?? order.createdAt}</span>
                                         </div>
+                                        {persistedQuote && (
+                                            <p className={styles.quoteLine}>
+                                                <span className={styles.quoteLabel}>Quote on file:</span>{" "}
+                                                {persistedQuote}
+                                            </p>
+                                        )}
                                         <div className={styles.orderActions}>
                                             <button
                                                 type="button"
                                                 className={styles.secondary}
                                                 disabled={!canDecide}
                                                 onClick={() => {
-                                                    setActiveOrderId(isActive ? null : order.id);
-                                                    setDecisionError(null);
+                                                    if (isActive) {
+                                                        setActiveOrderId(null);
+                                                        resetDecisionPanel();
+                                                    } else {
+                                                        setActiveOrderId(order.id);
+                                                        resetDecisionPanel();
+                                                    }
                                                 }}
                                             >
                                                 {isActive ? "Cancel" : "Decide…"}
@@ -209,6 +301,68 @@ const AdminOrderQueueScreen = () => {
                                         </div>
                                         {isActive && (
                                             <div className={styles.decisionPane}>
+                                                <div className={styles.pricingBlock}>
+                                                    <label className={styles.field}>
+                                                        <span>
+                                                            Exchange rate ({order.targetAssetCode} per 1{" "}
+                                                            {order.fiatCurrency})
+                                                        </span>
+                                                        <input
+                                                            type="text"
+                                                            inputMode="decimal"
+                                                            className={styles.input}
+                                                            value={exchangeRate}
+                                                            onChange={(e) => setExchangeRate(e.target.value)}
+                                                            placeholder="e.g. 0.00002"
+                                                            aria-label="Exchange rate"
+                                                        />
+                                                    </label>
+                                                    <p className={styles.hint}>
+                                                        Commission: {describeCommissionConfig(DEFAULT_COMMISSION_CONFIG)}
+                                                    </p>
+                                                    <div className={styles.previewButtons}>
+                                                        <button
+                                                            type="button"
+                                                            className={styles.secondary}
+                                                            onClick={() => fetchPreview(order.id)}
+                                                            disabled={quoteBusy || !exchangeRate}
+                                                        >
+                                                            {quoteBusy ? "Previewing…" : "Preview pricing"}
+                                                        </button>
+                                                    </div>
+                                                    {quoteError && (
+                                                        <p className={styles.error} role="alert">
+                                                            {quoteError}
+                                                        </p>
+                                                    )}
+                                                    {quote && (
+                                                        <dl className={styles.quoteGrid}>
+                                                            <dt>Gross</dt>
+                                                            <dd>
+                                                                {quote.grossFiatAmount} {quote.fiatCurrency}
+                                                            </dd>
+                                                            <dt>Fee</dt>
+                                                            <dd>
+                                                                {quote.feeFiatAmount} {quote.fiatCurrency}
+                                                            </dd>
+                                                            <dt>Net fiat</dt>
+                                                            <dd>
+                                                                {quote.netFiatAmount} {quote.fiatCurrency}
+                                                            </dd>
+                                                            <dt>Net crypto</dt>
+                                                            <dd>
+                                                                {quote.netCryptoAmount} {quote.netCryptoAssetCode}
+                                                            </dd>
+                                                            {quote.warnings?.length > 0 && (
+                                                                <>
+                                                                    <dt>Warnings</dt>
+                                                                    <dd>{quote.warnings.join(", ")}</dd>
+                                                                </>
+                                                            )}
+                                                        </dl>
+                                                    )}
+                                                </div>
+
                                                 <label className={styles.field}>
                                                     <span>Reason (required, 3–500 characters)</span>
                                                     <textarea

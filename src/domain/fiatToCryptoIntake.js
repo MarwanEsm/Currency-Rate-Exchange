@@ -8,6 +8,12 @@
 import { evaluateKycGateForOrderCreation } from "./fiatToCryptoCompliance";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
 import { validateFiatToCryptoOrderDraft } from "./fiatToCryptoOrder";
+import {
+    buildOrderPricingPatch,
+    computeFiatToCryptoQuote,
+    DEFAULT_COMMISSION_CONFIG,
+    validateCommissionConfig,
+} from "./fiatToCryptoPricing";
 import { validateCryptoTransferDestination } from "./fiatToCryptoTransfer";
 
 /**
@@ -26,12 +32,34 @@ export const normalizeFiatToCryptoIntakeBody = (raw) => {
         network: o.network === undefined || o.network === null || o.network === "" ? undefined : String(o.network).trim(),
         kycVerificationStatus:
             typeof o.kycVerificationStatus === "string" ? o.kycVerificationStatus.trim().toLowerCase() : "",
+        exchangeRate:
+            o.exchangeRate === undefined || o.exchangeRate === null || o.exchangeRate === ""
+                ? undefined
+                : typeof o.exchangeRate === "number"
+                    ? String(o.exchangeRate)
+                    : String(o.exchangeRate).trim(),
+        commissionConfig:
+            o.commissionConfig && typeof o.commissionConfig === "object" ? o.commissionConfig : undefined,
     };
 };
 
 /**
+ * @typedef {{
+ *   userId: string,
+ *   fiatCurrency: string,
+ *   fiatAmount: string,
+ *   targetAssetCode: string,
+ *   walletAddress: string,
+ *   kycVerificationStatus: string,
+ *   network?: string,
+ *   exchangeRate?: string,
+ *   commissionConfig?: import("./fiatToCryptoPricing.js").CommissionConfig,
+ * }} NormalizedFiatToCryptoIntake
+ */
+
+/**
  * @param {unknown} rawBody
- * @returns {{ ok: true, normalized: Record<string, string> & { network?: string } } | { ok: false, errors: string[] }}
+ * @returns {{ ok: true, normalized: NormalizedFiatToCryptoIntake } | { ok: false, errors: string[] }}
  */
 export const validateFiatToCryptoIntakePayload = (rawBody) => {
     const normalized = normalizeFiatToCryptoIntakeBody(rawBody);
@@ -80,7 +108,23 @@ export const validateFiatToCryptoIntakePayload = (rawBody) => {
         return { ok: false, errors };
     }
 
-    /** @type {Record<string, string> & { network?: string }} */
+    if (normalized.commissionConfig !== undefined) {
+        const configErrors = validateCommissionConfig(normalized.commissionConfig);
+        if (configErrors.length > 0) {
+            return { ok: false, errors: configErrors };
+        }
+    }
+
+    if (normalized.exchangeRate !== undefined) {
+        if (!/^\d+(\.\d+)?$/.test(normalized.exchangeRate) || Number(normalized.exchangeRate) <= 0) {
+            return {
+                ok: false,
+                errors: ["`exchangeRate`, when provided, must be a positive decimal string."],
+            };
+        }
+    }
+
+    /** @type {NormalizedFiatToCryptoIntake} */
     const out = {
         userId: normalized.userId,
         fiatCurrency: normalized.fiatCurrency,
@@ -89,19 +133,25 @@ export const validateFiatToCryptoIntakePayload = (rawBody) => {
         walletAddress: normalized.walletAddress,
         kycVerificationStatus: normalized.kycVerificationStatus,
         network: payout.canonicalNetwork,
+        ...(normalized.exchangeRate ? { exchangeRate: normalized.exchangeRate } : {}),
+        ...(normalized.commissionConfig ? { commissionConfig: normalized.commissionConfig } : {}),
     };
 
     return { ok: true, normalized: out };
 };
 
 /**
- * @param {Record<string, string> & { network?: string }} normalized
+ * Builds a submitted order and, when an `exchangeRate` is supplied, attaches the full pricing
+ * snapshot (gross/fee/net fiat + net crypto, commission config, warnings).
+ *
+ * @param {NormalizedFiatToCryptoIntake} normalized
  * @param {string} id
+ * @param {{ computedAt?: string }} [options]
  * @returns {import("./fiatToCryptoOrder.js").FiatToCryptoOrder}
  */
-export const buildSubmittedFiatToCryptoOrder = (normalized, id) => {
-    const now = new Date().toISOString();
-    return {
+export const buildSubmittedFiatToCryptoOrder = (normalized, id, options = {}) => {
+    const now = options.computedAt ?? new Date().toISOString();
+    const base = {
         id,
         userId: normalized.userId,
         fiatCurrency: normalized.fiatCurrency,
@@ -114,4 +164,19 @@ export const buildSubmittedFiatToCryptoOrder = (normalized, id) => {
         updatedAt: now,
         submittedAt: now,
     };
+
+    if (!normalized.exchangeRate) {
+        return base;
+    }
+
+    const quote = computeFiatToCryptoQuote({
+        fiatAmount: normalized.fiatAmount,
+        fiatCurrency: normalized.fiatCurrency,
+        targetAssetCode: normalized.targetAssetCode,
+        exchangeRate: normalized.exchangeRate,
+        commissionConfig: normalized.commissionConfig ?? DEFAULT_COMMISSION_CONFIG,
+        computedAt: now,
+    });
+
+    return { ...base, ...buildOrderPricingPatch(quote) };
 };

@@ -5,6 +5,12 @@ import {
     applyAdminDecisionToPaidOrder,
 } from "@/domain/fiatToCryptoAdminQueue";
 import { COMPLIANCE_CHECK_STATUS, KYC_VERIFICATION_STATUS } from "@/domain/fiatToCryptoCompliance";
+import {
+    buildOrderPricingPatch,
+    computeFiatToCryptoQuote,
+    DEFAULT_COMMISSION_CONFIG,
+    validateCommissionConfig,
+} from "@/domain/fiatToCryptoPricing";
 import { getFiatToCryptoOrderById, updateFiatToCryptoOrder } from "@/server/inMemoryFiatToCryptoOrders";
 
 const ERROR_STATUS = {
@@ -80,7 +86,33 @@ export default function handler(req, res) {
         });
     }
 
-    const updated = updateFiatToCryptoOrder(id, result.orderPatch);
+    /** @type {Record<string, unknown>} */
+    let orderPatch = { ...result.orderPatch };
+
+    if (body.decision === ADMIN_DECISION.APPROVE) {
+        const exchangeRate = typeof body.exchangeRate === "string" ? body.exchangeRate.trim() : "";
+        if (exchangeRate) {
+            const config = body.commissionConfig ?? DEFAULT_COMMISSION_CONFIG;
+            const configErrors = validateCommissionConfig(config);
+            if (configErrors.length > 0) {
+                return res.status(400).json({ error: "invalid_commission_config", messages: configErrors });
+            }
+            try {
+                const quote = computeFiatToCryptoQuote({
+                    fiatAmount: order.fiatAmount,
+                    fiatCurrency: order.fiatCurrency,
+                    targetAssetCode: order.targetAssetCode,
+                    exchangeRate,
+                    commissionConfig: config,
+                });
+                orderPatch = { ...orderPatch, ...buildOrderPricingPatch(quote) };
+            } catch (e) {
+                return res.status(400).json({ error: "pricing_failed", message: String(e?.message ?? e) });
+            }
+        }
+    }
+
+    const updated = updateFiatToCryptoOrder(id, orderPatch);
     if (!updated) {
         return res.status(404).json({ error: ADMIN_DECISION_ERROR_CODES.ORDER_NOT_FOUND });
     }
