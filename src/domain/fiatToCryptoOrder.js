@@ -225,6 +225,15 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   executionExecutedAt?: string,
  *   executionAttempts?: number,
  *   executionLastErrorCode?: string,
+ *   depositId?: string,
+ *   depositAmount?: string,
+ *   depositCurrency?: string,
+ *   depositReference?: string,
+ *   depositReceivedAt?: string,
+ *   reconciledAt?: string,
+ *   reconciliationOutcome?: string,
+ *   reconciliationVariance?: string,
+ *   reconciliationNotes?: string,
  * }} FiatToCryptoOrder
  *
  * Field notes:
@@ -244,6 +253,11 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   `executionFillQuantity`, `executionFilledAssetCode`, `executionExecutedAt`, and `executionAttempts`
  *   record the liquidity-provider fill metadata after `purchasing` → `transferring`. `executionLastErrorCode`
  *   is populated on `purchasing` → `failed` (or when a retry cycle was spent).
+ * - **Deposit reconciliation (FCX-23):** `depositId`, `depositAmount`, `depositCurrency`, `depositReference`,
+ *   and `depositReceivedAt` capture the bank / PSP payment that funded the order. `reconciledAt`,
+ *   `reconciliationOutcome` (one of `DEPOSIT_RECONCILIATION_OUTCOME`), `reconciliationVariance` (signed
+ *   minor-unit delta as decimal string), and `reconciliationNotes` hold the ops reviewer decision. A
+ *   `matched` outcome is the only one that also transitions `submitted` → `paid`.
  */
 
 const WALLET_ADDRESS_MIN_LEN = 8;

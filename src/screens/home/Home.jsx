@@ -158,6 +158,13 @@ const Home = () => {
                 >
                     Admin: order review queue
                 </button>
+                <button
+                    type="button"
+                    className={styles.progressLink}
+                    onClick={() => router.push("/admin/deposits")}
+                >
+                    Admin: deposit reconciliation
+                </button>
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>

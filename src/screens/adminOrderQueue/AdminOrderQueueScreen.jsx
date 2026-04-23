@@ -236,6 +236,9 @@ const AdminOrderQueueScreen = () => {
                     <button type="button" className={styles.link} onClick={() => router.push("/")}>
                         ← Home
                     </button>
+                    <button type="button" className={styles.link} onClick={() => router.push("/admin/deposits")}>
+                        Deposit reconciliation →
+                    </button>
                     <button type="button" className={styles.link} onClick={loadQueue} disabled={loading}>
                         {loading ? "Refreshing…" : "Refresh"}
                     </button>
