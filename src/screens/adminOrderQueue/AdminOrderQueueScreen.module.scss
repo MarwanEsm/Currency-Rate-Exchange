@@ -1,0 +1,233 @@
+.wrap {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+}
+
+.topNav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.link {
+    padding: 0.35rem 0;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.lead {
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.5;
+    margin: 0.5rem 0 1.25rem;
+}
+
+.warn {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 193, 7, 0.12);
+    border: 1px solid rgba(255, 193, 7, 0.35);
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+.section {
+    margin-bottom: 2rem;
+}
+
+.sectionTitle {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.hint {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0 0 0.75rem;
+}
+
+.rolePills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.rolePill,
+.rolePillActive {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.rolePillActive {
+    background: rgba(74, 144, 217, 0.35);
+    border-color: rgba(74, 144, 217, 0.75);
+    color: #fff;
+}
+
+.permSummary {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.orderCard {
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.orderHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.35rem;
+}
+
+.orderAmount {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.orderMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.code {
+    font-size: 0.85em;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.9);
+    word-break: break-all;
+}
+
+.orderActions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.secondary {
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    font-size: 0.9rem;
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+}
+
+.decisionPane {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    span {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.75);
+    }
+}
+
+.textarea {
+    padding: 0.5rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.decisionButtons {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.approve,
+.reject {
+    padding: 0.45rem 0.95rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: #fff;
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+}
+
+.approve {
+    background: linear-gradient(135deg, #3ddc84, #2ba36a);
+}
+
+.reject {
+    background: linear-gradient(135deg, #ff6b6b, #d14b4b);
+}
+
+.banner {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(61, 220, 132, 0.4);
+    background: rgba(61, 220, 132, 0.08);
+    color: rgba(255, 255, 255, 0.92);
+    margin-bottom: 1.25rem;
+}
+
+.error {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 107, 107, 0.45);
+    background: rgba(255, 80, 80, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0.5rem 0;
+}

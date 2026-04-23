@@ -151,6 +151,13 @@ const Home = () => {
                 >
                     New fiat-to-crypto request
                 </button>
+                <button
+                    type="button"
+                    className={styles.progressLink}
+                    onClick={() => router.push("/admin/orders")}
+                >
+                    Admin: order review queue
+                </button>
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
