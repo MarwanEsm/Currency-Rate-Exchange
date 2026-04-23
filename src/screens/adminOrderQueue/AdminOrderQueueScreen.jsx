@@ -33,6 +33,7 @@ const AdminOrderQueueScreen = () => {
 
     const [roles, setRoles] = useState([ADMIN_ROLE.ORDER_REVIEWER]);
     const [orders, setOrders] = useState([]);
+    const [purchasingOrders, setPurchasingOrders] = useState([]);
     const [listError, setListError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -47,8 +48,14 @@ const AdminOrderQueueScreen = () => {
     const [quoteError, setQuoteError] = useState(null);
     const [quoteBusy, setQuoteBusy] = useState(false);
 
+    const [executeBusyId, setExecuteBusyId] = useState(null);
+    const [executeSimulatedOutcome, setExecuteSimulatedOutcome] = useState("");
+    const [executeResultBanner, setExecuteResultBanner] = useState(null);
+    const [executeError, setExecuteError] = useState(null);
+
     const canView = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.VIEW_ORDER_QUEUE), [roles]);
     const canDecide = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.DECIDE_ORDER_APPROVAL), [roles]);
+    const canExecute = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.EXECUTE_PURCHASE), [roles]);
 
     const adminUserId = user?.uid ?? "";
 
@@ -59,21 +66,30 @@ const AdminOrderQueueScreen = () => {
     const loadQueue = useCallback(async () => {
         if (!adminUserId || !canView) {
             setOrders([]);
+            setPurchasingOrders([]);
             return;
         }
         setLoading(true);
         setListError(null);
         try {
-            const res = await fetch("/api/fiat-to-crypto/admin/queue", {
-                method: "GET",
-                headers: buildAdminHeaders(adminUserId, roles),
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                setListError(data.error || "Failed to load queue.");
+            const [paidRes, purchasingRes] = await Promise.all([
+                fetch("/api/fiat-to-crypto/admin/queue?status=paid", {
+                    method: "GET",
+                    headers: buildAdminHeaders(adminUserId, roles),
+                }),
+                fetch("/api/fiat-to-crypto/admin/queue?status=purchasing", {
+                    method: "GET",
+                    headers: buildAdminHeaders(adminUserId, roles),
+                }),
+            ]);
+            const paidData = await paidRes.json().catch(() => ({}));
+            const purchasingData = await purchasingRes.json().catch(() => ({}));
+            if (!paidRes.ok || !purchasingRes.ok) {
+                setListError(paidData.error || purchasingData.error || "Failed to load queue.");
                 return;
             }
-            setOrders(Array.isArray(data.orders) ? data.orders : []);
+            setOrders(Array.isArray(paidData.orders) ? paidData.orders : []);
+            setPurchasingOrders(Array.isArray(purchasingData.orders) ? purchasingData.orders : []);
         } catch {
             setListError("Network error. Please retry.");
         } finally {
@@ -167,6 +183,52 @@ const AdminOrderQueueScreen = () => {
         }
     };
 
+    const executePurchase = async (orderId) => {
+        if (!canExecute) return;
+        setExecuteBusyId(orderId);
+        setExecuteError(null);
+        setExecuteResultBanner(null);
+        try {
+            const res = await fetch(
+                `/api/fiat-to-crypto/admin/orders/${encodeURIComponent(orderId)}/execute-purchase`,
+                {
+                    method: "POST",
+                    headers: buildAdminHeaders(adminUserId, roles),
+                    body: JSON.stringify({
+                        ...(executeSimulatedOutcome ? { simulatedOutcome: executeSimulatedOutcome } : {}),
+                    }),
+                },
+            );
+            const data = await res.json().catch(() => ({}));
+            if (data.ok) {
+                setExecuteResultBanner({
+                    ok: true,
+                    orderId: data.order?.id,
+                    newStatus: data.order?.status,
+                    fillPrice: data.result?.fillPrice,
+                    fillQuantity: data.result?.fillQuantity,
+                    filledAssetCode: data.result?.filledAssetCode,
+                    providerId: data.result?.providerId,
+                    attempts: data.result?.attempts,
+                });
+            } else {
+                setExecuteResultBanner({
+                    ok: false,
+                    orderId: data.order?.id ?? orderId,
+                    newStatus: data.order?.status,
+                    errorCode: data.result?.errorCode,
+                    attempts: data.result?.attempts,
+                });
+                setExecuteError(data.result?.errorMessage || data.error || "Execution failed.");
+            }
+            await loadQueue();
+        } catch {
+            setExecuteError("Network error. Please retry.");
+        } finally {
+            setExecuteBusyId(null);
+        }
+    };
+
     return (
         <Container>
             <div className={styles.wrap}>
@@ -218,7 +280,8 @@ const AdminOrderQueueScreen = () => {
                     </div>
                     <p className={styles.permSummary}>
                         View: <strong>{canView ? "yes" : "no"}</strong> · Decide:{" "}
-                        <strong>{canDecide ? "yes" : "no"}</strong>
+                        <strong>{canDecide ? "yes" : "no"}</strong> · Execute purchase:{" "}
+                        <strong>{canExecute ? "yes" : "no"}</strong>
                     </p>
                 </section>
 
@@ -402,6 +465,102 @@ const AdminOrderQueueScreen = () => {
                                     </li>
                                 );
                             })}
+                        </ul>
+                    )}
+                </section>
+
+                {executeResultBanner && (
+                    <div
+                        className={executeResultBanner.ok ? styles.banner : styles.errorBanner}
+                        role="status"
+                    >
+                        Execution{" "}
+                        <strong>{executeResultBanner.ok ? "succeeded" : "failed"}</strong> for order{" "}
+                        <code className={styles.code}>{executeResultBanner.orderId}</code>{" "}
+                        ({executeResultBanner.attempts ?? 0} attempt
+                        {executeResultBanner.attempts === 1 ? "" : "s"}
+                        {executeResultBanner.providerId ? ` · ${executeResultBanner.providerId}` : ""})
+                        {executeResultBanner.ok ? (
+                            <>
+                                {" "}· filled{" "}
+                                <strong>
+                                    {executeResultBanner.fillQuantity} {executeResultBanner.filledAssetCode}
+                                </strong>{" "}
+                                @ <strong>{executeResultBanner.fillPrice}</strong> — now{" "}
+                                <strong>{executeResultBanner.newStatus}</strong>.
+                            </>
+                        ) : (
+                            <>
+                                {" "}· {executeResultBanner.errorCode ?? "unknown_error"} — now{" "}
+                                <strong>{executeResultBanner.newStatus ?? "failed"}</strong>.
+                            </>
+                        )}
+                    </div>
+                )}
+
+                <section className={styles.section} aria-labelledby="execute-heading">
+                    <h2 id="execute-heading" className={styles.sectionTitle}>
+                        Purchase execution (approved orders)
+                    </h2>
+                    <p className={styles.hint}>
+                        Orders in <strong>purchasing</strong> are ready for the liquidity provider. Execution
+                        retries transient errors up to 3 times and writes fill metadata + audit entries before
+                        moving the order to <strong>transferring</strong> (FCX-24). Use the simulated outcome to
+                        test failure paths in the demo provider.
+                    </p>
+                    <label className={styles.field}>
+                        <span>Simulated outcome (demo)</span>
+                        <select
+                            className={styles.input}
+                            value={executeSimulatedOutcome}
+                            onChange={(e) => setExecuteSimulatedOutcome(e.target.value)}
+                            aria-label="Simulated outcome"
+                        >
+                            <option value="">success (default)</option>
+                            <option value="timeout">timeout (retryable)</option>
+                            <option value="insufficient_liquidity">insufficient_liquidity (retryable)</option>
+                            <option value="network_error">network_error (retryable)</option>
+                            <option value="rate_rejected">rate_rejected (non-retryable)</option>
+                        </select>
+                    </label>
+                    {executeError && (
+                        <p className={styles.error} role="alert">
+                            {executeError}
+                        </p>
+                    )}
+                    {!canView ? (
+                        <p className={styles.hint}>Your selected roles don’t allow viewing the queue.</p>
+                    ) : purchasingOrders.length === 0 ? (
+                        <p className={styles.hint}>No orders are currently in purchasing.</p>
+                    ) : (
+                        <ul className={styles.list}>
+                            {purchasingOrders.map((order) => (
+                                <li key={order.id} className={styles.orderCard}>
+                                    <div className={styles.orderHead}>
+                                        <span className={styles.orderAmount}>
+                                            {order.netCryptoAmount ?? order.fiatAmount}{" "}
+                                            {order.netCryptoAssetCode ?? order.targetAssetCode} · from{" "}
+                                            {order.fiatAmount} {order.fiatCurrency}
+                                        </span>
+                                        <code className={styles.code}>{order.id}</code>
+                                    </div>
+                                    <div className={styles.orderMeta}>
+                                        <span>Rate locked: {order.exchangeRateApplied ?? "—"}</span>
+                                        <span>Fee: {order.feeFiatAmount ?? "—"} {order.fiatCurrency}</span>
+                                        <span>Attempts: {order.executionAttempts ?? 0}</span>
+                                    </div>
+                                    <div className={styles.orderActions}>
+                                        <button
+                                            type="button"
+                                            className={styles.approve}
+                                            disabled={!canExecute || executeBusyId === order.id}
+                                            onClick={() => executePurchase(order.id)}
+                                        >
+                                            {executeBusyId === order.id ? "Executing…" : "Execute purchase"}
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
                         </ul>
                     )}
                 </section>

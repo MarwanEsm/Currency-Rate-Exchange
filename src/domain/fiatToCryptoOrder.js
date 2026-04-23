@@ -217,6 +217,14 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   commissionConfigSnapshot?: import("./fiatToCryptoPricing.js").CommissionConfig,
  *   pricingComputedAt?: string,
  *   pricingWarnings?: ReadonlyArray<string>,
+ *   executionProviderId?: string,
+ *   executionProviderOrderId?: string,
+ *   executionFillPrice?: string,
+ *   executionFillQuantity?: string,
+ *   executionFilledAssetCode?: string,
+ *   executionExecutedAt?: string,
+ *   executionAttempts?: number,
+ *   executionLastErrorCode?: string,
  * }} FiatToCryptoOrder
  *
  * Field notes:
@@ -232,6 +240,10 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   `exchangeRateApplied`, and `commissionConfigSnapshot` persist the authoritative quote. These are
  *   populated at intake when an exchange rate is supplied and refreshed when the admin approves the
  *   order with a locked rate. `pricingWarnings` surfaces machine-readable flags (e.g. `net_crypto_below_dust_threshold`).
+ * - **Purchase execution (FCX-24):** `executionProviderId`, `executionProviderOrderId`, `executionFillPrice`,
+ *   `executionFillQuantity`, `executionFilledAssetCode`, `executionExecutedAt`, and `executionAttempts`
+ *   record the liquidity-provider fill metadata after `purchasing` → `transferring`. `executionLastErrorCode`
+ *   is populated on `purchasing` → `failed` (or when a retry cycle was spent).
  */
 
 const WALLET_ADDRESS_MIN_LEN = 8;

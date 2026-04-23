@@ -58,6 +58,22 @@ Validated `paid` orders wait for human approval before moving to `purchasing`.
 
 ---
 
+## Purchase execution (FCX-24)
+
+After approval an order lives in `purchasing` with a locked `exchangeRateApplied` and `netCryptoAmount`. Execution is the step that converts that quote into an actual crypto fill with a liquidity provider.
+
+- **Engine:** `src/domain/fiatToCryptoExecution.js`. `executePurchaseWithRetry(order, options)` guards eligibility (order must be `purchasing` **and** have a locked pricing snapshot), calls the registered liquidity provider, retries transient failures, writes one audit entry per attempt, and returns either a success payload (`providerId`, `providerOrderId`, `fillPrice`, `fillQuantity`, `filledAssetCode`, `attempts`) or a failure payload (`errorCode`, `errorMessage`, `attempts`).
+- **Retry policy:** up to `DEFAULT_MAX_PURCHASE_ATTEMPTS` (3) for codes in `RETRYABLE_ERROR_CODES` (`PROVIDER_TIMEOUT`, `INSUFFICIENT_LIQUIDITY`, `NETWORK_ERROR`). Non-retryable codes (e.g. `RATE_REJECTED`, `INVALID_ORDER_STATE`) fail immediately. Provider exceptions become `INTERNAL_ERROR`.
+- **Providers:** registered via `registerLiquidityProvider(id, fn)`. The demo ships `internal_simulator` with deterministic outcomes driven by `simulatedOutcome`. Production wires in the real venue adapter and should keep per-provider secrets out of the audit payload.
+- **Persistence:** success → `purchasing` → `transferring` with `executionProviderId`, `executionProviderOrderId`, `executionFillPrice`, `executionFillQuantity`, `executionFilledAssetCode`, `executionExecutedAt`, `executionAttempts`. Final failure → `purchasing` → `failed` with `failureCode`, `failureMessage`, `executionLastErrorCode`, and `executionAttempts` capturing retry effort. `buildExecutionOrderPatch` returns the exact patch the API merges.
+- **API:** `POST /api/fiat-to-crypto/admin/orders/:id/execute-purchase` requires the `execute_purchase` permission (roles `order_reviewer`, `operations_manager`). Accepts `{ providerId?, simulatedOutcome?, maxAttempts? }`. Returns `{ ok, order, result }` with HTTP 200 on success, 409 on failure so ops can distinguish retryable UI responses from auth errors.
+- **Admin UI:** `/admin/orders` adds a **Purchase execution (approved orders)** section fed by `GET /api/fiat-to-crypto/admin/queue?status=purchasing`. Operators can preview simulated outcomes before running execution and see a live banner with fill details or error codes.
+- **Audit:** every attempt appends a `PurchaseExecutionAuditEntry` to `executionAuditBuffer` (retrievable via `getPurchaseExecutionAuditLogSnapshot`). Persist this buffer to the durable sink in production and alert on streaks of `MAX_RETRIES_EXCEEDED`.
+
+**Ops signals:** repeated `INSUFFICIENT_LIQUIDITY` → coordinate with treasury before re-executing; `RATE_REJECTED` → provider rejected the locked rate, re-approval with a fresh quote is required; non-zero `executionAttempts` on completed orders is healthy noise, but p95 should stay ≤ 2.
+
+---
+
 ## Manual intervention
 
 ### KYC rejected or expired before or at execution
@@ -124,4 +140,5 @@ Validated `paid` orders wait for human approval before moving to `purchasing`.
 | `src/domain/adminPermissions.js` | Admin roles and permission checks (FCX-26) |
 | `src/domain/fiatToCryptoAdminQueue.js` + admin API routes | Admin review queue, approve/reject decisions, audit log (FCX-26) |
 | `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto calculation engine, ops pricing preview (FCX-22) |
+| `src/domain/fiatToCryptoExecution.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/execute-purchase` | Liquidity-provider purchase, retry loop, execution audit, order patch (FCX-24) |
 | `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated happy path, failure path, edge cases |

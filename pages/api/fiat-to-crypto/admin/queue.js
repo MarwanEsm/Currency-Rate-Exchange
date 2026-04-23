@@ -3,12 +3,16 @@ import { selectPendingExecutableOrders } from "@/domain/fiatToCryptoAdminQueue";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "@/domain/fiatToCryptoOrder";
 import { listFiatToCryptoOrdersByStatus } from "@/server/inMemoryFiatToCryptoOrders";
 
+const ALLOWED_STATUSES = new Set([FIAT_TO_CRYPTO_ORDER_STATUS.PAID, FIAT_TO_CRYPTO_ORDER_STATUS.PURCHASING]);
+
 /**
- * GET /api/fiat-to-crypto/admin/queue — admin list of orders pending approval (FCX-26).
+ * GET /api/fiat-to-crypto/admin/queue?status=paid|purchasing — admin queue (FCX-26 + FCX-24).
+ *
+ * Default status is `paid` (orders awaiting approval). `purchasing` returns orders approved and
+ * ready for liquidity-provider execution so the admin screen can render a separate section.
  *
  * Demo auth: admin identity and roles arrive via `x-admin-user-id` and `x-admin-roles` (comma-
- * separated). In production, resolve both from a verified Firebase ID token and a server-side
- * role store — do not trust headers alone.
+ * separated). Production must resolve both from a verified session, not headers.
  */
 export default function handler(req, res) {
     if (req.method !== "GET") {
@@ -29,7 +33,13 @@ export default function handler(req, res) {
         return res.status(403).json({ error: "forbidden" });
     }
 
-    const paid = listFiatToCryptoOrdersByStatus(FIAT_TO_CRYPTO_ORDER_STATUS.PAID);
-    const orders = selectPendingExecutableOrders(paid);
-    return res.status(200).json({ orders });
+    const requestedStatus = typeof req.query?.status === "string" ? req.query.status : FIAT_TO_CRYPTO_ORDER_STATUS.PAID;
+    if (!ALLOWED_STATUSES.has(requestedStatus)) {
+        return res.status(400).json({ error: "invalid_status", allowed: [...ALLOWED_STATUSES] });
+    }
+
+    const byStatus = listFiatToCryptoOrdersByStatus(requestedStatus);
+    const orders =
+        requestedStatus === FIAT_TO_CRYPTO_ORDER_STATUS.PAID ? selectPendingExecutableOrders(byStatus) : byStatus;
+    return res.status(200).json({ status: requestedStatus, orders });
 }
