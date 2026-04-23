@@ -28,6 +28,21 @@ Operational guidance for safely running fiat-to-crypto flows aligned with `src/d
 
 ---
 
+## Admin review queue (FCX-26)
+
+Validated `paid` orders wait for human approval before moving to `purchasing`.
+
+- **Entry point:** `/admin/orders` — lists orders in `paid` via `GET /api/fiat-to-crypto/admin/queue`.
+- **Action:** `POST /api/fiat-to-crypto/admin/orders/:id/decision` with `{ decision: "approve" | "reject", reason }`.
+- **Permissions:** only callers with the `decide_order_approval` permission (roles `order_reviewer`, `operations_manager`, `compliance_officer`) can decide. `read_only_auditor` can view but not decide. See `src/domain/adminPermissions.js`.
+- **Approve:** runs `evaluateFiatToCryptoOrderTransitionWithCompliance` (KYC still **verified**, AML and sanctions **cleared**). If compliance blocks, the approval is refused and the order stays in `paid` — the attempt is recorded with `outcome: "blocked"` in the admin audit log.
+- **Reject:** transitions `paid` → `failed` with `failureCode: admin_rejected` and the reviewer’s reason stored as `failureMessage`.
+- **Audit:** every decision (including blocked attempts) is appended to `getAdminDecisionAuditLogSnapshot()` with schema version, reviewer id + roles, previous/new status, and any compliance reason codes. Production: persist this payload in the durable audit sink alongside `ComplianceAuditEntry`.
+
+> Demo authentication: the current routes trust `x-admin-user-id` and `x-admin-roles` headers from the client. **Production must derive both from a verified session / role store** — never from the browser.
+
+---
+
 ## Manual intervention
 
 ### KYC rejected or expired before or at execution
@@ -91,4 +106,6 @@ Operational guidance for safely running fiat-to-crypto flows aligned with `src/d
 | `src/domain/fiatToCryptoTransfer.js` | Payout network config, address validation, tx hash fields, failure policy (FCX-21) |
 | `src/domain/fiatToCryptoOrderProgress.js` | User timeline, notification trigger keys, failure copy, completed delivery summary (FCX-20) |
 | `src/domain/fiatToCryptoIntake.js` + `POST /api/fiat-to-crypto/orders` | Intake validation and creating orders in `submitted` (FCX-25) |
+| `src/domain/adminPermissions.js` | Admin roles and permission checks (FCX-26) |
+| `src/domain/fiatToCryptoAdminQueue.js` + admin API routes | Admin review queue, approve/reject decisions, audit log (FCX-26) |
 | `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated happy path, failure path, edge cases |
