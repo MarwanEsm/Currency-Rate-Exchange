@@ -117,5 +117,6 @@ The main UI is implemented in **`src/screens/currenciesList/CurrenciesList.jsx`*
 - `pages/orders/progress.jsx`: demo **purchase status** view (timeline, notifications, failure guidance, delivery summary).
 - `pages/orders/new.jsx` + `POST /api/fiat-to-crypto/orders`: fiat-to-crypto **intake form** with client + server validation (FCX-25).
 - `pages/admin/orders.jsx` + `GET /api/fiat-to-crypto/admin/queue` + `POST /api/fiat-to-crypto/admin/orders/[id]/decision`: admin review queue with approve/reject + audit (FCX-26).
-- `docs/fiat-to-crypto-ops-runbook.md`: operations runbook and go-live checklist (FCX-18, incl. FCX-26 admin queue).
+- `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing`: commission & net-crypto calculation engine with configurable fixed/percentage/hybrid commission, per-asset precision, and ops pricing preview (FCX-22).
+- `docs/fiat-to-crypto-ops-runbook.md`: operations runbook and go-live checklist (FCX-18, incl. FCX-26 admin queue and FCX-22 pricing).
 - `functions/`: Firebase Cloud Functions workspace.
