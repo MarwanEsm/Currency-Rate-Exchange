@@ -274,6 +274,177 @@ describe("CurrenciesList", () => {
         expect(screen.queryByRole("button", { name: /refresh rate/i })).toBeNull();
     });
 
+    it("triggers conversion when Enter is pressed in the amount field (FCX-32)", async () => {
+        mockUseExchangeRates.mockImplementation((from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: 0.5,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: null,
+                    ageMs: null,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        });
+
+        render(<CurrenciesList />);
+
+        await userEvent.click(await screen.findByLabelText("Select source currency"));
+        await userEvent.click(await screen.findByText("US Dollar"));
+        await userEvent.click(screen.getByLabelText("Select target currency"));
+        await userEvent.click(await screen.findByText("Euro"));
+
+        const amountInput = screen.getByLabelText("Amount");
+        expect(amountInput).toHaveAttribute("aria-keyshortcuts", "Enter");
+
+        await userEvent.type(amountInput, "10");
+        await userEvent.keyboard("{Enter}");
+
+        expect(screen.getByRole("button", { name: /5[.,]00\s+EUR/ })).toBeInTheDocument();
+    });
+
+    it("Enter does nothing when Convert is disabled (no pair / invalid state) (FCX-32)", async () => {
+        render(<CurrenciesList />);
+
+        await screen.findByLabelText("Amount");
+        const amountInput = screen.getByLabelText("Amount");
+        await userEvent.click(amountInput);
+        await userEvent.keyboard("{Enter}");
+
+        expect(screen.getByRole("button", { name: "Convert" })).toBeDisabled();
+        expect(screen.queryByText(/enter a whole number amount/i)).toBeNull();
+    });
+
+    it("strips non-digit input so neighboring digits stay valid (FCX-32)", async () => {
+        mockUseExchangeRates.mockImplementation((from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: 2,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: null,
+                    ageMs: null,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        });
+
+        render(<CurrenciesList />);
+
+        await userEvent.click(await screen.findByLabelText("Select source currency"));
+        await userEvent.click(await screen.findByText("US Dollar"));
+        await userEvent.click(screen.getByLabelText("Select target currency"));
+        await userEvent.click(await screen.findByText("Euro"));
+
+        const amountInput = screen.getByLabelText("Amount");
+        await userEvent.type(amountInput, "1a-.0");
+
+        expect(amountInput.value).toMatch(/^10$/);
+
+        await userEvent.click(screen.getByRole("button", { name: "Convert" }));
+        expect(screen.getByRole("button", { name: /20[.,]00\s+EUR/ })).toBeInTheDocument();
+    });
+
+    it("ignores fully invalid amount input — Convert with no digits surfaces validation, no result (FCX-32)", async () => {
+        mockUseExchangeRates.mockImplementation((from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: 2,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: null,
+                    ageMs: null,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        });
+
+        render(<CurrenciesList />);
+
+        await userEvent.click(await screen.findByLabelText("Select source currency"));
+        await userEvent.click(await screen.findByText("US Dollar"));
+        await userEvent.click(screen.getByLabelText("Select target currency"));
+        await userEvent.click(await screen.findByText("Euro"));
+
+        const amountInput = screen.getByLabelText("Amount");
+        await userEvent.type(amountInput, "abc.-");
+        expect(amountInput.value).toBe("");
+
+        await userEvent.click(screen.getByRole("button", { name: "Convert" }));
+        expect(
+            await screen.findByText(/enter a whole number amount/i),
+        ).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /EUR/ })).toBeNull();
+    });
+
+    it("rounds to two decimals using half-up at the precision boundary (FCX-32)", async () => {
+        mockUseExchangeRates.mockImplementation((from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: 0.005,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: null,
+                    ageMs: null,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        });
+
+        render(<CurrenciesList />);
+
+        await userEvent.click(await screen.findByLabelText("Select source currency"));
+        await userEvent.click(await screen.findByText("US Dollar"));
+        await userEvent.click(screen.getByLabelText("Select target currency"));
+        await userEvent.click(await screen.findByText("Euro"));
+
+        await userEvent.type(screen.getByLabelText("Amount"), "1");
+        await userEvent.click(screen.getByRole("button", { name: "Convert" }));
+
+        expect(screen.getByRole("button", { name: /0[.,]01\s+EUR/ })).toBeInTheDocument();
+    });
+
     it("shows a rounded two-decimal converted total after Convert", async () => {
         mockUseExchangeRates.mockImplementation((from, to) => {
             if (from === "USD" && to === "EUR") {

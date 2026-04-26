@@ -67,4 +67,17 @@ describe("convertAmountWithRate", () => {
     it("returns null when the product is not finite", () => {
         expect(convertAmountWithRate(Number.MAX_VALUE, Number.MAX_VALUE)).toBeNull();
     });
+
+    describe("precision boundary (FCX-32)", () => {
+        test.each([
+            [1, 0.005, 0.01],
+            [1, 0.004, 0],
+            [10, 0.125, 1.25],
+            [3, 0.3333, 1],
+            [1000, 0.00001, 0.01],
+            [0, 0.5, 0],
+        ])("convertAmountWithRate(%p, %p) => %p", (amount, rate, expected) => {
+            expect(convertAmountWithRate(amount, rate)).toBe(expected);
+        });
+    });
 });

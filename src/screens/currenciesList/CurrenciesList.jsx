@@ -115,6 +115,13 @@ const CurrenciesList = () => {
     const isConvertDisabled =
         !showPair || !!providerError || isLoading || numericRate === null;
 
+    const onAmountKeyDown = (event) => {
+        if (event.key !== "Enter") return;
+        if (isConvertDisabled) return;
+        event.preventDefault();
+        onConvert();
+    };
+
     const handleLogout = async () => {
         try {
             await logout();
@@ -282,6 +289,7 @@ const CurrenciesList = () => {
                         placeholder="Amount"
                         value={formatWholeAmountForDisplay(amount)}
                         aria-invalid={amountValidationMessage ? "true" : "false"}
+                        aria-keyshortcuts="Enter"
                         aria-describedby={
                             amountValidationMessage ? "amount-validation-message" : undefined
                         }
@@ -291,6 +299,7 @@ const CurrenciesList = () => {
                             setConvertInvalidAttempt(false);
                         }}
                         onBlur={() => setAmountTouched(true)}
+                        onKeyDown={onAmountKeyDown}
                     />
                     {amountValidationMessage ? (
                         <div
