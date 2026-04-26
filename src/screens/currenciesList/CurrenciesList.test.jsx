@@ -198,6 +198,82 @@ describe("CurrenciesList", () => {
         expect(screen.getByLabelText("Amount")).toHaveAttribute("aria-invalid", "true");
     });
 
+    it("shows a Stale rate badge and a Refresh rate button when the hook reports isStale=true", async () => {
+        mockUseExchangeRates.mockImplementation((from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: 0.915,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: "2026-04-19T14:00:00.000Z",
+                    ageMs: 5 * 60 * 1000,
+                    isStale: true,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        });
+
+        render(<CurrenciesList />);
+
+        await userEvent.click(await screen.findByLabelText("Select source currency"));
+        await userEvent.click(await screen.findByText("US Dollar"));
+        await userEvent.click(screen.getByLabelText("Select target currency"));
+        await userEvent.click(await screen.findByText("Euro"));
+
+        expect(await screen.findByTestId("stale-rate-badge")).toHaveTextContent(/stale rate/i);
+        expect(screen.getByRole("group", { name: /stale rate/i })).toBeInTheDocument();
+        expect(screen.getByText(/rates updated 5m ago/i)).toBeInTheDocument();
+
+        const refreshButton = screen.getByRole("button", { name: /refresh rate/i });
+        await userEvent.click(refreshButton);
+        expect(retryRatesMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not show a Stale rate badge when the hook reports fresh data", async () => {
+        mockUseExchangeRates.mockImplementation((from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: 0.915,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: "2026-04-19T14:00:00.000Z",
+                    ageMs: 2_000,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        });
+
+        render(<CurrenciesList />);
+
+        await userEvent.click(await screen.findByLabelText("Select source currency"));
+        await userEvent.click(await screen.findByText("US Dollar"));
+        await userEvent.click(screen.getByLabelText("Select target currency"));
+        await userEvent.click(await screen.findByText("Euro"));
+
+        await screen.findByText(/1 USD = 0[.,]915 EUR/);
+        expect(screen.queryByTestId("stale-rate-badge")).toBeNull();
+        expect(screen.queryByRole("button", { name: /refresh rate/i })).toBeNull();
+    });
+
     it("shows a rounded two-decimal converted total after Convert", async () => {
         mockUseExchangeRates.mockImplementation((from, to) => {
             if (from === "USD" && to === "EUR") {

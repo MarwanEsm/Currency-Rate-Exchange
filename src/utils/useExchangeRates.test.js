@@ -120,4 +120,73 @@ describe("useExchangeRates", () => {
         await waitFor(() => expect(getExchangeRates).toHaveBeenCalledWith("GBP", expect.any(AbortSignal)));
         await waitFor(() => expect(result.current.numericRate).toBeCloseTo(1.2));
     });
+
+    describe("staleness (FCX-31)", () => {
+        const FROZEN_NOW = new Date("2026-04-19T12:00:00.000Z").getTime();
+
+        beforeEach(() => {
+            jest.useFakeTimers({ now: FROZEN_NOW });
+            // Configure a fresh mock for fake-timer tests so we don't get a delayed promise resolution.
+            getExchangeRates.mockResolvedValue({
+                base: "USD",
+                fetchedAt: new Date(FROZEN_NOW).toISOString(),
+                rates: { EUR: "0.915" },
+            });
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        it("reports isStale=false and an age near zero immediately after fetch", async () => {
+            const { result } = renderHook(() =>
+                useExchangeRates("USD", "EUR", { staleAfterMs: 60_000 }),
+            );
+
+            await waitFor(() => expect(result.current.numericRate).toBeCloseTo(0.915));
+
+            expect(result.current.isStale).toBe(false);
+            expect(result.current.ageMs).toBeGreaterThanOrEqual(0);
+            expect(result.current.ageMs).toBeLessThan(1_000);
+            expect(result.current.fetchedAt).toBeTruthy();
+        });
+
+        it("flips to isStale=true once the configured staleAfterMs elapses", async () => {
+            const { result } = renderHook(() =>
+                useExchangeRates("USD", "EUR", { staleAfterMs: 60_000 }),
+            );
+
+            await waitFor(() => expect(result.current.numericRate).toBeCloseTo(0.915));
+            expect(result.current.isStale).toBe(false);
+
+            await act(async () => {
+                jest.advanceTimersByTime(61_000);
+            });
+
+            expect(result.current.isStale).toBe(true);
+            expect(result.current.ageMs).toBeGreaterThanOrEqual(60_000);
+        });
+
+        it("respects a custom staleAfterMs threshold", async () => {
+            const { result } = renderHook(() =>
+                useExchangeRates("USD", "EUR", { staleAfterMs: 500 }),
+            );
+
+            await waitFor(() => expect(result.current.numericRate).toBeCloseTo(0.915));
+
+            await act(async () => {
+                jest.advanceTimersByTime(15_000);
+            });
+
+            expect(result.current.isStale).toBe(true);
+        });
+
+        it("returns isStale=false and ageMs=null before the first successful fetch", () => {
+            const { result } = renderHook(() => useExchangeRates(undefined, "EUR"));
+
+            expect(result.current.isStale).toBe(false);
+            expect(result.current.ageMs).toBeNull();
+            expect(result.current.fetchedAt).toBeNull();
+        });
+    });
 });

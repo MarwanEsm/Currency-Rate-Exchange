@@ -16,6 +16,7 @@ import {
     sanitizeAmountDigitString,
 } from "../../utils/convertCurrencyAmount";
 import { EXCHANGE_RATE_ERROR_CODES } from "../../services/exchangeRateProvider";
+import { formatRelativeAge } from "../../utils/formatRelativeAge";
 
 const PROVIDER_ERROR_MESSAGES = {
     [EXCHANGE_RATE_ERROR_CODES.NETWORK]: "Unable to reach the exchange rate provider. Please check your connection and try again.",
@@ -38,10 +39,15 @@ const CurrenciesList = () => {
     const [hasConverted, setHasConverted] = useState(false);
     const [amountTouched, setAmountTouched] = useState(false);
     const [convertInvalidAttempt, setConvertInvalidAttempt] = useState(false);
-    const { numericRate, providerError, isLoading, fetchedAt, retryRates } = useExchangeRates(
-        fromCurrency?.value,
-        toCurrency?.value,
-    );
+    const {
+        numericRate,
+        providerError,
+        isLoading,
+        fetchedAt,
+        ageMs,
+        isStale,
+        retryRates,
+    } = useExchangeRates(fromCurrency?.value, toCurrency?.value);
 
     /* eslint-disable react-hooks/set-state-in-effect -- defensive reset when source and target match */
     useEffect(() => {
@@ -132,13 +138,21 @@ const CurrenciesList = () => {
         return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(parsed);
     }, [fetchedAt]);
 
+    const relativeAgeLabel = useMemo(() => formatRelativeAge(ageMs), [ageMs]);
+
+    const showRate = Boolean(showPair && !providerErrorMessage && !isLoading && formattedRate !== null);
+    const showStaleIndicator = Boolean(showRate && isStale);
+
     const exchangeRateGroupAriaLabel = useMemo(() => {
         if (!showPair) return "Exchange rate";
         if (providerErrorMessage) return "Exchange rate unavailable.";
         if (isLoading) return "Loading exchange rate";
         if (formattedRate !== null && fromCurrency && toCurrency) {
             const line = `1 ${fromCurrency.value} = ${formattedRate} ${toCurrency.value}`;
-            return fetchedAtLabel ? `${line}, as of ${fetchedAtLabel}` : line;
+            const stalePrefix = showStaleIndicator ? "Stale rate, " : "";
+            const ageSuffix = relativeAgeLabel ? `, updated ${relativeAgeLabel}` : "";
+            const absoluteSuffix = fetchedAtLabel ? `, as of ${fetchedAtLabel}` : "";
+            return `${stalePrefix}${line}${ageSuffix}${absoluteSuffix}`;
         }
         return "Exchange rate unavailable for this pair.";
     }, [
@@ -149,6 +163,8 @@ const CurrenciesList = () => {
         fromCurrency,
         toCurrency,
         fetchedAtLabel,
+        relativeAgeLabel,
+        showStaleIndicator,
     ]);
 
     const renderExchangeRatePanelBody = () => {
@@ -162,13 +178,33 @@ const CurrenciesList = () => {
             return <span className={styles.rateLoading}>Loading…</span>;
         }
         if (formattedRate !== null) {
+            const updatedLine = relativeAgeLabel && fetchedAtLabel
+                ? `Rates updated ${relativeAgeLabel} (${fetchedAtLabel})`
+                : fetchedAtLabel
+                    ? `Rates updated ${fetchedAtLabel}`
+                    : null;
             return (
                 <>
                     <b className={styles.rateFigure}>
                         1 {fromCurrency.value} = {formattedRate} {toCurrency.value}
                     </b>
-                    {fetchedAtLabel ? (
-                        <span className={styles.rateUpdatedLabel}>Rates updated {fetchedAtLabel}</span>
+                    {showStaleIndicator ? (
+                        <span className={styles.staleBadge} role="status" data-testid="stale-rate-badge">
+                            Stale rate
+                        </span>
+                    ) : null}
+                    {updatedLine ? (
+                        <span className={styles.rateUpdatedLabel}>{updatedLine}</span>
+                    ) : null}
+                    {showStaleIndicator ? (
+                        <button
+                            type="button"
+                            className={styles.refreshRateButton}
+                            onClick={retryRates}
+                            disabled={isLoading}
+                        >
+                            Refresh rate
+                        </button>
                     ) : null}
                 </>
             );

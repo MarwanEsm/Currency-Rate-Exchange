@@ -223,6 +223,39 @@
     cursor: default;
 }
 
+.staleBadge {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #4a2900;
+    background-color: #ffd7a8;
+    border: 1px solid #d18a3a;
+    border-radius: 999px;
+}
+
+.refreshRateButton {
+    align-self: center;
+    margin-top: 4px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: inherit;
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.refreshRateButton:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
 .duplicateCurrencyMessage {
     margin-top: 12px;
     padding: 10px 16px;
