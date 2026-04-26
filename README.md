@@ -19,13 +19,15 @@ This project is a Next.js web application for:
 
 The conversion experience lives on the **currencies** screen (`/currencies`). It uses:
 
-- **Coinbase public HTTP API** (`https://api.coinbase.com/v2/exchange-rates`) as the single source of live rates. No exchange-rate API key is stored in the app; requests are made from the client like any other HTTPS call.
-- **`src/services/exchangeRateProvider.js`** — fetches and normalizes responses, maps failures to typed error codes (`network_error`, `http_error`, `parse_error`, `invalid_payload_error`), and surfaces a server-side **`fetchedAt`** timestamp (ISO 8601) on success.
-- **`src/utils/useExchangeRates.js`** — loads rates for the selected **base** (“from”) currency, exposes loading state, last-fetch time, and errors; coordinates with the cache below.
-- **`src/utils/exchangeRatesCache.js`** — in-memory cache keyed by base currency. Successful fetches are reused for **`EXCHANGE_RATES_CACHE_TTL_MS` (5 minutes)** unless the entry expires, the user changes base, or **Retry** invalidates that base’s cache entry.
-- **`src/utils/convertCurrencyAmount.js`** — sanitizes the amount input, parses whole-number digit strings, and converts with **half-up rounding to two decimal places** for the displayed result.
+- **Coinbase public HTTP APIs** (no API key in the app; browser HTTPS only):
+  - **`/v2/currencies`** — populates the **from** / **to** dropdowns (`CurrencySelect`).
+  - **`/v2/exchange-rates`** — numeric rate map for the selected **base** (“from”) currency (`exchangeRateProvider` default `baseUrl`).
+- **`src/services/exchangeRateProvider.js`** — default timeout **10s**, optional retries via `createExchangeRateClient`; normalizes responses; maps failures to typed codes (`network_error`, `http_error`, `parse_error`, `invalid_payload_error`); success includes provider **`fetchedAt`** (ISO 8601).
+- **`src/utils/useExchangeRates.js`** — loads rates for the base currency; exposes `numericRate`, loading, `fetchedAt`, **`ageMs` / `isStale`** (UI staleness, default **60s** after `fetchedAt`, independent of cache TTL), and `retryRates`. While mounted, it schedules a **background refetch when the in-memory cache TTL elapses** so data can refresh without leaving the screen.
+- **`src/utils/exchangeRatesCache.js`** — in-memory cache keyed by base. Successful fetches are reused for **`EXCHANGE_RATES_CACHE_TTL_MS` (5 minutes)** until expiry, **base change**, or **Retry / Refresh rate** invalidation for that base.
+- **`src/utils/convertCurrencyAmount.js`** — sanitizes input (non-digits stripped, **max 15 digits**), parses whole-number strings, converts with **half-up rounding to two decimals** for the result.
 
-The main UI is implemented in **`src/screens/currenciesList/CurrenciesList.jsx`** with accessible currency selectors (`CurrencySelect`).
+The main UI is **`src/screens/currenciesList/CurrenciesList.jsx`**: accessible `CurrencySelect` controls, rate panel (loading / empty / error / pair line), **Convert** plus a **Refresh rate** control (timestamp, optional **Stale rate** badge) in the same button row, and provider **Retry** when the fetch fails.
 
 ---
 
@@ -54,21 +56,26 @@ The main UI is implemented in **`src/screens/currenciesList/CurrenciesList.jsx`*
 ## User flow (conversion screen)
 
 1. Open **`/currencies`**.
-2. Choose a **from** (base) currency and a **to** currency from the lists (the same currency cannot be selected on both sides; the UI prevents invalid pairs and shows guidance when needed).
-3. The app fetches (or reuses a cached) rate map for the **from** currency and shows **1 {FROM} = {rate} {TO}** when a numeric rate exists, with **“Rates updated …”** / last fetch context when available.
-4. Enter a **whole-number amount** (digits only). **Convert** applies the current rate and shows the converted value, or messaging when the amount or rate is not usable.
-5. If the provider fails, an error message is shown with **Retry**, which clears the in-memory cache for the current base and triggers a fresh fetch.
+2. Choose a **from** (base) currency and a **to** currency (lists come from **`/v2/currencies`**). The same currency cannot be both sides; the UI resets or warns as needed.
+3. The app fetches or **reuses a cached** rate map for the **from** currency (**`/v2/exchange-rates`**) and shows **1 {FROM} = {rate} {TO}** when a numeric rate exists. The panel shows **loading**, **empty**, **unavailable**, or **error** states with clear copy and affordances (**Try again** when there is no rate but no hard provider error).
+4. Next to **Convert**, **Refresh rate** shows **“Rates updated …”** when timestamps are available, may show a **Stale rate** badge after the configured age, and triggers the same cache-bypass refetch as retry. **Enter** in the amount field runs **Convert** when it is enabled.
+5. Enter a **whole-number amount** (digits only; decimals/minus are ignored with user-visible notice). **Convert** applies the rate (two-decimal result) or validation when the amount or rate is unusable.
+6. On provider failure, an alert explains the issue and **Retry** invalidates the cached base and refetches.
 
 ---
 
 ## Known limitations
 
-- **Amount input:** only **non-negative whole numbers** (digits). No decimals in the amount field. Input is capped at **`MAX_AMOUNT_DIGITS` (15)** to avoid unsafe `Number` precision on very long strings.
-- **Converted output:** rounded to **two decimal places** (half-up). Extremely large products that are not finite numbers are not shown as a numeric result.
-- **Rates:** data depends on **Coinbase** availability, response shape, and the user’s network. Rates are **indicative** for the app’s UI, not a trading or settlement guarantee.
-- **Caching:** successful responses are **reused for up to five minutes** per base currency; stale data beyond TTL is not served from cache. Changing **from** or using **Retry** can force a new request sooner.
-- **Scope:** rates are fetched **per base currency**; changing **to** reuses the same rate map until the base or cache policy changes.
-- **Auth:** Firebase env vars must be valid for authentication flows elsewhere in the app; the conversion screen’s rate calls do not use Firebase, but misconfigured Firebase can still break overall local setup.
+- **Amount input:** only **non-negative whole numbers** (digits). Decimals and minus signs are not accepted as typed; they are stripped with feedback. **`MAX_AMOUNT_DIGITS` (15)** caps length for safe `Number` use.
+- **Converted output:** **two decimal places** (half-up). Non-finite products are not shown as a numeric result.
+- **Rates:** depend on **Coinbase**, network, and browser CORS/public API behavior. Values are **indicative**, not for trading or settlement.
+- **Caching vs UI “stale”:** cache **TTL is 5 minutes** (`EXCHANGE_RATES_CACHE_TTL_MS`) — entries are not read after expiry, and the hook can **auto-refetch** when that window ends while you stay on the page. **`isStale` / badge** use a shorter default (**~60s** after `fetchedAt`) so the UI can warn that quotes may be aging even while a cached payload is still valid for network reuse.
+- **Scope:** one rate map per **base**; changing **to** only picks a different key from the same map (no extra network call until TTL, refresh, or base change).
+- **Auth:** Firebase env must be set for auth elsewhere; rate fetches do not use Firebase keys.
+
+## Tests (conversion & rates)
+
+- **`npm test`** — includes `useExchangeRates`, `exchangeRatesCache`, `exchangeRateProvider` / client, **`rateFetchAndConversion.test.js`** (hook + conversion wiring), and **`CurrenciesList` / `CurrencySelect`** UI tests. Prefer mocks and deterministic timers for rate/cache cases to avoid flaky CI.
 
 ---
 
