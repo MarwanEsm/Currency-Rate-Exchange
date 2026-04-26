@@ -158,13 +158,28 @@ const CurrenciesList = () => {
 
     const relativeAgeLabel = useMemo(() => formatRelativeAge(ageMs), [ageMs]);
 
+    const rateMetaUpdatedLine = useMemo(() => {
+        if (relativeAgeLabel && fetchedAtLabel) {
+            return `Rates updated ${relativeAgeLabel} (${fetchedAtLabel})`;
+        }
+        if (fetchedAtLabel) return `Rates updated ${fetchedAtLabel}`;
+        return null;
+    }, [relativeAgeLabel, fetchedAtLabel]);
+
     const showRate = Boolean(showPair && !providerErrorMessage && !isLoading && formattedRate !== null);
     const showStaleIndicator = Boolean(showRate && isStale);
+
+    const rateRefreshButtonAriaLabel = useMemo(() => {
+        const parts = ["Refresh exchange rate"];
+        if (showStaleIndicator) parts.push("Stale rate");
+        if (rateMetaUpdatedLine) parts.push(rateMetaUpdatedLine);
+        return parts.join(". ");
+    }, [showStaleIndicator, rateMetaUpdatedLine]);
 
     const emptyStateMessage = useMemo(() => {
         if (fromCurrency && toCurrency) return null;
         if (!fromCurrency && !toCurrency) {
-            return "Select a source and target currency to see the rate.";
+            return "Select a source & target currency to see the rate.";
         }
         if (!fromCurrency) {
             return "Select a source currency to see the rate.";
@@ -230,35 +245,10 @@ const CurrenciesList = () => {
             );
         }
         if (formattedRate !== null) {
-            const updatedLine = relativeAgeLabel && fetchedAtLabel
-                ? `Rates updated ${relativeAgeLabel} (${fetchedAtLabel})`
-                : fetchedAtLabel
-                    ? `Rates updated ${fetchedAtLabel}`
-                    : null;
             return (
-                <>
-                    <b className={styles.rateFigure}>
-                        1 {fromCurrency.value} = {formattedRate} {toCurrency.value}
-                    </b>
-                    {showStaleIndicator ? (
-                        <span className={styles.staleBadge} role="status" data-testid="stale-rate-badge">
-                            Stale rate
-                        </span>
-                    ) : null}
-                    {updatedLine ? (
-                        <span className={styles.rateUpdatedLabel}>{updatedLine}</span>
-                    ) : null}
-                    {showStaleIndicator ? (
-                        <button
-                            type="button"
-                            className={styles.refreshRateButton}
-                            onClick={retryRates}
-                            disabled={isLoading}
-                        >
-                            Refresh rate
-                        </button>
-                    ) : null}
-                </>
+                <b className={styles.rateFigure}>
+                    1 {fromCurrency.value} = {formattedRate} {toCurrency.value}
+                </b>
             );
         }
         return (
@@ -433,11 +423,44 @@ const CurrenciesList = () => {
                 </div>
             )}
 
-            <Button onClick={onConvert} disabled={isConvertDisabled}>
-                {hasConverted && formattedConverted !== null
-                    ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
-                    : "Convert"}
-            </Button>
+            <div className={styles.convertRow}>
+                <Button
+                    className={styles.convertRowButton}
+                    onClick={onConvert}
+                    disabled={isConvertDisabled}
+                >
+                    {hasConverted && formattedConverted !== null
+                        ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
+                        : "Convert"}
+                </Button>
+                {showRate ? (
+                    <Button
+                        className={styles.convertRowButton}
+                        onClick={retryRates}
+                        disabled={isLoading}
+                        aria-label={rateRefreshButtonAriaLabel}
+                        data-testid="rate-refresh-action-button"
+                    >
+                        <span className={styles.rateRefreshButtonInner}>
+                            {showStaleIndicator ? (
+                                <span
+                                    className={styles.staleBadge}
+                                    role="status"
+                                    data-testid="stale-rate-badge"
+                                >
+                                    Stale rate
+                                </span>
+                            ) : null}
+                            {rateMetaUpdatedLine ? (
+                                <span className={styles.rateRefreshMeta}>{rateMetaUpdatedLine}</span>
+                            ) : null}
+                            <span className={styles.rateRefreshActionLabel}>
+                                {isLoading ? "Refreshing…" : "Refresh rate"}
+                            </span>
+                        </span>
+                    </Button>
+                ) : null}
+            </div>
             {isAuthenticated && <Button variant="secondary" onClick={handleLogout}>Log out</Button>}
         </div>
     </Container>;

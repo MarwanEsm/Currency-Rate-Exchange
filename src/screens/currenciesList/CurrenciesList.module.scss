@@ -149,14 +149,60 @@
     text-align: center;
 }
 
-.rateUpdatedLabel {
-    display: block;
-    width: 100%;
-    margin-top: 2px;
-    font-size: 0.8em;
-    font-weight: 500;
-    opacity: 0.92;
+.convertRow {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+button.convertRowButton {
+    display: inline-flex;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    box-sizing: border-box;
+}
+
+.rateRefreshButtonInner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    max-width: 280px;
     text-align: center;
+    color: inherit;
+}
+
+.rateRefreshMeta {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+    opacity: 0.92;
+    white-space: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.rateRefreshActionLabel {
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1.2;
+    letter-spacing: normal;
+}
+
+.rateRefreshButtonInner .staleBadge {
+    margin: 0;
+    color: #3b474d;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 .rateLoading,
@@ -235,7 +281,11 @@
     margin-top: 40px;
 }
 
-.listContainer button {
+.listContainer > .convertRow button {
+    min-width: 250px;
+}
+
+.listContainer > button {
     margin-top: 30px;
     min-width: 250px;
 }
