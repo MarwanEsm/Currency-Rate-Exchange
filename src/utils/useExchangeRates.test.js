@@ -4,7 +4,7 @@ import {
     EXCHANGE_RATE_ERROR_CODES,
     getExchangeRates,
 } from "@/services/exchangeRateProvider";
-import { clearExchangeRatesCache } from "@/utils/exchangeRatesCache";
+import { clearExchangeRatesCache, EXCHANGE_RATES_CACHE_TTL_MS } from "@/utils/exchangeRatesCache";
 import useExchangeRates from "./useExchangeRates";
 
 jest.mock("@/services/exchangeRateProvider", () => ({
@@ -119,6 +119,37 @@ describe("useExchangeRates", () => {
 
         await waitFor(() => expect(getExchangeRates).toHaveBeenCalledWith("GBP", expect.any(AbortSignal)));
         await waitFor(() => expect(result.current.numericRate).toBeCloseTo(1.2));
+    });
+
+    it("refetches in the background when cache TTL elapses while mounted (FCX-35)", async () => {
+        jest.useFakeTimers();
+        try {
+            const t0 = new Date("2026-04-19T12:00:00.000Z").getTime();
+            jest.setSystemTime(t0);
+
+            getExchangeRates.mockResolvedValue(normalizedUsd);
+
+            const { result } = renderHook(() => useExchangeRates("USD", "EUR"));
+
+            await waitFor(() => expect(getExchangeRates).toHaveBeenCalledTimes(1));
+            await waitFor(() => expect(result.current.numericRate).toBeCloseTo(0.915));
+
+            getExchangeRates.mockResolvedValueOnce({
+                ...normalizedUsd,
+                fetchedAt: "2026-04-19T12:10:00.000Z",
+                rates: { EUR: "0.99" },
+            });
+
+            await act(async () => {
+                jest.advanceTimersByTime(EXCHANGE_RATES_CACHE_TTL_MS + 500);
+            });
+
+            await waitFor(() => expect(getExchangeRates).toHaveBeenCalledTimes(2));
+            await waitFor(() => expect(result.current.numericRate).toBeCloseTo(0.99));
+            expect(result.current.fetchedAt).toBe("2026-04-19T12:10:00.000Z");
+        } finally {
+            jest.useRealTimers();
+        }
     });
 
     describe("staleness (FCX-31)", () => {

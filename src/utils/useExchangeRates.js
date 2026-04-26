@@ -1,12 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getExchangeRates } from "@/services/exchangeRateProvider";
 import {
+    getMsUntilExchangeRatesCacheExpiry,
     invalidateExchangeRatesCache,
     readExchangeRatesCache,
     writeExchangeRatesCache,
 } from "@/utils/exchangeRatesCache";
 
 /**
+ * Caching & refresh (FCX-35):
+ * - Successful fetches are written to `exchangeRatesCache` and reused until `EXCHANGE_RATES_CACHE_TTL_MS`.
+ * - While mounted, a `setTimeout` schedules `retryRates` at that TTL so the UI gets fresh data without
+ *   refetching on every render. Manual **Retry** / **Refresh rate** still calls `retryRates` immediately.
+ * - UI freshness vs market staleness: `EXCHANGE_RATE_STALE_AFTER_MS` (FCX-31) is separate — it only
+ *   drives the “stale” affordance; TTL drives network reuse.
+ *
  * After this many milliseconds elapse since `fetchedAt`, the rate is considered "stale" — the
  * value is still shown, but the UI must indicate it may no longer reflect the live market (FCX-31).
  * Decoupled from `EXCHANGE_RATES_CACHE_TTL_MS`: cache TTL controls re-fetching, this controls UI.
@@ -34,6 +42,9 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode, options) => {
         }
         setRetryToken((prev) => prev + 1);
     }, [fromCurrencyCode]);
+
+    const retryRatesRef = useRef(retryRates);
+    retryRatesRef.current = retryRates;
 
     useEffect(() => {
         let isMounted = true;
@@ -100,6 +111,22 @@ const useExchangeRates = (fromCurrencyCode, toCurrencyCode, options) => {
             controller.abort();
         };
     }, [fromCurrencyCode, retryToken]);
+
+    useEffect(() => {
+        if (!fromCurrencyCode) return undefined;
+        if (isLoading) return undefined;
+        if (!exchangeRatesSnapshot?.rates) return undefined;
+        if (exchangeRatesSnapshot.baseCurrencyCode !== fromCurrencyCode) return undefined;
+
+        const ms = getMsUntilExchangeRatesCacheExpiry(fromCurrencyCode);
+        if (ms === null) return undefined;
+
+        const id = window.setTimeout(() => {
+            retryRatesRef.current();
+        }, ms);
+
+        return () => window.clearTimeout(id);
+    }, [fromCurrencyCode, isLoading, exchangeRatesSnapshot, retryToken]);
 
     const exchangeRates = useMemo(() => {
         if (!fromCurrencyCode) return null;

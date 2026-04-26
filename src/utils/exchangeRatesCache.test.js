@@ -1,6 +1,7 @@
 import {
     clearExchangeRatesCache,
     EXCHANGE_RATES_CACHE_TTL_MS,
+    getMsUntilExchangeRatesCacheExpiry,
     invalidateExchangeRatesCache,
     readExchangeRatesCache,
     writeExchangeRatesCache,
@@ -26,6 +27,30 @@ describe("exchangeRatesCache", () => {
             expect(readExchangeRatesCache("USD")).toEqual(payload);
 
             jest.setSystemTime(new Date("2026-01-01T00:06:00.001Z").getTime());
+            expect(readExchangeRatesCache("USD")).toBeNull();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("getMsUntilExchangeRatesCacheExpiry returns remaining TTL then null after expiry", () => {
+        jest.useFakeTimers();
+        try {
+            jest.setSystemTime(new Date("2026-01-01T00:00:00.000Z").getTime());
+            writeExchangeRatesCache("USD", {
+                base: "USD",
+                fetchedAt: "2026-01-01T00:00:00.000Z",
+                rates: { EUR: "0.9" },
+            });
+
+            const half = EXCHANGE_RATES_CACHE_TTL_MS / 2;
+            expect(getMsUntilExchangeRatesCacheExpiry("USD")).toBe(EXCHANGE_RATES_CACHE_TTL_MS);
+
+            jest.advanceTimersByTime(half);
+            expect(getMsUntilExchangeRatesCacheExpiry("USD")).toBe(EXCHANGE_RATES_CACHE_TTL_MS - half);
+
+            jest.advanceTimersByTime(half + 1);
+            expect(getMsUntilExchangeRatesCacheExpiry("USD")).toBeNull();
             expect(readExchangeRatesCache("USD")).toBeNull();
         } finally {
             jest.useRealTimers();
