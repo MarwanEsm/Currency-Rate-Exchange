@@ -80,4 +80,15 @@ describe("convertAmountWithRate", () => {
             expect(convertAmountWithRate(amount, rate)).toBe(expected);
         });
     });
+
+    describe("FCX-36 edge cases (invalid amount / missing rate guard)", () => {
+        it("does not convert when amount string is empty after sanitization", () => {
+            expect(parseDigitsAmount(sanitizeAmountDigitString("abc"))).toBeNull();
+            expect(convertAmountWithRate(parseDigitsAmount(""), 1.5)).toBeNull();
+        });
+
+        it("does not convert when rate is missing (null)", () => {
+            expect(convertAmountWithRate(100, null)).toBeNull();
+        });
+    });
 });
