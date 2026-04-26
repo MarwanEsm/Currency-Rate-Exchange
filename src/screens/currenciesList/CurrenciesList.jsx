@@ -161,8 +161,23 @@ const CurrenciesList = () => {
     const showRate = Boolean(showPair && !providerErrorMessage && !isLoading && formattedRate !== null);
     const showStaleIndicator = Boolean(showRate && isStale);
 
+    const emptyStateMessage = useMemo(() => {
+        if (fromCurrency && toCurrency) return null;
+        if (!fromCurrency && !toCurrency) {
+            return "Select a source and target currency to see the rate.";
+        }
+        if (!fromCurrency) {
+            return "Select a source currency to see the rate.";
+        }
+        return "Select a target currency to see the rate.";
+    }, [fromCurrency, toCurrency]);
+
     const exchangeRateGroupAriaLabel = useMemo(() => {
-        if (!showPair) return "Exchange rate";
+        if (!showPair) {
+            return emptyStateMessage
+                ? `Exchange rate: ${emptyStateMessage}`
+                : "Exchange rate";
+        }
         if (providerErrorMessage) return "Exchange rate unavailable.";
         if (isLoading) return "Loading exchange rate";
         if (formattedRate !== null && fromCurrency && toCurrency) {
@@ -183,17 +198,36 @@ const CurrenciesList = () => {
         fetchedAtLabel,
         relativeAgeLabel,
         showStaleIndicator,
+        emptyStateMessage,
     ]);
 
     const renderExchangeRatePanelBody = () => {
         if (!showPair) {
-            return <span className={styles.exchangeRateTitle}>Exchange rate</span>;
+            return (
+                <span
+                    className={styles.exchangeRateEmpty}
+                    role="status"
+                    data-testid="exchange-rate-empty"
+                >
+                    {emptyStateMessage}
+                </span>
+            );
         }
         if (providerErrorMessage) {
             return <b className={styles.rateFigure}>—</b>;
         }
         if (isLoading) {
-            return <span className={styles.rateLoading}>Loading…</span>;
+            return (
+                <span
+                    className={styles.rateLoading}
+                    role="status"
+                    aria-live="polite"
+                    data-testid="exchange-rate-loading"
+                >
+                    <span className={styles.spinner} aria-hidden="true" />
+                    <span>Loading exchange rate…</span>
+                </span>
+            );
         }
         if (formattedRate !== null) {
             const updatedLine = relativeAgeLabel && fetchedAtLabel
@@ -228,8 +262,20 @@ const CurrenciesList = () => {
             );
         }
         return (
-            <span className={styles.rateUnavailable}>
-                Rate unavailable for this pair.
+            <span
+                className={styles.rateUnavailable}
+                role="status"
+                data-testid="exchange-rate-unavailable"
+            >
+                <span>Rate unavailable for this pair.</span>
+                <button
+                    type="button"
+                    className={styles.refreshRateButton}
+                    onClick={retryRates}
+                    disabled={isLoading}
+                >
+                    Try again
+                </button>
             </span>
         );
     };

@@ -161,10 +161,11 @@
 
 .rateLoading,
 .rateUnavailable,
-.rateHint {
+.rateHint,
+.exchangeRateEmpty {
     display: block;
     width: 100%;
-    max-width: 260px;
+    max-width: 280px;
     margin-left: auto;
     margin-right: auto;
     font-size: 0.95em;
@@ -173,8 +174,47 @@
     text-align: center;
 }
 
+.rateLoading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
 .rateUnavailable {
     color: #ffe8e8;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.exchangeRateEmpty {
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 600;
+}
+
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: rateSpin 0.8s linear infinite;
+}
+
+@keyframes rateSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner {
+        animation: none;
+        border-top-color: rgba(255, 255, 255, 0.7);
+    }
 }
 
 .exchangeRateWrapper {

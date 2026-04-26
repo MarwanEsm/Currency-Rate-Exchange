@@ -618,4 +618,184 @@ describe("CurrenciesList", () => {
             });
         });
     });
+
+    describe("loading, error, and empty states (FCX-34)", () => {
+        const hookForPair = (overrides) => (from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: null,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: null,
+                    ageMs: null,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                    ...overrides,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        };
+
+        const selectUsdEur = async () => {
+            await userEvent.click(await screen.findByLabelText("Select source currency"));
+            await userEvent.click(await screen.findByText("US Dollar"));
+            await userEvent.click(screen.getByLabelText("Select target currency"));
+            await userEvent.click(await screen.findByText("Euro"));
+        };
+
+        it("shows an actionable empty state before any currency is selected", async () => {
+            render(<CurrenciesList />);
+
+            const empty = await screen.findByTestId("exchange-rate-empty");
+            expect(empty).toHaveTextContent(
+                /select a source and target currency to see the rate\./i,
+            );
+            expect(empty).toHaveAttribute("role", "status");
+            expect(
+                screen.getByRole("group", { name: /exchange rate.*select a source and target currency/i }),
+            ).toBeInTheDocument();
+        });
+
+        it("narrows the empty state guidance to the missing side once one currency is picked", async () => {
+            render(<CurrenciesList />);
+
+            await userEvent.click(await screen.findByLabelText("Select source currency"));
+            await userEvent.click(await screen.findByText("US Dollar"));
+
+            const empty = await screen.findByTestId("exchange-rate-empty");
+            expect(empty).toHaveTextContent(/select a target currency to see the rate\./i);
+        });
+
+        it("shows a loading indicator with role=status and a visible spinner during fetch", async () => {
+            mockUseExchangeRates.mockImplementation(hookForPair({ isLoading: true }));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const loading = await screen.findByTestId("exchange-rate-loading");
+            expect(loading).toHaveAttribute("role", "status");
+            expect(loading).toHaveAttribute("aria-live", "polite");
+            expect(loading).toHaveTextContent(/loading exchange rate/i);
+            expect(loading.querySelector("[aria-hidden=\"true\"]")).not.toBeNull();
+
+            const panel = screen.getByRole("group", { name: /loading exchange rate/i });
+            expect(panel).toHaveAttribute("aria-busy", "true");
+        });
+
+        it("keeps the amount input and currency selectors usable during loading transitions", async () => {
+            mockUseExchangeRates.mockImplementation(hookForPair({ isLoading: true }));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const amountInput = screen.getByLabelText("Amount");
+            expect(amountInput).not.toBeDisabled();
+
+            await userEvent.type(amountInput, "12");
+            expect(amountInput.value.replace(/\D/g, "")).toBe("12");
+
+            expect(screen.getByLabelText("Select source currency")).not.toBeDisabled();
+            expect(screen.getByLabelText("Select target currency")).not.toBeDisabled();
+
+            expect(screen.getByRole("button", { name: "Convert" })).toBeDisabled();
+        });
+
+        it("renders the error state with an alert and a working Retry button", async () => {
+            mockUseExchangeRates.mockImplementation(
+                hookForPair({ providerError: { code: EXCHANGE_RATE_ERROR_CODES.NETWORK } }),
+            );
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            expect(await screen.findByRole("alert")).toHaveTextContent(
+                /unable to reach the exchange rate provider/i,
+            );
+
+            await userEvent.click(screen.getByRole("button", { name: "Retry" }));
+            expect(retryRatesMock).toHaveBeenCalledTimes(1);
+        });
+
+        it("disables the Retry button while a retry is in flight (no double-fire)", async () => {
+            mockUseExchangeRates.mockImplementation(
+                hookForPair({
+                    providerError: { code: EXCHANGE_RATE_ERROR_CODES.NETWORK },
+                    isLoading: true,
+                }),
+            );
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const retryButton = await screen.findByRole("button", { name: /retrying/i });
+            expect(retryButton).toBeDisabled();
+        });
+
+        it("offers a Try again affordance when a pair is selected but the rate is unavailable", async () => {
+            mockUseExchangeRates.mockImplementation(hookForPair({ numericRate: null }));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const unavailable = await screen.findByTestId("exchange-rate-unavailable");
+            expect(unavailable).toHaveTextContent(/rate unavailable for this pair\./i);
+
+            const tryAgain = screen.getByRole("button", { name: /try again/i });
+            await userEvent.click(tryAgain);
+            expect(retryRatesMock).toHaveBeenCalledTimes(1);
+        });
+
+        it("keeps the rate panel mounted across empty → loading → ready transitions for layout stability", async () => {
+            const states = [
+                { isLoading: false, numericRate: null }, // empty (no pair) – before selection
+                { isLoading: true, numericRate: null }, // loading
+                { isLoading: false, numericRate: 0.9, fetchedAt: "2026-04-19T14:00:00.000Z" }, // ready
+            ];
+            let phase = 0;
+            mockUseExchangeRates.mockImplementation((from, to) => {
+                if (from === "USD" && to === "EUR") {
+                    return {
+                        ...states[Math.min(phase, states.length - 1)],
+                        providerError: null,
+                        ageMs: null,
+                        isStale: false,
+                        retryRates: retryRatesMock,
+                        fetchedAt: states[Math.min(phase, states.length - 1)].fetchedAt ?? null,
+                    };
+                }
+                return {
+                    numericRate: null,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: null,
+                    ageMs: null,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                };
+            });
+
+            const { rerender } = render(<CurrenciesList />);
+
+            expect(await screen.findByTestId("exchange-rate-empty")).toBeInTheDocument();
+
+            phase = 1;
+            await selectUsdEur();
+            rerender(<CurrenciesList />);
+            expect(await screen.findByTestId("exchange-rate-loading")).toBeInTheDocument();
+
+            phase = 2;
+            rerender(<CurrenciesList />);
+            expect(await screen.findByText(/1 USD = 0[,.]90 EUR/)).toBeInTheDocument();
+
+            expect(screen.getByRole("group", { name: /1 USD = 0[,.]90 EUR/ })).toBeInTheDocument();
+        });
+    });
 });
