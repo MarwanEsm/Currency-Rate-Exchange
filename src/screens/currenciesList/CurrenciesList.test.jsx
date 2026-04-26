@@ -193,7 +193,7 @@ describe("CurrenciesList", () => {
         await userEvent.click(screen.getByRole("button", { name: "Convert" }));
 
         expect(
-            await screen.findByText(/enter a whole number amount/i),
+            await screen.findByText(/enter an amount to convert/i),
         ).toBeInTheDocument();
         expect(screen.getByLabelText("Amount")).toHaveAttribute("aria-invalid", "true");
     });
@@ -323,7 +323,7 @@ describe("CurrenciesList", () => {
         await userEvent.keyboard("{Enter}");
 
         expect(screen.getByRole("button", { name: "Convert" })).toBeDisabled();
-        expect(screen.queryByText(/enter a whole number amount/i)).toBeNull();
+        expect(screen.queryByText(/enter an amount to convert/i)).toBeNull();
     });
 
     it("strips non-digit input so neighboring digits stay valid (FCX-32)", async () => {
@@ -403,7 +403,7 @@ describe("CurrenciesList", () => {
 
         await userEvent.click(screen.getByRole("button", { name: "Convert" }));
         expect(
-            await screen.findByText(/enter a whole number amount/i),
+            await screen.findByText(/enter an amount to convert/i),
         ).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: /EUR/ })).toBeNull();
     });
@@ -476,5 +476,146 @@ describe("CurrenciesList", () => {
         await userEvent.click(screen.getByRole("button", { name: "Convert" }));
 
         expect(screen.getByRole("button", { name: /9[.,]15\s+EUR/ })).toBeInTheDocument();
+    });
+
+    describe("validation and formatting (FCX-33)", () => {
+        const ratedHook = (rate) => (from, to) => {
+            if (from === "USD" && to === "EUR") {
+                return {
+                    numericRate: rate,
+                    providerError: null,
+                    isLoading: false,
+                    fetchedAt: null,
+                    ageMs: null,
+                    isStale: false,
+                    retryRates: retryRatesMock,
+                };
+            }
+            return {
+                numericRate: null,
+                providerError: null,
+                isLoading: false,
+                fetchedAt: null,
+                ageMs: null,
+                isStale: false,
+                retryRates: retryRatesMock,
+            };
+        };
+
+        const selectUsdEur = async () => {
+            await userEvent.click(await screen.findByLabelText("Select source currency"));
+            await userEvent.click(await screen.findByText("US Dollar"));
+            await userEvent.click(screen.getByLabelText("Select target currency"));
+            await userEvent.click(await screen.findByText("Euro"));
+        };
+
+        it("shows the helper text once a valid pair is selected and links it via aria-describedby", async () => {
+            mockUseExchangeRates.mockImplementation(ratedHook(0.5));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const helper = await screen.findByText(
+                /whole positive numbers only.*decimals and minus signs are ignored/i,
+            );
+            expect(helper).toBeInTheDocument();
+            expect(helper.id).toBe("amount-helper-text");
+
+            const amountInput = screen.getByLabelText("Amount");
+            expect(amountInput.getAttribute("aria-describedby") || "").toContain(
+                "amount-helper-text",
+            );
+        });
+
+        it("does not show the helper text before a pair / rate is available", async () => {
+            render(<CurrenciesList />);
+            await screen.findByLabelText("Amount");
+
+            expect(
+                screen.queryByText(/whole positive numbers only/i),
+            ).toBeNull();
+        });
+
+        it("surfaces an adjustment notice when minus signs and decimals are stripped", async () => {
+            mockUseExchangeRates.mockImplementation(ratedHook(2));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const amountInput = screen.getByLabelText("Amount");
+            await userEvent.type(amountInput, "-1.5");
+
+            expect(
+                await screen.findByText(/removed unsupported characters from your input/i),
+            ).toBeInTheDocument();
+            expect(amountInput.value).not.toMatch(/[-.]/);
+        });
+
+        it("clears the adjustment notice once the user empties the field", async () => {
+            mockUseExchangeRates.mockImplementation(ratedHook(2));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const amountInput = screen.getByLabelText("Amount");
+            await userEvent.type(amountInput, "-1");
+            expect(
+                await screen.findByText(/removed unsupported characters/i),
+            ).toBeInTheDocument();
+
+            await userEvent.clear(amountInput);
+
+            await waitFor(() => {
+                expect(screen.queryByText(/removed unsupported characters/i)).toBeNull();
+            });
+        });
+
+        it("formats large amounts with locale grouping in the input without breaking the math", async () => {
+            mockUseExchangeRates.mockImplementation(ratedHook(2));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const amountInput = screen.getByLabelText("Amount");
+            await userEvent.type(amountInput, "1000000");
+            expect(amountInput.value).toMatch(/[.,\s\u00A0]/);
+            expect(amountInput.value.replace(/\D/g, "")).toBe("1000000");
+
+            await userEvent.click(screen.getByRole("button", { name: "Convert" }));
+            expect(
+                screen.getByRole("button", { name: /2[.,\s\u00A0]?000[.,\s\u00A0]?000[.,]00\s+EUR/ }),
+            ).toBeInTheDocument();
+        });
+
+        it("formats the converted output with exactly two fraction digits", async () => {
+            mockUseExchangeRates.mockImplementation(ratedHook(0.9));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            await userEvent.type(screen.getByLabelText("Amount"), "100");
+            await userEvent.click(screen.getByRole("button", { name: "Convert" }));
+
+            const resultButton = screen.getByRole("button", { name: /EUR/ });
+            expect(resultButton.textContent).toMatch(/^90[.,]00\s+EUR$/);
+        });
+
+        it("aria-invalid flips to true only when there is a validation message", async () => {
+            mockUseExchangeRates.mockImplementation(ratedHook(2));
+
+            render(<CurrenciesList />);
+            await selectUsdEur();
+
+            const amountInput = screen.getByLabelText("Amount");
+            expect(amountInput).toHaveAttribute("aria-invalid", "false");
+
+            await userEvent.click(screen.getByRole("button", { name: "Convert" }));
+            expect(amountInput).toHaveAttribute("aria-invalid", "true");
+
+            await userEvent.type(amountInput, "5");
+            await waitFor(() => {
+                expect(amountInput).toHaveAttribute("aria-invalid", "false");
+            });
+        });
     });
 });

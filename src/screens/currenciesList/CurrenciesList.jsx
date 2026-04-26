@@ -39,6 +39,7 @@ const CurrenciesList = () => {
     const [hasConverted, setHasConverted] = useState(false);
     const [amountTouched, setAmountTouched] = useState(false);
     const [convertInvalidAttempt, setConvertInvalidAttempt] = useState(false);
+    const [inputAdjustmentNotice, setInputAdjustmentNotice] = useState(false);
     const {
         numericRate,
         providerError,
@@ -87,7 +88,7 @@ const CurrenciesList = () => {
         if (numericAmount !== null) return null;
         if (amount !== "") return null;
         if (amountTouched || convertInvalidAttempt) {
-            return "Enter a whole number amount. Decimals and minus signs are not allowed.";
+            return "Enter an amount to convert.";
         }
         return null;
     }, [
@@ -100,6 +101,16 @@ const CurrenciesList = () => {
         amountTouched,
         convertInvalidAttempt,
     ]);
+
+    const showAmountHelperText = showPair && !providerErrorMessage && !isLoading && numericRate !== null;
+    const showInputAdjustmentNotice = showAmountHelperText && inputAdjustmentNotice;
+    const amountDescribedBy = [
+        amountValidationMessage ? "amount-validation-message" : null,
+        showInputAdjustmentNotice ? "amount-adjustment-notice" : null,
+        showAmountHelperText ? "amount-helper-text" : null,
+    ]
+        .filter(Boolean)
+        .join(" ") || undefined;
 
     const onConvert = () => {
         if (!showPair || !!providerError || isLoading || numericRate === null) return;
@@ -290,17 +301,41 @@ const CurrenciesList = () => {
                         value={formatWholeAmountForDisplay(amount)}
                         aria-invalid={amountValidationMessage ? "true" : "false"}
                         aria-keyshortcuts="Enter"
-                        aria-describedby={
-                            amountValidationMessage ? "amount-validation-message" : undefined
-                        }
+                        aria-describedby={amountDescribedBy}
                         onChange={(e) => {
-                            setAmount(sanitizeAmountDigitString(e.target.value));
+                            const raw = e.target.value;
+                            const sanitized = sanitizeAmountDigitString(raw);
+                            const wasAdjusted = sanitized !== raw && raw.length > 0;
+                            setAmount(sanitized);
+                            if (wasAdjusted) {
+                                setInputAdjustmentNotice(true);
+                            } else if (sanitized === "") {
+                                setInputAdjustmentNotice(false);
+                            }
                             setHasConverted(false);
                             setConvertInvalidAttempt(false);
                         }}
                         onBlur={() => setAmountTouched(true)}
                         onKeyDown={onAmountKeyDown}
                     />
+                    {showAmountHelperText ? (
+                        <div
+                            id="amount-helper-text"
+                            className={styles.amountHelperText}
+                        >
+                            Whole positive numbers only — decimals and minus signs are ignored.
+                        </div>
+                    ) : null}
+                    {showInputAdjustmentNotice ? (
+                        <div
+                            id="amount-adjustment-notice"
+                            className={styles.amountAdjustmentNotice}
+                            role="status"
+                            aria-live="polite"
+                        >
+                            Removed unsupported characters from your input.
+                        </div>
+                    ) : null}
                     {amountValidationMessage ? (
                         <div
                             id="amount-validation-message"

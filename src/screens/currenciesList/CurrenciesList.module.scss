@@ -73,6 +73,26 @@
     text-align: center;
 }
 
+.amountHelperText {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.78);
+    text-align: center;
+}
+
+.amountAdjustmentNotice {
+    margin-top: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #4a2900;
+    background-color: #ffd7a8;
+    border: 1px solid #d18a3a;
+    border-radius: 5px;
+    text-align: center;
+}
+
 .exchangeRatePanel {
     display: flex;
     flex-direction: column;
