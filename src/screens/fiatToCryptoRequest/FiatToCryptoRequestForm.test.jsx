@@ -43,18 +43,26 @@ describe("FiatToCryptoRequestForm (FCX-40)", () => {
         jest.clearAllMocks();
     });
 
-    it("renders fields for fiat amount, asset, and destination address", () => {
+    it("when logged in, renders quote fields and buy form (wallet + submit)", () => {
         renderWithAuth();
-        expect(screen.getByLabelText("Fiat amount")).toBeInTheDocument();
-        expect(screen.getByLabelText("Crypto asset")).toBeInTheDocument();
+        expect(screen.getByLabelText("Fiat amount for quote")).toBeInTheDocument();
+        expect(screen.getByLabelText("Crypto asset for quote")).toBeInTheDocument();
         expect(screen.getByLabelText("Destination wallet address")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /submit buy request/i })).toBeInTheDocument();
+    });
+
+    it("when guest, shows rate check only — no wallet or submit", () => {
+        renderWithAuth({ user: null, isAuthenticated: false, logout: jest.fn() });
+        expect(screen.getByLabelText("Fiat amount for quote")).toBeInTheDocument();
+        expect(screen.queryByLabelText("Destination wallet address")).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /submit buy request/i })).not.toBeInTheDocument();
     });
 
     it("blocks submission with the same client validation as the server when the amount is invalid", async () => {
         renderWithAuth();
-        await userEvent.type(screen.getByLabelText("Fiat amount"), "not-a-number");
+        await userEvent.type(screen.getByLabelText("Fiat amount for quote"), "not-a-number");
         await userEvent.type(screen.getByLabelText("Destination wallet address"), validBtcAddress);
-        await userEvent.click(screen.getByRole("button", { name: /submit request/i }));
+        await userEvent.click(screen.getByRole("button", { name: /submit buy request/i }));
         expect(global.fetch).not.toHaveBeenCalled();
         expect(await screen.findByRole("alert")).toBeInTheDocument();
     });
@@ -75,9 +83,9 @@ describe("FiatToCryptoRequestForm (FCX-40)", () => {
         });
 
         renderWithAuth();
-        await userEvent.type(screen.getByLabelText("Fiat amount"), "100.00");
+        await userEvent.type(screen.getByLabelText("Fiat amount for quote"), "100.00");
         await userEvent.type(screen.getByLabelText("Destination wallet address"), validBtcAddress);
-        await userEvent.click(screen.getByRole("button", { name: /submit request/i }));
+        await userEvent.click(screen.getByRole("button", { name: /submit buy request/i }));
 
         await waitFor(() => {
             expect(global.fetch).toHaveBeenCalledWith(
@@ -95,9 +103,33 @@ describe("FiatToCryptoRequestForm (FCX-40)", () => {
         expect(confirm).toHaveTextContent("submitted");
     });
 
-    it("does not call the API when the user is not logged in", async () => {
+    it("loads indicative quote without login when Check indicative quote is used", async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async () => ({
+                indicative: true,
+                disclaimer: "Indicative only.",
+                fiatAmount: "50.00",
+                fiatCurrency: "USD",
+                targetAssetCode: "BTC",
+                providerSpotCryptoPerFiat: "0.00002",
+                quote: {
+                    netCryptoAmount: "0.001",
+                    netCryptoAssetCode: "BTC",
+                    feeFiatAmount: "1.00",
+                },
+            }),
+        });
+
         renderWithAuth({ user: null, isAuthenticated: false, logout: jest.fn() });
-        await userEvent.click(screen.getByRole("button", { name: /submit request/i }));
-        expect(global.fetch).not.toHaveBeenCalled();
+        await userEvent.type(screen.getByLabelText("Fiat amount for quote"), "50.00");
+        await userEvent.click(screen.getByRole("button", { name: /check indicative quote/i }));
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalled();
+            expect(global.fetch.mock.calls[0][0]).toMatch(/\/api\/fiat-to-crypto\/quote-preview\?/);
+        });
+        expect(await screen.findByText(/Indicative only/i)).toBeInTheDocument();
     });
 });

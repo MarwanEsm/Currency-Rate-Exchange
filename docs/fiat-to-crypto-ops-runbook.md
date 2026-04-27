@@ -90,7 +90,7 @@ Before an order can move from `submitted` to `paid`, ops must match the incoming
 - **API:**
     - `POST /api/fiat-to-crypto/admin/deposits/reconcile` — requires the `reconcile_deposit` permission (roles `order_reviewer`, `operations_manager`). Returns HTTP 200 on `matched`, 409 on any other recorded outcome, 400 on payload errors.
     - `GET /api/fiat-to-crypto/admin/deposits/log` — returns all reconciliation events for audit (requires `view_order_queue`).
-- **Admin UI (FCX-41):** `/admin/deposits` lists **submitted** orders from `GET /api/fiat-to-crypto/admin/queue?status=submitted`, a form to enter deposit details (including AML/sanctions at funding for `matched`), and a reverse-chronological log of past events. The orders screen links to it, and vice versa.
+- **Admin UI:** this deployment uses a minimal `/admin/orders` inbox for **`submitted`** requests only (`GET /api/fiat-to-crypto/admin/queue?status=submitted`). Deposit reconciliation is via API/scripts, not a page in this app (FCX-41 APIs remain).
 
 **Ops signals:** rising `amount_under` rate → check processor fee deduction; `currency_mismatch` spikes → customer routing / UX bug on intake; persistent `no_matching_order` → investigate reference generation at checkout; `duplicate_deposit` → webhook replay, confirm idempotency on the processor side.
 
@@ -184,9 +184,8 @@ After liquidity execution, the order is in **`transferring`**. Custody records t
 
 ## User status & notifications (FCX-46)
 
-- **UI:** `/orders/progress?id={orderId}` loads the order when the browser sends `x-user-id` (demo: Firebase UID). Without `id`, the page remains an interactive FCX-20 demo.
-- **API:** `GET /api/fiat-to-crypto/orders/:id` returns `{ order, notifications }` for the owner only. `notifications` is the in-memory audit of `ORDER_PROGRESS_NOTIFICATION_TRIGGER` keys emitted when `status` changed (via `saveSubmittedFiatToCryptoOrder` / `updateFiatToCryptoOrder`). Production should persist the same payload to an outbox and deliver email/push/in-app.
-- **Intake:** After submit, **Track this request** deep-links to the live progress view.
+- **UI:** there is no purchase-progress page in this deployment; customers keep their **request reference** from intake.
+- **API:** `GET /api/fiat-to-crypto/orders/:id` still returns `{ order, notifications }` for the owner (`x-user-id`) for integrations or future UI.
 
 ---
 
@@ -203,6 +202,6 @@ After liquidity execution, the order is in **`transferring`**. Custody records t
 | `src/domain/fiatToCryptoAdminQueue.js` + admin API routes + `GET /api/fiat-to-crypto/admin/decisions/log` | Admin review queue (FCX-43), approve/reject decisions, audit log (FCX-26) |
 | `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto engine, configurable model, ops preview, persisted on approve (FCX-22, FCX-42) |
 | `src/domain/fiatToCryptoExecution.js` + `POST …/execute-purchase` + `GET …/execution/log` + `GET …/execution/providers` | Liquidity-provider purchase, retry loop, execution audit, provider discovery (FCX-24, FCX-44) |
-| `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` + admin queue `status=submitted` | Deposit matching, amount/currency verification, under/over/mismatch/duplicate handling, audit log, ops UI (FCX-23, FCX-41) |
+| `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` + admin queue `status=submitted` | Deposit matching engine + APIs; **no** deposit UI in this app (FCX-23, FCX-41) |
 | `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated compliance / transition / draft edge cases (FCX-18) |
 | `src/domain/fiatToCryptoFulfillment.e2e.test.js` | Full fulfillment path on in-memory store + audit/notification checks (FCX-47) |

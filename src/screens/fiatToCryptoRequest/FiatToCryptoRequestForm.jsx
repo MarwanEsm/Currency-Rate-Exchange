@@ -1,18 +1,17 @@
 /**
- * User intake: fiat amount, asset, network, destination address (FCX-40).
- * Shares validation with the API via `validateFiatToCryptoIntakePayload` (FCX-25).
+ * Fiat → crypto: guests may only check indicative rates; signed-in users can check rates and submit a buy request.
  */
 import React, { useContext, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import Container from "@/components/layout/container/Container";
 import Headline from "@/components/elements/headline/Headline";
 import { AuthContext } from "@/firebase/authContext";
 import { KYC_VERIFICATION_STATUS } from "@/domain/fiatToCryptoCompliance";
+import { FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS } from "@/domain/fiatToCryptoQuotePreview";
 import { ASSET_ALLOWED_TRANSFER_NETWORKS, CRYPTO_TRANSFER_NETWORK_ID } from "@/domain/fiatToCryptoTransfer";
 import { validateFiatToCryptoIntakePayload } from "@/domain/fiatToCryptoIntake";
 import styles from "./FiatToCryptoRequestForm.module.scss";
-
-const FIAT_CURRENCIES = ["USD", "EUR"];
 
 const NETWORK_LABELS = {
     [CRYPTO_TRANSFER_NETWORK_ID.BITCOIN_MAINNET]: "Bitcoin (mainnet)",
@@ -36,6 +35,10 @@ const FiatToCryptoRequestForm = () => {
     const [confirmation, setConfirmation] = useState(null);
     const [referenceCopied, setReferenceCopied] = useState(false);
 
+    const [quoteLoading, setQuoteLoading] = useState(false);
+    const [quoteError, setQuoteError] = useState(null);
+    const [quoteResult, setQuoteResult] = useState(null);
+
     const networkOptions = useMemo(() => {
         const list = ASSET_ALLOWED_TRANSFER_NETWORKS[targetAssetCode] ?? [];
         return list.map((id) => ({ id, label: NETWORK_LABELS[id] ?? id }));
@@ -43,7 +46,7 @@ const FiatToCryptoRequestForm = () => {
 
     const runClientValidation = () => {
         if (!user?.uid) {
-            setClientErrors(["Please log in to submit a request."]);
+            setClientErrors(["Please log in to submit a buy request."]);
             return null;
         }
         const body = {
@@ -62,6 +65,33 @@ const FiatToCryptoRequestForm = () => {
         }
         setClientErrors([]);
         return body;
+    };
+
+    const handleCheckQuote = async () => {
+        setQuoteError(null);
+        setQuoteResult(null);
+        setQuoteLoading(true);
+        try {
+            const params = new URLSearchParams({
+                fiatCurrency,
+                fiatAmount: fiatAmount.trim(),
+                targetAssetCode,
+            });
+            const res = await fetch(`/api/fiat-to-crypto/quote-preview?${params.toString()}`);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const msg = Array.isArray(data.errors)
+                    ? data.errors.join(" ")
+                    : data.message || data.error || "Could not load quote.";
+                setQuoteError(msg);
+                return;
+            }
+            setQuoteResult(data);
+        } catch {
+            setQuoteError("Network error. Please try again.");
+        } finally {
+            setQuoteLoading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -102,138 +132,204 @@ const FiatToCryptoRequestForm = () => {
                 <button type="button" className={styles.back} onClick={() => router.push("/")}>
                     ← Home
                 </button>
-                <Headline size={2}>Fiat-to-crypto request</Headline>
+                <Headline size={2}>Fiat-to-crypto</Headline>
+
                 <p className={styles.lead}>
-                    Enter how much fiat you are sending, which asset you want, the network (when there is more than
-                    one), and where we should deliver it. Values are checked in the browser and on the server; a
-                    successful request is stored as <strong>submitted</strong> and you get a reference ID to keep
-                    (FCX-40).
+                    <strong>Before you log in:</strong> you can check rates only —{" "}
+                    <Link href="/currencies" className={styles.inlineLink}>
+                        fiat ↔ fiat
+                    </Link>{" "}
+                    on the currencies page, and <strong>fiat → crypto</strong> below. Buying and submitting a request
+                    requires an account.
                 </p>
 
-                {!isAuthenticated && (
-                    <p className={styles.warn} role="status">
-                        Log in to attach this request to your account and enable submission.
+                {isAuthenticated ? (
+                    <p className={styles.lead}>
+                        You are signed in: use the calculator below, then complete <strong>Buy crypto</strong> with your
+                        wallet and network.
+                    </p>
+                ) : (
+                    <p className={styles.info} role="status">
+                        You are not signed in — rate check only. To buy, open the{" "}
+                        <Link href="/" className={styles.inlineLink}>
+                            home page
+                        </Link>{" "}
+                        and log in or register, then return here.
                     </p>
                 )}
 
-                <form className={styles.form} onSubmit={handleSubmit} noValidate>
-                    <label className={styles.field}>
-                        <span>Fiat currency</span>
-                        <select
-                            className={styles.input}
-                            value={fiatCurrency}
-                            onChange={(e) => setFiatCurrency(e.target.value)}
-                            aria-label="Fiat currency"
-                        >
-                            {FIAT_CURRENCIES.map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+                <section className={styles.section} aria-labelledby="quote-heading">
+                    <h2 id="quote-heading" className={styles.sectionTitle}>
+                        {isAuthenticated ? "Check fiat → crypto rate" : "Fiat → crypto rate (check only)"}
+                    </h2>
+                    <p className={styles.hint}>
+                        Indicative quote from live spot data and default fees — not binding.
+                    </p>
 
-                    <label className={styles.field}>
-                        <span>Fiat amount</span>
-                        <input
-                            className={styles.input}
-                            type="text"
-                            inputMode="decimal"
-                            autoComplete="transaction-amount"
-                            value={fiatAmount}
-                            onChange={(e) => setFiatAmount(e.target.value)}
-                            placeholder="e.g. 250.00"
-                            aria-label="Fiat amount"
-                            required
-                        />
-                    </label>
-
-                    <label className={styles.field}>
-                        <span>Crypto asset</span>
-                        <select
-                            className={styles.input}
-                            value={targetAssetCode}
-                            onChange={(e) => {
-                                setTargetAssetCode(e.target.value);
-                                setNetwork("");
-                            }}
-                            aria-label="Crypto asset"
-                        >
-                            {Object.keys(ASSET_ALLOWED_TRANSFER_NETWORKS).map((code) => (
-                                <option key={code} value={code}>
-                                    {code}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    {networkOptions.length > 1 ? (
+                    <div className={styles.quoteRow}>
                         <label className={styles.field}>
-                            <span>Network</span>
+                            <span>Fiat currency</span>
                             <select
                                 className={styles.input}
-                                value={network}
-                                onChange={(e) => setNetwork(e.target.value)}
-                                aria-label="Blockchain network"
-                                required
+                                value={fiatCurrency}
+                                onChange={(e) => setFiatCurrency(e.target.value)}
+                                aria-label="Fiat currency for quote"
                             >
-                                <option value="">Select network</option>
-                                {networkOptions.map((opt) => (
-                                    <option key={opt.id} value={opt.id}>
-                                        {opt.label}
+                                {FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS.map((c) => (
+                                    <option key={c} value={c}>
+                                        {c}
                                     </option>
                                 ))}
                             </select>
                         </label>
-                    ) : (
-                        <p className={styles.hint}>
-                            Network: {NETWORK_LABELS[networkOptions[0]?.id] ?? networkOptions[0]?.id} (applied
-                            automatically for {targetAssetCode}).
+
+                        <label className={styles.field}>
+                            <span>Fiat amount</span>
+                            <input
+                                className={styles.input}
+                                type="text"
+                                inputMode="decimal"
+                                value={fiatAmount}
+                                onChange={(e) => setFiatAmount(e.target.value)}
+                                placeholder="e.g. 250.00"
+                                aria-label="Fiat amount for quote"
+                            />
+                        </label>
+
+                        <label className={styles.field}>
+                            <span>Crypto asset</span>
+                            <select
+                                className={styles.input}
+                                value={targetAssetCode}
+                                onChange={(e) => {
+                                    setTargetAssetCode(e.target.value);
+                                    setNetwork("");
+                                }}
+                                aria-label="Crypto asset for quote"
+                            >
+                                {Object.keys(ASSET_ALLOWED_TRANSFER_NETWORKS).map((code) => (
+                                    <option key={code} value={code}>
+                                        {code}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+
+                    <button
+                        type="button"
+                        className={styles.secondary}
+                        onClick={handleCheckQuote}
+                        disabled={quoteLoading || !fiatAmount.trim()}
+                    >
+                        {quoteLoading ? "Loading…" : "Check indicative quote"}
+                    </button>
+
+                    {quoteError && (
+                        <p className={styles.quoteError} role="alert">
+                            {quoteError}
                         </p>
                     )}
 
-                    <label className={styles.field}>
-                        <span>Destination wallet address</span>
-                        <textarea
-                            className={styles.textarea}
-                            value={walletAddress}
-                            onChange={(e) => setWalletAddress(e.target.value)}
-                            rows={3}
-                            placeholder="Paste the payout address for the selected asset and network"
-                            aria-label="Destination wallet address"
-                            required
-                        />
-                    </label>
-
-                    <label className={styles.field}>
-                        <span>Identity verification (demo)</span>
-                        <select
-                            className={styles.input}
-                            value={kycVerificationStatus}
-                            onChange={(e) => setKycVerificationStatus(e.target.value)}
-                            aria-label="KYC verification status for demo"
-                        >
-                            <option value={KYC_VERIFICATION_STATUS.VERIFIED}>Verified (allowed)</option>
-                            <option value={KYC_VERIFICATION_STATUS.PENDING}>Pending (blocked)</option>
-                            <option value={KYC_VERIFICATION_STATUS.REJECTED}>Rejected (blocked)</option>
-                        </select>
-                    </label>
-
-                    {displayErrors.length > 0 && (
-                        <div className={styles.errors} role="alert">
-                            <p className={styles.errorsTitle}>Please fix the following:</p>
-                            <ul>
-                                {displayErrors.map((err, i) => (
-                                    <li key={`${i}:${err}`}>{err}</li>
-                                ))}
-                            </ul>
+                    {quoteResult?.quote && (
+                        <div className={styles.quoteBox} aria-live="polite">
+                            <p className={styles.quoteDisclaimer}>{quoteResult.disclaimer}</p>
+                            <p>
+                                After estimated fees: <strong>{quoteResult.quote.netCryptoAmount}</strong>{" "}
+                                {quoteResult.quote.netCryptoAssetCode} for{" "}
+                                <strong>
+                                    {quoteResult.fiatAmount} {quoteResult.fiatCurrency}
+                                </strong>
+                                .
+                            </p>
+                            <p className={styles.quoteMeta}>
+                                Fee (est.): {quoteResult.quote.feeFiatAmount} {quoteResult.fiatCurrency} · Spot (crypto
+                                per 1 fiat): {quoteResult.providerSpotCryptoPerFiat}
+                            </p>
                         </div>
                     )}
+                </section>
 
-                    <button type="submit" className={styles.submit} disabled={submitting || !isAuthenticated}>
-                        {submitting ? "Submitting…" : "Submit request"}
-                    </button>
-                </form>
+                {isAuthenticated ? (
+                    <section className={styles.section} aria-labelledby="submit-heading">
+                        <h2 id="submit-heading" className={styles.sectionTitle}>
+                            Buy crypto (submit request)
+                        </h2>
+                        <p className={styles.hint}>
+                            Uses the amounts and asset selected above. Our team receives the request in the admin inbox;
+                            fulfillment continues outside this app.
+                        </p>
+
+                        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+                            {networkOptions.length > 1 ? (
+                                <label className={styles.field}>
+                                    <span>Network</span>
+                                    <select
+                                        className={styles.input}
+                                        value={network}
+                                        onChange={(e) => setNetwork(e.target.value)}
+                                        aria-label="Blockchain network"
+                                        required
+                                    >
+                                        <option value="">Select network</option>
+                                        {networkOptions.map((opt) => (
+                                            <option key={opt.id} value={opt.id}>
+                                                {opt.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            ) : (
+                                <p className={styles.hint}>
+                                    Network: {NETWORK_LABELS[networkOptions[0]?.id] ?? networkOptions[0]?.id} (applied
+                                    automatically for {targetAssetCode}).
+                                </p>
+                            )}
+
+                            <label className={styles.field}>
+                                <span>Destination wallet address</span>
+                                <textarea
+                                    className={styles.textarea}
+                                    value={walletAddress}
+                                    onChange={(e) => setWalletAddress(e.target.value)}
+                                    rows={3}
+                                    placeholder="Paste the payout address for the selected asset and network"
+                                    aria-label="Destination wallet address"
+                                    required
+                                />
+                            </label>
+
+                            <label className={styles.field}>
+                                <span>Identity verification (demo)</span>
+                                <select
+                                    className={styles.input}
+                                    value={kycVerificationStatus}
+                                    onChange={(e) => setKycVerificationStatus(e.target.value)}
+                                    aria-label="KYC verification status for demo"
+                                >
+                                    <option value={KYC_VERIFICATION_STATUS.VERIFIED}>Verified (allowed)</option>
+                                    <option value={KYC_VERIFICATION_STATUS.PENDING}>Pending (blocked)</option>
+                                    <option value={KYC_VERIFICATION_STATUS.REJECTED}>Rejected (blocked)</option>
+                                </select>
+                            </label>
+
+                            {displayErrors.length > 0 && (
+                                <div className={styles.errors} role="alert">
+                                    <p className={styles.errorsTitle}>Please fix the following:</p>
+                                    <ul>
+                                        {displayErrors.map((err, i) => (
+                                            <li key={`${i}:${err}`}>{err}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            <button type="submit" className={styles.submit} disabled={submitting}>
+                                {submitting ? "Submitting…" : "Submit buy request"}
+                            </button>
+                        </form>
+                    </section>
+                ) : null}
 
                 {confirmation && (
                     <section className={styles.confirm} aria-live="polite" aria-label="Order confirmation">
@@ -267,19 +363,10 @@ const FiatToCryptoRequestForm = () => {
                             Status: <strong>{confirmation.status}</strong> · {confirmation.targetAssetCode} ·{" "}
                             {confirmation.fiatAmount} {confirmation.fiatCurrency}
                         </p>
-                        <button
-                            type="button"
-                            className={styles.secondary}
-                            onClick={() =>
-                                router.push(
-                                    confirmation?.id
-                                        ? `/orders/progress?id=${encodeURIComponent(confirmation.id)}`
-                                        : "/orders/progress",
-                                )
-                            }
-                        >
-                            Track this request
-                        </button>
+                        <p className={styles.afterSubmit}>
+                            Keep this reference for your records. Our team will contact you or continue processing in
+                            our operations systems — there is no live tracking page in this app.
+                        </p>
                     </section>
                 )}
             </div>

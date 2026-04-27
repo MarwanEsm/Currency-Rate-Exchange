@@ -47,6 +47,12 @@ describe("CurrenciesList", () => {
         });
     });
 
+    it("shows a back-to-home control when the user is not logged in", async () => {
+        render(<CurrenciesList />);
+
+        expect(screen.getByRole("button", { name: /back to home page/i })).toBeInTheDocument();
+    });
+
     it("exposes the amount input with an accessible label", async () => {
         render(<CurrenciesList />);
 

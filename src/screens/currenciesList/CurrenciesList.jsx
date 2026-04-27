@@ -272,6 +272,16 @@ const CurrenciesList = () => {
 
     return <Container>
         <div className={styles.listContainer}>
+            {!isAuthenticated ? (
+                <button
+                    type="button"
+                    className={styles.backToHome}
+                    onClick={() => router.push("/")}
+                    aria-label="Back to home page"
+                >
+                    ← Home
+                </button>
+            ) : null}
 
             <Row className="justify-content-center">
                 <Col lg={8} md={8} sm={10}>

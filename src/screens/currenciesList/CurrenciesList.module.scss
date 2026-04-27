@@ -3,6 +3,23 @@
     padding: 0 20px
 }
 
+.backToHome {
+    display: inline-block;
+    margin: 0 0 0.5rem;
+    padding: 0.35rem 0;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.backToHome:hover {
+    color: #fff;
+}
+
 .listContainer h2 {
     color: white;
     margin: 40px auto 40px auto;

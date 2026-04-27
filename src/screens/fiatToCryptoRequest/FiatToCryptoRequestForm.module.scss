@@ -23,6 +23,79 @@
     margin: 0.5rem 0 1.25rem;
 }
 
+.inlineLink {
+    color: #7eb8ff;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.section {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sectionTitle {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.quoteRow {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    @media (min-width: 640px) {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-end;
+
+        .field {
+            flex: 1;
+            min-width: 7rem;
+        }
+    }
+}
+
+.quoteBox {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(61, 220, 132, 0.35);
+    background: rgba(61, 220, 132, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+}
+
+.quoteDisclaimer {
+    margin: 0 0 0.5rem;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.quoteMeta {
+    margin: 0.5rem 0 0;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.quoteError {
+    margin: 0.75rem 0 0;
+    color: #ff9b9b;
+    font-size: 0.9rem;
+}
+
+.info {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: rgba(100, 149, 237, 0.12);
+    border: 1px solid rgba(100, 149, 237, 0.35);
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
 .warn {
     padding: 0.75rem 1rem;
     border-radius: 8px;
@@ -166,6 +239,13 @@
     color: rgba(255, 255, 255, 0.78);
 }
 
+.afterSubmit {
+    margin: 0.75rem 0 0;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.72);
+}
+
 .secondary {
     padding: 0.45rem 0.9rem;
     border-radius: 6px;
@@ -174,4 +254,9 @@
     color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
     font-size: 0.9rem;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }

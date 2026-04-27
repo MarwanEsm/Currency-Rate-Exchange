@@ -1,8 +1,13 @@
-/** `/admin/orders` — ops queue: review/approve (FCX-43), pricing (FCX-42), execution (FCX-44), payout (FCX-45). */
-import AdminOrderQueueScreen from "../../src/screens/adminOrderQueue/AdminOrderQueueScreen";
+/** `/admin/orders` — minimal inbox for `submitted` buy requests (fulfillment off-app). */
+import AdminPageGuard from "@/components/admin/AdminPageGuard";
+import AdminSubmittedOrdersScreen from "@/screens/adminSubmittedOrders/AdminSubmittedOrdersScreen";
 
 const AdminOrdersPage = () => {
-    return <AdminOrderQueueScreen />;
+    return (
+        <AdminPageGuard title="Admin: new requests">
+            <AdminSubmittedOrdersScreen />
+        </AdminPageGuard>
+    );
 };
 
 export default AdminOrdersPage;

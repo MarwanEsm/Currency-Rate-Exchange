@@ -13,6 +13,7 @@ import ResetPassword from "@/components/forms/resetPassword/ResetPassword";
 import SuccessMessage from "@/components/messages/successMessage/SuccessMessage";
 import ErrorMessage from "@/components/messages/errorMessage/ErrorMessage";
 import { AuthContext, AUTH_ERROR_CODES, AUTH_SUCCESS_CODES } from "@/firebase/authContext";
+import { canAccessFiatCryptoAdminUi } from "@/utils/fiatCryptoAdminAccess";
 
 const Home = () => {
 
@@ -24,7 +25,8 @@ const Home = () => {
     const [successCode, setSuccessCode] = useState(null);
 
 
-    const { login, register, resetPassword } = useContext(AuthContext);
+    const { login, register, resetPassword, user, isAuthenticated } = useContext(AuthContext);
+    const showAdminNav = canAccessFiatCryptoAdminUi(user, isAuthenticated);
 
     const router = useRouter();
 
@@ -140,31 +142,26 @@ const Home = () => {
                 <button
                     type="button"
                     className={styles.progressLink}
-                    onClick={() => router.push("/orders/progress")}
+                    onClick={() => router.push("/currencies")}
                 >
-                    Purchase status (demo)
+                    Fiat exchange rates
                 </button>
                 <button
                     type="button"
                     className={styles.progressLink}
                     onClick={() => router.push("/orders/new")}
                 >
-                    New fiat-to-crypto request
+                    Buy crypto with fiat
                 </button>
-                <button
-                    type="button"
-                    className={styles.progressLink}
-                    onClick={() => router.push("/admin/orders")}
-                >
-                    Admin: order review queue
-                </button>
-                <button
-                    type="button"
-                    className={styles.progressLink}
-                    onClick={() => router.push("/admin/deposits")}
-                >
-                    Admin: deposit reconciliation
-                </button>
+                {showAdminNav ? (
+                    <button
+                        type="button"
+                        className={styles.progressLink}
+                        onClick={() => router.push("/admin/orders")}
+                    >
+                        Admin: new requests
+                    </button>
+                ) : null}
                 <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
