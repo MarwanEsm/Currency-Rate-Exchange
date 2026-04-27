@@ -121,6 +121,7 @@ The main UI is **`src/screens/currenciesList/CurrenciesList.jsx`**: accessible `
 - `src/utils/`: shared hooks, conversion helpers, exchange-rate cache, and responsive helpers.
 - `src/services/exchangeRateProvider.js`: reusable provider client for exchange-rate requests, normalization, and typed error handling.
 - `src/domain/`: fiat-to-crypto order lifecycle, compliance gates, secure transfer validation (FCX-21), user progress/notifications (FCX-20), and FCX-18 E2E-style tests.
+- `src/domain/fiatToCryptoOrder.js`: canonical **statuses** (`submitted` → `paid` → `purchasing` → `transferring` → `completed` / `failed`), **transition + owner** matrix, **`FiatToCryptoOrder` data shape** (user, fiat, asset, wallet, fees, audit, transfer, execution, deposit fields), and **`validateFiatToCryptoOrderDraft`** — code-backed source of truth for ops (FCX-38).
 - `pages/orders/progress.jsx`: demo **purchase status** view (timeline, notifications, failure guidance, delivery summary).
 - `pages/orders/new.jsx` + `POST /api/fiat-to-crypto/orders`: fiat-to-crypto **intake form** with client + server validation (FCX-25).
 - `pages/admin/orders.jsx` + `GET /api/fiat-to-crypto/admin/queue` + `POST /api/fiat-to-crypto/admin/orders/[id]/decision`: admin review queue with approve/reject + audit (FCX-26).

@@ -158,7 +158,7 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 
 | Asset | Purpose |
 |-------|---------|
-| `src/domain/fiatToCryptoOrder.js` | Statuses, transitions, draft validation |
+| `src/domain/fiatToCryptoOrder.js` | Statuses, transitions, `FiatToCryptoOrder` model, draft validation, required-field contract (FCX-38) |
 | `src/domain/fiatToCryptoCompliance.js` | KYC / AML / sanctions gates and audit entries |
 | `src/domain/fiatToCryptoTransfer.js` | Payout network config, address validation, tx hash fields, failure policy (FCX-21) |
 | `src/domain/fiatToCryptoOrderProgress.js` | User timeline, notification trigger keys, failure copy, completed delivery summary (FCX-20) |

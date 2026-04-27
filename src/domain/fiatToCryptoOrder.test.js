@@ -1,4 +1,5 @@
 import {
+    FIAT_TO_CRYPTO_ORDER_REQUIRED_DRAFT_FIELDS,
     FIAT_TO_CRYPTO_ORDER_STATUS,
     FIAT_TO_CRYPTO_ORDER_TRANSITIONS,
     getAllowedFiatToCryptoOrderNextStatuses,
@@ -8,7 +9,7 @@ import {
     validateFiatToCryptoOrderDraft,
 } from "./fiatToCryptoOrder";
 
-describe("fiatToCryptoOrder (FCX-17)", () => {
+describe("fiatToCryptoOrder (FCX-17, FCX-38)", () => {
     describe("statuses", () => {
         it("defines six canonical statuses", () => {
             expect(Object.keys(FIAT_TO_CRYPTO_ORDER_STATUS)).toHaveLength(6);
@@ -95,6 +96,41 @@ describe("fiatToCryptoOrder (FCX-17)", () => {
 
         it("requires network to be a string when present", () => {
             expect(validateFiatToCryptoOrderDraft({ ...valid, network: 123 }).length).toBeGreaterThan(0);
+        });
+    });
+
+    describe("FCX-38 (lifecycle, model, validation contract)", () => {
+        it("defines the six operational statuses from submission through fulfillment", () => {
+            expect(new Set(Object.values(FIAT_TO_CRYPTO_ORDER_STATUS))).toEqual(
+                new Set(["submitted", "paid", "purchasing", "transferring", "completed", "failed"]),
+            );
+        });
+
+        it("documents required draft fields for create/submit validation", () => {
+            expect(FIAT_TO_CRYPTO_ORDER_REQUIRED_DRAFT_FIELDS).toEqual([
+                "userId",
+                "fiatCurrency",
+                "fiatAmount",
+                "targetAssetCode",
+                "walletAddress",
+            ]);
+            const partial = {
+                userId: "u",
+                fiatCurrency: "USD",
+                fiatAmount: "10",
+                targetAssetCode: "BTC",
+            };
+            const errs = validateFiatToCryptoOrderDraft(partial);
+            expect(errs.some((e) => /walletAddress/i.test(e))).toBe(true);
+        });
+
+        it("every non-terminal status has at least one documented transition", () => {
+            const nonTerminal = Object.values(FIAT_TO_CRYPTO_ORDER_STATUS).filter(
+                (s) => s !== "completed" && s !== "failed",
+            );
+            for (const s of nonTerminal) {
+                expect(FIAT_TO_CRYPTO_ORDER_TRANSITIONS.some((t) => t.from === s)).toBe(true);
+            }
         });
     });
 });

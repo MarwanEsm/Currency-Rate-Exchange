@@ -1,9 +1,25 @@
 /**
- * Fiat-to-crypto order — request lifecycle, data model, and validation (FCX-17).
+ * Fiat-to-crypto order — request lifecycle, data model, and validation (FCX-17, FCX-38).
  *
  * Purpose: give operations and engineering a single, code-backed definition of how an
  * order moves from submission through fulfillment, what data we persist, who drives each
  * transition, and which fields are mandatory before an order is accepted.
+ *
+ * ## Data model (persisted shape — FCX-38)
+ *
+ * Grouping of `FiatToCryptoOrder` typedef fields (storage-agnostic; see typedef below):
+ *
+ * | Group | Fields (representative) |
+ * |-------|-------------------------|
+ * | **User & request** | `id`, `userId`, `fiatCurrency`, `fiatAmount`, `targetAssetCode`, `walletAddress`, optional `network` |
+ * | **Fees & pricing** | `feeQuoteFiat`, `feeActualFiat`, `networkFeeAsset`, `grossFiatAmount`, `feeFiatAmount`, `netFiatAmount`, `exchangeRateApplied`, `netCryptoAmount`, `netCryptoAssetCode`, `commissionConfigSnapshot`, `pricingComputedAt`, `pricingWarnings` |
+ * | **Status & failure** | `status`, `failureCode`, `failureMessage` |
+ * | **Audit & idempotency** | `createdAt`, `updatedAt`, `submittedAt` … `failedAt`, `createdByUserId`, `lastUpdatedBy`, `idempotencyKey` |
+ * | **Transfer (payout)** | `transferTxHash`, `transferCanonicalNetwork`, `transferTxBroadcastAt`, `transferTxConfirmedAt`, `deliveredAssetAmount`, `deliveredAssetCode` |
+ * | **Execution (LP)** | `executionProviderId`, `executionProviderOrderId`, `executionFillPrice`, … `executionLastErrorCode` |
+ * | **Deposit / reconciliation** | `depositId`, `depositAmount`, … `reconciliationNotes` |
+ *
+ * Amounts and rates are **strings** where noted to preserve decimal precision at boundaries.
  *
  * ## Order statuses
  *
@@ -25,11 +41,15 @@
  * outgoing transitions in this table; retries are modeled as **new** orders or separate
  * compensating workflows outside this minimal state machine.
  *
- * ## Validation
+ * ## Validation (FCX-38)
  *
- * Use `validateFiatToCryptoOrderDraft` for required-field checks on create/submit payloads.
- * Stricter per-asset or per-chain rules (e.g. memo tag, contract address whitelist) should be
- * layered by the payment and custody integrations that consume this model.
+ * **Required on draft / create** (see `FIAT_TO_CRYPTO_ORDER_REQUIRED_DRAFT_FIELDS`): `userId`,
+ * `fiatCurrency`, `fiatAmount` (positive decimal string), `targetAssetCode`, `walletAddress`
+ * (length bounds). **Optional:** `network` (must be string if present).
+ *
+ * Use `validateFiatToCryptoOrderDraft` for these checks. Intake / API layers add KYC, destination
+ * format, commission config, and optional `exchangeRate` (see `fiatToCryptoIntake.js`).
+ * Stricter per-asset rules (memo tag, contract whitelist) belong in payment and custody integrations.
  *
  * ## Compliance (FCX-19)
  *
@@ -262,6 +282,20 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
 
 const WALLET_ADDRESS_MIN_LEN = 8;
 const WALLET_ADDRESS_MAX_LEN = 256;
+
+/**
+ * Keys required by `validateFiatToCryptoOrderDraft` for a new order payload (FCX-38).
+ * `network` is optional; when omitted it is not validated beyond intake/transfer rules.
+ *
+ * @type {ReadonlyArray<'userId' | 'fiatCurrency' | 'fiatAmount' | 'targetAssetCode' | 'walletAddress'>}
+ */
+export const FIAT_TO_CRYPTO_ORDER_REQUIRED_DRAFT_FIELDS = Object.freeze([
+    "userId",
+    "fiatCurrency",
+    "fiatAmount",
+    "targetAssetCode",
+    "walletAddress",
+]);
 
 /**
  * @param {unknown} value
