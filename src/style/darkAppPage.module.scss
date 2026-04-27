@@ -55,6 +55,11 @@
     color: #fff;
     font-size: 0.95rem;
     font-family: inherit;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.48);
+        opacity: 1;
+    }
 }
 
 .textarea {

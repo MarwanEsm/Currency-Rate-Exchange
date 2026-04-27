@@ -29,6 +29,20 @@ const getProviderErrorMessage = (error) => {
     return PROVIDER_ERROR_MESSAGES[error.code] ?? "Unable to load exchange rates. Please try again.";
 };
 
+const AMOUNT_FIELD_HELPER =
+    "Whole positive numbers only — decimals and minus signs are ignored.";
+const AMOUNT_INPUT_ADJUSTMENT_NOTICE = "Removed unsupported characters from your input.";
+
+const AmountInfoIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.25" />
+        <path
+            fill="currentColor"
+            d="M8 4.35a.72.72 0 1 1 0 1.45.72.72 0 0 1 0-1.45zm-.55 2.65h1.1v4.65h-1.1V7z"
+        />
+    </svg>
+);
+
 const CurrenciesList = () => {
 
     const [fromCurrency, setFromCurrency] = useState(null)
@@ -334,54 +348,82 @@ const CurrenciesList = () => {
             <Row className="justify-content-center">
 
                 <Col lg={4} md={4} sm={6} className={styles.inputWrapper}>
-                    <strong>{fromCurrency?.value}</strong>
-                    <label htmlFor="conversion-amount" className={styles.srOnly}>Amount</label>
-                    <input
-                        id="conversion-amount"
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        autoComplete="off"
-                        placeholder="Amount"
-                        className={styles.amountInput}
-                        value={formatWholeAmountForDisplay(amount)}
-                        aria-invalid={amountValidationMessage ? "true" : "false"}
-                        aria-keyshortcuts="Enter"
-                        aria-describedby={amountDescribedBy}
-                        onChange={(e) => {
-                            const raw = e.target.value;
-                            const sanitized = sanitizeAmountDigitString(raw);
-                            const wasAdjusted = sanitized !== raw && raw.length > 0;
-                            setAmount(sanitized);
-                            if (wasAdjusted) {
-                                setInputAdjustmentNotice(true);
-                            } else if (sanitized === "") {
-                                setInputAdjustmentNotice(false);
-                            }
-                            setHasConverted(false);
-                            setConvertInvalidAttempt(false);
-                        }}
-                        onBlur={() => setAmountTouched(true)}
-                        onKeyDown={onAmountKeyDown}
-                    />
                     {showAmountHelperText ? (
-                        <div
-                            id="amount-helper-text"
-                            className={styles.amountHelperText}
-                        >
-                            Whole positive numbers only — decimals and minus signs are ignored.
-                        </div>
+                        <span id="amount-helper-text" className={styles.srOnly}>
+                            {AMOUNT_FIELD_HELPER}
+                        </span>
                     ) : null}
                     {showInputAdjustmentNotice ? (
-                        <div
+                        <span
                             id="amount-adjustment-notice"
-                            className={styles.amountAdjustmentNotice}
+                            className={styles.srOnly}
                             role="status"
                             aria-live="polite"
+                            aria-atomic="true"
                         >
-                            Removed unsupported characters from your input.
-                        </div>
+                            {AMOUNT_INPUT_ADJUSTMENT_NOTICE}
+                        </span>
                     ) : null}
+                    <div className={styles.amountInputRow}>
+                        <div className={styles.amountField}>
+                            {fromCurrency?.value ? (
+                                <strong className={styles.amountCurrency} aria-hidden="true">
+                                    {fromCurrency.value}
+                                </strong>
+                            ) : null}
+                            <label htmlFor="conversion-amount" className={styles.srOnly}>Amount</label>
+                            <input
+                                id="conversion-amount"
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                autoComplete="off"
+                                placeholder="Amount"
+                                className={styles.amountInput}
+                                value={formatWholeAmountForDisplay(amount)}
+                                aria-invalid={amountValidationMessage ? "true" : "false"}
+                                aria-keyshortcuts="Enter"
+                                aria-describedby={amountDescribedBy}
+                                onChange={(e) => {
+                                    const raw = e.target.value;
+                                    const sanitized = sanitizeAmountDigitString(raw);
+                                    const wasAdjusted = sanitized !== raw && raw.length > 0;
+                                    setAmount(sanitized);
+                                    if (wasAdjusted) {
+                                        setInputAdjustmentNotice(true);
+                                    } else if (sanitized === "") {
+                                        setInputAdjustmentNotice(false);
+                                    }
+                                    setHasConverted(false);
+                                    setConvertInvalidAttempt(false);
+                                }}
+                                onBlur={() => setAmountTouched(true)}
+                                onKeyDown={onAmountKeyDown}
+                            />
+                        </div>
+                        {showAmountHelperText ? (
+                            <div className={styles.amountInfoWrap}>
+                                <button
+                                    type="button"
+                                    className={`${styles.amountInfoBtn}${showInputAdjustmentNotice ? ` ${styles.amountInfoBtnHighlight}` : ""}`}
+                                    aria-label="Amount field help: open for formatting rules"
+                                >
+                                    <AmountInfoIcon />
+                                </button>
+                                <div
+                                    id="amount-field-help-tooltip"
+                                    role="tooltip"
+                                    className={styles.amountInfoTooltip}
+                                    data-testid="amount-info-tooltip"
+                                >
+                                    <p className={styles.tooltipParagraph}>{AMOUNT_FIELD_HELPER}</p>
+                                    {showInputAdjustmentNotice ? (
+                                        <p className={styles.tooltipAdjustment}>{AMOUNT_INPUT_ADJUSTMENT_NOTICE}</p>
+                                    ) : null}
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
                     {amountValidationMessage ? (
                         <div
                             id="amount-validation-message"

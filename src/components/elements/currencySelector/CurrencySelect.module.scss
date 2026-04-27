@@ -15,88 +15,155 @@
     border: 0;
 }
 
-.select {
+/* Unstyled react-select: match darkAppPage `.input` (fiat form native selects) */
+.rsContainer {
+    width: 100%;
     margin: 12px auto 0;
-    font-size: 16px;
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.rsControl {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    box-sizing: border-box;
+    padding: 0.5rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    cursor: pointer;
+    transition: border-color 0.12s ease, box-shadow 0.12s ease;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.35);
+    }
+}
+
+.rsControlFocused {
+    border-color: #4a90d9;
+    box-shadow: 0 0 0 1px rgba(74, 144, 217, 0.45);
+}
+
+.rsControlDisabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.rsValueContainer {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    padding: 0;
+    gap: 0.25rem;
+}
+
+.rsSingleValue {
+    color: #fff;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rsPlaceholder {
+    color: rgba(255, 255, 255, 0.48);
+    margin: 0;
+}
+
+.rsInput {
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    background: transparent;
+    font: inherit;
+
+    input {
+        font: inherit !important;
+        color: inherit !important;
+    }
+}
+
+.rsIndicatorsContainer {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    align-self: stretch;
+    padding-left: 0.35rem;
+}
+
+.rsIndicatorSeparator {
+    align-self: stretch;
+    width: 1px;
+    margin: 0 0.25rem;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.rsDropdownIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.65);
+
+    &:hover {
+        color: rgba(255, 255, 255, 0.9);
+    }
+}
+
+.rsClearIndicator {
+    padding: 0 0.15rem;
+    color: rgba(255, 255, 255, 0.55);
     cursor: pointer;
 
-    .react-select__control {
-        border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        background: rgba(0, 0, 0, 0.35);
-        min-height: 40px;
-        box-shadow: none;
-
-        &:hover {
-            border-color: rgba(255, 255, 255, 0.35);
-        }
+    &:hover {
+        color: rgba(255, 255, 255, 0.9);
     }
+}
 
-    .react-select__control--is-focused {
-        border-color: #4a90d9;
-        box-shadow: 0 0 0 1px rgba(74, 144, 217, 0.45);
-    }
+.rsMenuPortal {
+    z-index: 9999;
+}
 
-    .react-select__single-value,
-    .react-select__input-container {
-        color: #fff;
-    }
+.rsMenu {
+    margin-top: 4px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(18, 22, 30, 0.98);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+}
 
-    .react-select__placeholder {
-        color: rgba(255, 255, 255, 0.5);
-    }
+.rsMenuList {
+    padding: 4px 0;
+    max-height: 200px;
+}
 
-    .react-select__menu {
-        margin-top: 4px;
-        border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(18, 22, 30, 0.98);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-        z-index: 9999;
-        max-height: 200px;
-        overflow: hidden;
-    }
+.rsOption {
+    padding: 0.45rem 0.65rem;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.92);
+    background: transparent;
+}
 
-    .react-select__menu-list {
-        padding: 4px 0;
-    }
+.rsOptionFocused {
+    background: rgba(74, 144, 217, 0.28);
+}
 
-    .react-select__option {
-        background: transparent;
-        color: rgba(255, 255, 255, 0.92);
-        cursor: pointer;
-    }
+.rsOptionSelected {
+    background: rgba(74, 144, 217, 0.45);
+}
 
-    .react-select__option--is-focused {
-        background: rgba(74, 144, 217, 0.28);
-    }
+.rsOptionDisabled {
+    color: rgba(255, 255, 255, 0.35);
+    cursor: not-allowed;
+}
 
-    .react-select__option--is-selected {
-        background: rgba(74, 144, 217, 0.45);
-    }
-
-    .react-select__option--is-disabled {
-        color: rgba(255, 255, 255, 0.35);
-        cursor: not-allowed;
-    }
-
-    .react-select__indicator-separator {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    .react-select__dropdown-indicator {
-        color: rgba(255, 255, 255, 0.65);
-
-        &:hover {
-            color: rgba(255, 255, 255, 0.9);
-        }
-    }
-
-    .react-select__clear-indicator {
-        color: rgba(255, 255, 255, 0.55);
-
-        &:hover {
-            color: rgba(255, 255, 255, 0.9);
-        }
-    }
+.rsLoadingMessage,
+.rsNoOptionsMessage {
+    padding: 0.5rem 0.65rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.88rem;
 }

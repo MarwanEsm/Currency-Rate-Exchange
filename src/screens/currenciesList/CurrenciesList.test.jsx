@@ -518,17 +518,19 @@ describe("CurrenciesList", () => {
             await userEvent.click(await screen.findByText("Euro"));
         };
 
-        it("shows the helper text once a valid pair is selected and links it via aria-describedby", async () => {
+        it("exposes helper copy for assistive tech once a valid pair is selected and links it via aria-describedby", async () => {
             mockUseExchangeRates.mockImplementation(ratedHook(0.5));
 
             render(<CurrenciesList />);
             await selectUsdEur();
 
-            const helper = await screen.findByText(
-                /whole positive numbers only.*decimals and minus signs are ignored/i,
-            );
-            expect(helper).toBeInTheDocument();
-            expect(helper.id).toBe("amount-helper-text");
+            await waitFor(() => {
+                const helper = document.getElementById("amount-helper-text");
+                expect(helper).toBeTruthy();
+                expect(helper.textContent).toMatch(
+                    /whole positive numbers only.*decimals and minus signs are ignored/i,
+                );
+            });
 
             const amountInput = screen.getByLabelText("Amount");
             expect(amountInput.getAttribute("aria-describedby") || "").toContain(
@@ -536,13 +538,11 @@ describe("CurrenciesList", () => {
             );
         });
 
-        it("does not show the helper text before a pair / rate is available", async () => {
+        it("does not expose helper copy before a pair / rate is available", async () => {
             render(<CurrenciesList />);
             await screen.findByLabelText("Amount");
 
-            expect(
-                screen.queryByText(/whole positive numbers only/i),
-            ).toBeNull();
+            expect(document.getElementById("amount-helper-text")).toBeNull();
         });
 
         it("surfaces an adjustment notice when minus signs and decimals are stripped", async () => {
@@ -554,9 +554,11 @@ describe("CurrenciesList", () => {
             const amountInput = screen.getByLabelText("Amount");
             await userEvent.type(amountInput, "-1.5");
 
-            expect(
-                await screen.findByText(/removed unsupported characters from your input/i),
-            ).toBeInTheDocument();
+            await waitFor(() => {
+                const notice = document.getElementById("amount-adjustment-notice");
+                expect(notice).toBeTruthy();
+                expect(notice.textContent).toMatch(/removed unsupported characters from your input/i);
+            });
             expect(amountInput.value).not.toMatch(/[-.]/);
         });
 
@@ -568,14 +570,14 @@ describe("CurrenciesList", () => {
 
             const amountInput = screen.getByLabelText("Amount");
             await userEvent.type(amountInput, "-1");
-            expect(
-                await screen.findByText(/removed unsupported characters/i),
-            ).toBeInTheDocument();
+            await waitFor(() => {
+                expect(document.getElementById("amount-adjustment-notice")).toBeTruthy();
+            });
 
             await userEvent.clear(amountInput);
 
             await waitFor(() => {
-                expect(screen.queryByText(/removed unsupported characters/i)).toBeNull();
+                expect(document.getElementById("amount-adjustment-notice")).toBeNull();
             });
         });
 
