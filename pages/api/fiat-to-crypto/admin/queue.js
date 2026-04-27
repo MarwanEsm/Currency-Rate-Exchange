@@ -10,7 +10,7 @@ const ALLOWED_STATUSES = new Set([
 ]);
 
 /**
- * GET /api/fiat-to-crypto/admin/queue?status=submitted|paid|purchasing — admin queue (FCX-43 + FCX-26 + FCX-24 + FCX-41).
+ * GET /api/fiat-to-crypto/admin/queue?status=submitted|paid|purchasing — admin queue (FCX-43 + FCX-26 + FCX-24 + FCX-44 + FCX-41).
  *
  * `submitted` lists orders awaiting fiat funding / deposit match (FCX-41). Default status is `paid`
  * (orders awaiting approval). `purchasing` returns orders approved and ready for liquidity-provider

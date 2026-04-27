@@ -1,5 +1,5 @@
 /**
- * Admin order queue for review & approval (FCX-43) with commission preview via FCX-42 (`fiatToCryptoPricing.js`).
+ * Admin order queue for review & approval (FCX-43), pricing (FCX-42), and purchase execution (FCX-44).
  */
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
@@ -26,6 +26,13 @@ const buildAdminHeaders = (adminUserId, roles) => ({
 const decisionOutcomeLabel = (outcome) => {
     if (outcome === "blocked") return "Blocked (compliance)";
     if (outcome === "applied") return "Applied";
+    return String(outcome ?? "—");
+};
+
+const executionOutcomeLabel = (outcome) => {
+    if (outcome === "success") return "Success";
+    if (outcome === "retry") return "Retry scheduled";
+    if (outcome === "failed_permanent") return "Failed";
     return String(outcome ?? "—");
 };
 
@@ -76,6 +83,13 @@ const AdminOrderQueueScreen = () => {
     const [decisionLogEntries, setDecisionLogEntries] = useState([]);
     const [decisionLogError, setDecisionLogError] = useState(null);
     const [decisionLogLoading, setDecisionLogLoading] = useState(false);
+
+    const [executionLogEntries, setExecutionLogEntries] = useState([]);
+    const [executionLogError, setExecutionLogError] = useState(null);
+    const [executionLogLoading, setExecutionLogLoading] = useState(false);
+
+    const [liquidityProviders, setLiquidityProviders] = useState([]);
+    const [executeProviderId, setExecuteProviderId] = useState("");
 
     const buildCommissionConfig = useCallback(() => {
         const c = { type: commissionType, label: "ops_queue_v1" };
@@ -167,10 +181,56 @@ const AdminOrderQueueScreen = () => {
         }
     }, [adminUserId, canView, roles]);
 
+    const loadExecutionLog = useCallback(async () => {
+        if (!adminUserId || !canView) {
+            setExecutionLogEntries([]);
+            return;
+        }
+        setExecutionLogLoading(true);
+        setExecutionLogError(null);
+        try {
+            const res = await fetch("/api/fiat-to-crypto/admin/execution/log", {
+                method: "GET",
+                headers: buildAdminHeaders(adminUserId, roles),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                setExecutionLogError(data.error || "Failed to load execution log.");
+                return;
+            }
+            setExecutionLogEntries(Array.isArray(data.entries) ? [...data.entries].reverse() : []);
+        } catch {
+            setExecutionLogError("Network error. Please retry.");
+        } finally {
+            setExecutionLogLoading(false);
+        }
+    }, [adminUserId, canView, roles]);
+
+    const loadLiquidityProviders = useCallback(async () => {
+        if (!adminUserId || !canView) {
+            setLiquidityProviders([]);
+            return;
+        }
+        try {
+            const res = await fetch("/api/fiat-to-crypto/admin/execution/providers", {
+                method: "GET",
+                headers: buildAdminHeaders(adminUserId, roles),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) return;
+            const list = Array.isArray(data.providers) ? data.providers : [];
+            setLiquidityProviders(list);
+            setExecuteProviderId((prev) => (prev && list.includes(prev) ? prev : list[0] ?? ""));
+        } catch {
+            /* non-fatal */
+        }
+    }, [adminUserId, canView, roles]);
+
     const refreshQueuesAndLog = useCallback(async () => {
         await loadQueue();
         await loadDecisionLog();
-    }, [loadQueue, loadDecisionLog]);
+        await loadExecutionLog();
+    }, [loadQueue, loadDecisionLog, loadExecutionLog]);
 
     useEffect(() => {
         loadQueue();
@@ -179,6 +239,14 @@ const AdminOrderQueueScreen = () => {
     useEffect(() => {
         loadDecisionLog();
     }, [loadDecisionLog]);
+
+    useEffect(() => {
+        loadExecutionLog();
+    }, [loadExecutionLog]);
+
+    useEffect(() => {
+        loadLiquidityProviders();
+    }, [loadLiquidityProviders]);
 
     const resetDecisionPanel = () => {
         setQuote(null);
@@ -297,6 +365,7 @@ const AdminOrderQueueScreen = () => {
                     method: "POST",
                     headers: buildAdminHeaders(adminUserId, roles),
                     body: JSON.stringify({
+                        ...(executeProviderId ? { providerId: executeProviderId } : {}),
                         ...(executeSimulatedOutcome ? { simulatedOutcome: executeSimulatedOutcome } : {}),
                     }),
                 },
@@ -323,7 +392,7 @@ const AdminOrderQueueScreen = () => {
                 });
                 setExecuteError(data.result?.errorMessage || data.error || "Execution failed.");
             }
-            await loadQueue();
+            await refreshQueuesAndLog();
         } catch {
             setExecuteError("Network error. Please retry.");
         } finally {
@@ -345,9 +414,9 @@ const AdminOrderQueueScreen = () => {
                         type="button"
                         className={styles.link}
                         onClick={refreshQueuesAndLog}
-                        disabled={loading || decisionLogLoading}
+                        disabled={loading || decisionLogLoading || executionLogLoading}
                     >
-                        {loading || decisionLogLoading ? "Refreshing…" : "Refresh"}
+                        {loading || decisionLogLoading || executionLogLoading ? "Refreshing…" : "Refresh"}
                     </button>
                 </div>
 
@@ -688,11 +757,31 @@ const AdminOrderQueueScreen = () => {
                         Purchase execution (approved orders)
                     </h2>
                     <p className={styles.hint}>
-                        Orders in <strong>purchasing</strong> are ready for the liquidity provider. Execution
+                        Orders in <strong>purchasing</strong> are ready for the liquidity provider (FCX-44). Execution
                         retries transient errors up to 3 times and writes fill metadata + audit entries before
                         moving the order to <strong>transferring</strong> (FCX-24). Use the simulated outcome to
                         test failure paths in the demo provider.
                     </p>
+                    <label className={styles.field}>
+                        <span>Liquidity provider</span>
+                        <select
+                            className={styles.input}
+                            value={executeProviderId}
+                            onChange={(e) => setExecuteProviderId(e.target.value)}
+                            aria-label="Liquidity provider"
+                            disabled={liquidityProviders.length === 0}
+                        >
+                            {liquidityProviders.length === 0 ? (
+                                <option value="">Loading providers…</option>
+                            ) : (
+                                liquidityProviders.map((id) => (
+                                    <option key={id} value={id}>
+                                        {id}
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                    </label>
                     <label className={styles.field}>
                         <span>Simulated outcome (demo)</span>
                         <select
@@ -744,6 +833,55 @@ const AdminOrderQueueScreen = () => {
                                             {executeBusyId === order.id ? "Executing…" : "Execute purchase"}
                                         </button>
                                     </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </section>
+
+                <section className={styles.section} aria-labelledby="execution-log-heading">
+                    <h2 id="execution-log-heading" className={styles.sectionTitle}>
+                        Purchase execution audit log (most recent first)
+                    </h2>
+                    <p className={styles.hint}>
+                        One row per provider attempt (success, retry, or final failure). Same payload as{" "}
+                        <code className={styles.code}>GET /api/fiat-to-crypto/admin/execution/log</code> (FCX-44).
+                    </p>
+                    {executionLogError && (
+                        <p className={styles.error} role="alert">
+                            {executionLogError}
+                        </p>
+                    )}
+                    {!canView ? (
+                        <p className={styles.hint}>Your selected roles don’t allow viewing the audit log.</p>
+                    ) : executionLogEntries.length === 0 ? (
+                        <p className={styles.hint}>No execution events yet.</p>
+                    ) : (
+                        <ul className={styles.list}>
+                            {executionLogEntries.map((e) => (
+                                <li
+                                    key={`${e.occurredAt}-${e.orderId}-${e.attempt}-${e.outcome}-${e.providerId}`}
+                                    className={styles.auditCard}
+                                >
+                                    <div className={styles.auditHead}>
+                                        <span className={styles.auditOutcome}>{executionOutcomeLabel(e.outcome)}</span>
+                                        <span>
+                                            Attempt <strong>{e.attempt}</strong> ·{" "}
+                                            <code className={styles.code}>{e.orderId}</code> · {e.providerId}
+                                        </span>
+                                    </div>
+                                    <div className={styles.auditMeta}>
+                                        <span>At: {e.occurredAt}</span>
+                                        {e.providerOrderId && <span>Provider order: {e.providerOrderId}</span>}
+                                        {e.fillQuantity != null && e.filledAssetCode && (
+                                            <span>
+                                                Fill: {e.fillQuantity} {e.filledAssetCode} @ {e.fillPrice ?? "—"}
+                                            </span>
+                                        )}
+                                        {e.errorCode && <span>Error: {e.errorCode}</span>}
+                                        {e.actor && <span>Actor: {e.actor}</span>}
+                                    </div>
+                                    {e.errorMessage ? <p className={styles.auditReason}>{e.errorMessage}</p> : null}
                                 </li>
                             ))}
                         </ul>

@@ -9,7 +9,7 @@ import {
 import { getFiatToCryptoOrderById, updateFiatToCryptoOrder } from "@/server/inMemoryFiatToCryptoOrders";
 
 /**
- * POST /api/fiat-to-crypto/admin/orders/[id]/execute-purchase — trigger liquidity purchase (FCX-24).
+ * POST /api/fiat-to-crypto/admin/orders/[id]/execute-purchase — trigger liquidity purchase (FCX-24, FCX-44).
  *
  * Order must already be in `purchasing`. On success the order moves to `transferring` with fill
  * metadata (provider, fill price, fill quantity, attempts). On failure after retries, it moves to

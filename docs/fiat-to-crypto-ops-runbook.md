@@ -85,7 +85,7 @@ Before an order can move from `submitted` to `paid`, ops must match the incoming
 
 ---
 
-## Purchase execution (FCX-24)
+## Purchase execution (FCX-24, FCX-44)
 
 After approval an order lives in `purchasing` with a locked `exchangeRateApplied` and `netCryptoAmount`. Execution is the step that converts that quote into an actual crypto fill with a liquidity provider.
 
@@ -94,7 +94,9 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 - **Providers:** registered via `registerLiquidityProvider(id, fn)`. The demo ships `internal_simulator` with deterministic outcomes driven by `simulatedOutcome`. Production wires in the real venue adapter and should keep per-provider secrets out of the audit payload.
 - **Persistence:** success → `purchasing` → `transferring` with `executionProviderId`, `executionProviderOrderId`, `executionFillPrice`, `executionFillQuantity`, `executionFilledAssetCode`, `executionExecutedAt`, `executionAttempts`. Final failure → `purchasing` → `failed` with `failureCode`, `failureMessage`, `executionLastErrorCode`, and `executionAttempts` capturing retry effort. `buildExecutionOrderPatch` returns the exact patch the API merges.
 - **API:** `POST /api/fiat-to-crypto/admin/orders/:id/execute-purchase` requires the `execute_purchase` permission (roles `order_reviewer`, `operations_manager`). Accepts `{ providerId?, simulatedOutcome?, maxAttempts? }`. Returns `{ ok, order, result }` with HTTP 200 on success, 409 on failure so ops can distinguish retryable UI responses from auth errors.
-- **Admin UI:** `/admin/orders` adds a **Purchase execution (approved orders)** section fed by `GET /api/fiat-to-crypto/admin/queue?status=purchasing`. Operators can preview simulated outcomes before running execution and see a live banner with fill details or error codes.
+- **Provider registry:** `GET /api/fiat-to-crypto/admin/execution/providers` lists registered `providerId` values (requires `view_order_queue`). Demo includes `internal_simulator`; production registers real venues via `registerLiquidityProvider` at boot.
+- **Execution audit API:** `GET /api/fiat-to-crypto/admin/execution/log` returns all `PurchaseExecutionAuditEntry` rows (requires `view_order_queue`).
+- **Admin UI:** `/admin/orders` adds a **Purchase execution (approved orders)** section fed by `GET /api/fiat-to-crypto/admin/queue?status=purchasing`. Operators pick a provider, optionally simulate failures, run execution, and review the execution audit log (FCX-44).
 - **Audit:** every attempt appends a `PurchaseExecutionAuditEntry` to `executionAuditBuffer` (retrievable via `getPurchaseExecutionAuditLogSnapshot`). Persist this buffer to the durable sink in production and alert on streaks of `MAX_RETRIES_EXCEEDED`.
 
 **Ops signals:** repeated `INSUFFICIENT_LIQUIDITY` → coordinate with treasury before re-executing; `RATE_REJECTED` → provider rejected the locked rate, re-approval with a fresh quote is required; non-zero `executionAttempts` on completed orders is healthy noise, but p95 should stay ≤ 2.
@@ -167,6 +169,6 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 | `src/domain/adminPermissions.js` | Admin roles and permission checks (FCX-26) |
 | `src/domain/fiatToCryptoAdminQueue.js` + admin API routes + `GET /api/fiat-to-crypto/admin/decisions/log` | Admin review queue (FCX-43), approve/reject decisions, audit log (FCX-26) |
 | `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto engine, configurable model, ops preview, persisted on approve (FCX-22, FCX-42) |
-| `src/domain/fiatToCryptoExecution.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/execute-purchase` | Liquidity-provider purchase, retry loop, execution audit, order patch (FCX-24) |
+| `src/domain/fiatToCryptoExecution.js` + `POST …/execute-purchase` + `GET …/execution/log` + `GET …/execution/providers` | Liquidity-provider purchase, retry loop, execution audit, provider discovery (FCX-24, FCX-44) |
 | `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` + admin queue `status=submitted` | Deposit matching, amount/currency verification, under/over/mismatch/duplicate handling, audit log, ops UI (FCX-23, FCX-41) |
 | `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated happy path, failure path, edge cases |

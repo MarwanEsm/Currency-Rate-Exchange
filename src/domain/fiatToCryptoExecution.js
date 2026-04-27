@@ -1,5 +1,5 @@
 /**
- * Crypto purchase execution from liquidity providers (FCX-24).
+ * Crypto purchase execution from liquidity providers (FCX-24, FCX-44).
  *
  * Given an order already in `purchasing` (after admin approval locks a quote), this module calls
  * a registered liquidity provider, retries transient failures, records fill metadata, appends an
