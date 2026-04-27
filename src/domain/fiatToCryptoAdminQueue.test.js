@@ -18,6 +18,9 @@ const paidOrderFixture = (overrides = {}) => ({
     targetAssetCode: "BTC",
     walletAddress: "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
     network: "bitcoin_mainnet",
+    kycVerificationStatus: KYC_VERIFICATION_STATUS.VERIFIED,
+    amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+    sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
     status: FIAT_TO_CRYPTO_ORDER_STATUS.PAID,
     createdAt: "2026-04-20T10:00:00.000Z",
     updatedAt: "2026-04-20T10:05:00.000Z",
@@ -139,10 +142,7 @@ describe("applyAdminDecisionToPaidOrder", () => {
     it("blocks approval when compliance gate rejects (AML blocked)", () => {
         const result = applyAdminDecisionToPaidOrder(
             adminInput({
-                complianceContext: {
-                    ...okCompliance,
-                    amlCheckStatus: COMPLIANCE_CHECK_STATUS.BLOCKED,
-                },
+                order: paidOrderFixture({ amlCheckStatus: COMPLIANCE_CHECK_STATUS.BLOCKED }),
             }),
         );
         expect(result.ok).toBe(false);
@@ -153,6 +153,34 @@ describe("applyAdminDecisionToPaidOrder", () => {
         expect(log).toHaveLength(1);
         expect(log[0].outcome).toBe("blocked");
         expect(log[0].newStatus).toBe(FIAT_TO_CRYPTO_ORDER_STATUS.PAID);
+    });
+
+    it("does not let request complianceContext override a blocked AML value on the order (FCX-39)", () => {
+        const result = applyAdminDecisionToPaidOrder(
+            adminInput({
+                order: paidOrderFixture({ amlCheckStatus: COMPLIANCE_CHECK_STATUS.BLOCKED }),
+                complianceContext: {
+                    kycVerificationStatus: KYC_VERIFICATION_STATUS.VERIFIED,
+                    amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+                    sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+                },
+            }),
+        );
+        expect(result.ok).toBe(false);
+        if (result.ok) return;
+        expect(result.errorCode).toBe(ADMIN_DECISION_ERROR_CODES.COMPLIANCE_BLOCKED);
+    });
+
+    it("blocks approval when AML/sanctions are missing on the order and no override is supplied (FCX-39)", () => {
+        const result = applyAdminDecisionToPaidOrder(
+            adminInput({
+                order: paidOrderFixture({ amlCheckStatus: undefined, sanctionsCheckStatus: undefined }),
+                complianceContext: undefined,
+            }),
+        );
+        expect(result.ok).toBe(false);
+        if (result.ok) return;
+        expect(result.errorCode).toBe(ADMIN_DECISION_ERROR_CODES.COMPLIANCE_BLOCKED);
     });
 
     it("appends an audit entry for each attempted decision", () => {

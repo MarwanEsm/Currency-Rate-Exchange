@@ -159,6 +159,7 @@ export const buildSubmittedFiatToCryptoOrder = (normalized, id, options = {}) =>
         targetAssetCode: normalized.targetAssetCode,
         walletAddress: normalized.walletAddress,
         network: normalized.network,
+        kycVerificationStatus: normalized.kycVerificationStatus,
         status: FIAT_TO_CRYPTO_ORDER_STATUS.SUBMITTED,
         createdAt: now,
         updatedAt: now,

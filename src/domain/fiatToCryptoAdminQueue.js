@@ -8,7 +8,10 @@
  */
 
 import { ADMIN_PERMISSION, hasAdminPermission } from "./adminPermissions";
-import { evaluateFiatToCryptoOrderTransitionWithCompliance } from "./fiatToCryptoCompliance";
+import {
+    evaluateFiatToCryptoOrderTransitionWithCompliance,
+    resolveComplianceContextForEnterPurchasing,
+} from "./fiatToCryptoCompliance";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
 
 export const ADMIN_DECISION = {
@@ -80,7 +83,8 @@ const sanitizeReason = (reason) => String(reason ?? "").trim();
 
 /**
  * Validates and applies an admin decision to a `paid` order. Pure: returns a patch + audit entry;
- * the caller persists.
+ * the caller persists. `complianceContext` only fills missing fields on the order; persisted order
+ * values win (FCX-39).
  *
  * @param {{
  *   order: import("./fiatToCryptoOrder.js").FiatToCryptoOrder | null | undefined,
@@ -183,7 +187,7 @@ export const applyAdminDecisionToPaidOrder = (input) => {
         };
     }
 
-    const compliance = input.complianceContext ?? { kycVerificationStatus: "pending" };
+    const compliance = resolveComplianceContextForEnterPurchasing(order, input.complianceContext);
     const gate = evaluateFiatToCryptoOrderTransitionWithCompliance(
         FIAT_TO_CRYPTO_ORDER_STATUS.PAID,
         FIAT_TO_CRYPTO_ORDER_STATUS.PURCHASING,

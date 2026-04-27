@@ -1,5 +1,5 @@
 /**
- * KYC / AML / sanctions gates for fiat-to-crypto orders (FCX-19).
+ * KYC / AML / sanctions gates for fiat-to-crypto orders (FCX-19, FCX-39).
  *
  * Policy (enforced by exported evaluators — call these from order services / workers):
  *
@@ -7,6 +7,9 @@
  *    is accepted into `submitted` (or equivalent create path).
  * 2. **Enter purchasing** — when moving `paid` → `purchasing`, **AML** and **sanctions**
  *    screening must both be in a **cleared** state; KYC must still be **verified**.
+ *    Persist snapshot fields on the order (`kycVerificationStatus`, `amlCheckStatus`,
+ *    `sanctionsCheckStatus`) and resolve them with `resolveComplianceContextForEnterPurchasing`
+ *    so the admin API cannot “approve” without a recorded screening result (FCX-39).
  *
  * Failed checks return stable **reason codes** for UI, APIs, and ops tooling. Each
  * evaluation returns an **audit payload** suitable for append-only compliance logs.
@@ -156,7 +159,17 @@ export const evaluateKycGateForOrderCreation = (context, auditCtx = {}) => {
  * @param {{ orderId?: string, userId?: string, correlationId?: string, actor?: string, occurredAt?: string }} [auditCtx]
  * @returns {{ allowed: boolean, reasonCodes: ComplianceBlockReasonCode[], audit: ComplianceAuditEntry }}
  */
-export const evaluateAmlSanctionsGateForPurchasing = (context, auditCtx = {}) => {
+/**
+ * Pure assessment (no audit logging). Use for idempotent preflight checks (e.g. execution) — FCX-39.
+ *
+ * @param {{
+ *   kycVerificationStatus: string,
+ *   amlCheckStatus?: string,
+ *   sanctionsCheckStatus?: string,
+ * }} context
+ * @returns {{ allowed: boolean, reasonCodes: ComplianceBlockReasonCode[] }}
+ */
+export const assessAmlSanctionsSnapshotForPurchasing = (context) => {
     /** @type {ComplianceBlockReasonCode[]} */
     const reasonCodes = [];
 
@@ -192,7 +205,31 @@ export const evaluateAmlSanctionsGateForPurchasing = (context, auditCtx = {}) =>
         reasonCodes.push(COMPLIANCE_BLOCK_REASON_CODES.SANCTIONS_SCREENING_ERROR);
     }
 
-    if (reasonCodes.length === 0) {
+    return { allowed: reasonCodes.length === 0, reasonCodes };
+};
+
+/**
+ * Merges persisted order fields with optional request-time values. **Order** fields take
+ * precedence when set so callers cannot override a stored blocked state via the admin API (FCX-39).
+ *
+ * @param {{ kycVerificationStatus?: string, amlCheckStatus?: string, sanctionsCheckStatus?: string }} order
+ * @param {{ kycVerificationStatus?: string, amlCheckStatus?: string, sanctionsCheckStatus?: string }} [requestOverride]
+ * @returns {{ kycVerificationStatus: string, amlCheckStatus: string, sanctionsCheckStatus: string }}
+ */
+export const resolveComplianceContextForEnterPurchasing = (order, requestOverride = {}) => {
+    const o = order && typeof order === "object" ? order : {};
+    const r = requestOverride && typeof requestOverride === "object" ? requestOverride : {};
+    return {
+        kycVerificationStatus: o.kycVerificationStatus ?? r.kycVerificationStatus ?? KYC_VERIFICATION_STATUS.PENDING,
+        amlCheckStatus: o.amlCheckStatus ?? r.amlCheckStatus,
+        sanctionsCheckStatus: o.sanctionsCheckStatus ?? r.sanctionsCheckStatus,
+    };
+};
+
+export const evaluateAmlSanctionsGateForPurchasing = (context, auditCtx = {}) => {
+    const { allowed, reasonCodes } = assessAmlSanctionsSnapshotForPurchasing(context);
+
+    if (allowed) {
         const audit = buildComplianceAuditEntry("enter_purchasing", "allowed", [], auditCtx);
         logComplianceDecisionForAudit(audit);
         return { allowed: true, reasonCodes: [], audit };

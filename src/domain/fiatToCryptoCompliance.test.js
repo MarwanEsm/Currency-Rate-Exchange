@@ -2,12 +2,14 @@ import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
 import {
     COMPLIANCE_BLOCK_REASON_CODES,
     COMPLIANCE_CHECK_STATUS,
+    assessAmlSanctionsSnapshotForPurchasing,
     evaluateAmlSanctionsGateForPurchasing,
     evaluateFiatToCryptoOrderTransitionWithCompliance,
     evaluateKycGateForOrderCreation,
     getComplianceAuditLogSnapshot,
     KYC_VERIFICATION_STATUS,
     resetComplianceAuditLogForTests,
+    resolveComplianceContextForEnterPurchasing,
 } from "./fiatToCryptoCompliance";
 
 describe("fiatToCryptoCompliance (FCX-19)", () => {
@@ -136,6 +138,26 @@ describe("fiatToCryptoCompliance (FCX-19)", () => {
             expect(blocked.allowed).toBe(false);
             expect(blocked.reasonCodes).toContain(COMPLIANCE_BLOCK_REASON_CODES.SANCTIONS_MATCH);
             expect(blocked.audit?.orderId).toBe("ord-1");
+        });
+    });
+
+    describe("FCX-39 helpers", () => {
+        it("assessAmlSanctionsSnapshotForPurchasing does not write to the compliance audit log", () => {
+            const before = getComplianceAuditLogSnapshot().length;
+            assessAmlSanctionsSnapshotForPurchasing({
+                kycVerificationStatus: KYC_VERIFICATION_STATUS.VERIFIED,
+                amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+                sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+            });
+            expect(getComplianceAuditLogSnapshot().length).toBe(before);
+        });
+
+        it("resolveComplianceContextForEnterPurchasing keeps AML from the order when the request would clear it", () => {
+            const r = resolveComplianceContextForEnterPurchasing(
+                { amlCheckStatus: COMPLIANCE_CHECK_STATUS.BLOCKED, sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED },
+                { amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED, sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED },
+            );
+            expect(r.amlCheckStatus).toBe(COMPLIANCE_CHECK_STATUS.BLOCKED);
         });
     });
 });

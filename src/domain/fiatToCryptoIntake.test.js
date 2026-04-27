@@ -61,6 +61,7 @@ describe("fiatToCryptoIntake (FCX-25)", () => {
         expect(order.status).toBe(FIAT_TO_CRYPTO_ORDER_STATUS.SUBMITTED);
         expect(order.id).toBe("ord-fixed");
         expect(order.submittedAt).toBeDefined();
+        expect(order.kycVerificationStatus).toBe("verified");
     });
 
     it("normalizes numeric fiat amount to string", () => {

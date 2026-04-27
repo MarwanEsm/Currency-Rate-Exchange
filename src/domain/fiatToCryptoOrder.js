@@ -205,6 +205,9 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   targetAssetCode: string,
  *   walletAddress: string,
  *   network?: string,
+ *   kycVerificationStatus?: string,
+ *   amlCheckStatus?: string,
+ *   sanctionsCheckStatus?: string,
  *   feeQuoteFiat?: string,
  *   feeActualFiat?: string,
  *   networkFeeAsset?: string,
@@ -278,6 +281,10 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  *   `reconciliationOutcome` (one of `DEPOSIT_RECONCILIATION_OUTCOME`), `reconciliationVariance` (signed
  *   minor-unit delta as decimal string), and `reconciliationNotes` hold the ops reviewer decision. A
  *   `matched` outcome is the only one that also transitions `submitted` → `paid`.
+ * - **Compliance snapshot (FCX-39):** `kycVerificationStatus` is set on create (must match
+ *   `KYC_VERIFICATION_STATUS.VERIFIED` to be accepted). `amlCheckStatus` and `sanctionsCheckStatus`
+ *   (see `COMPLIANCE_CHECK_STATUS` in `fiatToCryptoCompliance.js`) should be recorded when fiat is
+ *   confirmed (e.g. on deposit match) before `paid` → `purchasing`.
  */
 
 const WALLET_ADDRESS_MIN_LEN = 8;

@@ -9,6 +9,7 @@ import {
     resetLiquidityProvidersForTests,
     resetPurchaseExecutionAuditLogForTests,
 } from "./fiatToCryptoExecution";
+import { COMPLIANCE_CHECK_STATUS, KYC_VERIFICATION_STATUS } from "./fiatToCryptoCompliance";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
 
 const purchasingOrder = (overrides = {}) => ({
@@ -19,6 +20,9 @@ const purchasingOrder = (overrides = {}) => ({
     targetAssetCode: "BTC",
     walletAddress: "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
     network: "bitcoin_mainnet",
+    kycVerificationStatus: KYC_VERIFICATION_STATUS.VERIFIED,
+    amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+    sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
     status: FIAT_TO_CRYPTO_ORDER_STATUS.PURCHASING,
     grossFiatAmount: "100.00",
     feeFiatAmount: "2.00",
@@ -73,6 +77,17 @@ describe("fiatToCryptoExecution — engine (FCX-24)", () => {
         expect(result.ok).toBe(false);
         if (result.ok) return;
         expect(result.errorCode).toBe(PURCHASE_EXECUTION_ERROR_CODES.ORDER_NOT_ELIGIBLE);
+        expect(result.attempts).toBe(0);
+    });
+
+    it("refuses execution when compliance snapshot is not eligible (FCX-39)", async () => {
+        const result = await executePurchaseWithRetry(
+            purchasingOrder({ amlCheckStatus: COMPLIANCE_CHECK_STATUS.BLOCKED }),
+            { clock: makeFixedClock(), uuidFactory: makeUuidFactory() },
+        );
+        expect(result.ok).toBe(false);
+        if (result.ok) return;
+        expect(result.errorCode).toBe(PURCHASE_EXECUTION_ERROR_CODES.COMPLIANCE_BLOCKED);
         expect(result.attempts).toBe(0);
     });
 

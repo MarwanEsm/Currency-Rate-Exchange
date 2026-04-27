@@ -21,6 +21,9 @@
  * Only `matched` returns an order patch that transitions `submitted` → `paid`. The other outcomes
  * return a "hold" patch that records the deposit reference, variance, and reviewer notes without
  * changing status — so the queue screen can surface the anomaly for manual resolution.
+ *
+ * For `matched`, pass `complianceScreening` with the AML and sanctions result at funding time
+ * (FCX-39) so the order can later move `paid` → `purchasing` only when checks are `cleared`.
  */
 
 /**
@@ -202,6 +205,7 @@ const compareAmountsWithTolerance = (expectedAmount, depositAmount, toleranceBps
  *   toleranceBps?: number,
  *   uuidFactory?: () => string,
  *   nowIso?: () => string,
+ *   complianceScreening?: { amlCheckStatus: string, sanctionsCheckStatus: string },
  * }} input
  * @returns {{
  *   outcome: DepositReconciliationOutcome,
@@ -220,6 +224,7 @@ export const reconcileDeposit = (input) => {
         toleranceBps = DEFAULT_DEPOSIT_AMOUNT_TOLERANCE_BPS,
         uuidFactory,
         nowIso,
+        complianceScreening,
     } = input;
 
     const validationErrors = validateDepositRecord(deposit);
@@ -298,7 +303,7 @@ export const reconcileDeposit = (input) => {
                 outcome: DEPOSIT_RECONCILIATION_OUTCOME.MATCHED,
                 extra: { varianceMinor: fromMinorUnitsSigned(varianceMinor) },
             }),
-            orderPatch: buildMatchPatch(order, deposit, reconciledAt, actor, varianceMinor, notes),
+            orderPatch: buildMatchPatch(order, deposit, reconciledAt, actor, varianceMinor, notes, complianceScreening),
         };
     }
 
@@ -321,9 +326,10 @@ export const reconcileDeposit = (input) => {
  * @param {string | undefined} actor
  * @param {bigint} varianceMinor
  * @param {string | undefined} notes
+ * @param {{ amlCheckStatus: string, sanctionsCheckStatus: string } | undefined} complianceScreening
  * @returns {Partial<import("./fiatToCryptoOrder.js").FiatToCryptoOrder>}
  */
-const buildMatchPatch = (order, deposit, reconciledAt, actor, varianceMinor, notes) => ({
+const buildMatchPatch = (order, deposit, reconciledAt, actor, varianceMinor, notes, complianceScreening) => ({
     status: "paid",
     paidAt: reconciledAt,
     updatedAt: reconciledAt,
@@ -337,6 +343,12 @@ const buildMatchPatch = (order, deposit, reconciledAt, actor, varianceMinor, not
     reconciliationOutcome: DEPOSIT_RECONCILIATION_OUTCOME.MATCHED,
     reconciliationVariance: fromMinorUnitsSigned(varianceMinor),
     reconciliationNotes: notes,
+    ...(complianceScreening
+        ? {
+              amlCheckStatus: complianceScreening.amlCheckStatus,
+              sanctionsCheckStatus: complianceScreening.sanctionsCheckStatus,
+          }
+        : {}),
 });
 
 /**

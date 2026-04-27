@@ -1,3 +1,4 @@
+import { COMPLIANCE_CHECK_STATUS } from "./fiatToCryptoCompliance";
 import {
     DEFAULT_DEPOSIT_AMOUNT_TOLERANCE_BPS,
     DEPOSIT_RECONCILIATION_OUTCOME,
@@ -7,6 +8,11 @@ import {
     reconcileDeposit,
     validateDepositRecord,
 } from "./fiatToCryptoDeposit";
+
+const clearedScreening = () => ({
+    amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+    sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+});
 
 const baseOrder = {
     id: "ord_1",
@@ -88,6 +94,7 @@ describe("reconcileDeposit", () => {
             notes: "routine match",
             uuidFactory: fixedId,
             nowIso: fixedTime,
+            complianceScreening: clearedScreening(),
         });
 
         expect(result.outcome).toBe(DEPOSIT_RECONCILIATION_OUTCOME.MATCHED);
@@ -119,6 +126,8 @@ describe("reconcileDeposit", () => {
             reconciliationOutcome: "matched",
             reconciliationVariance: "0.00",
             reconciliationNotes: "routine match",
+            amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
+            sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
         });
 
         const audit = getDepositReconciliationAuditLogSnapshot();
@@ -163,6 +172,7 @@ describe("reconcileDeposit", () => {
             deposit: { ...baseDeposit, amount: "99.95" },
             order: baseOrder,
             toleranceBps: 5,
+            complianceScreening: clearedScreening(),
         });
         expect(result.outcome).toBe(DEPOSIT_RECONCILIATION_OUTCOME.MATCHED);
         expect(result.orderPatch?.status).toBe("paid");
@@ -227,12 +237,13 @@ describe("reconcileDeposit", () => {
         const result = reconcileDeposit({
             deposit: { ...baseDeposit, currency: "usd" },
             order: { ...baseOrder, fiatCurrency: "USD" },
+            complianceScreening: clearedScreening(),
         });
         expect(result.outcome).toBe(DEPOSIT_RECONCILIATION_OUTCOME.MATCHED);
     });
 
     test("every call appends exactly one audit event", () => {
-        reconcileDeposit({ deposit: baseDeposit, order: baseOrder });
+        reconcileDeposit({ deposit: baseDeposit, order: baseOrder, complianceScreening: clearedScreening() });
         reconcileDeposit({ deposit: { ...baseDeposit, id: "dep_2", amount: "50.00" }, order: baseOrder });
         reconcileDeposit({ deposit: { ...baseDeposit, id: "dep_3" }, order: undefined });
         const log = getDepositReconciliationAuditLogSnapshot();

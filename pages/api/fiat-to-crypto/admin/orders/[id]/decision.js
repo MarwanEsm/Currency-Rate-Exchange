@@ -4,7 +4,6 @@ import {
     ADMIN_DECISION_ERROR_CODES,
     applyAdminDecisionToPaidOrder,
 } from "@/domain/fiatToCryptoAdminQueue";
-import { COMPLIANCE_CHECK_STATUS, KYC_VERIFICATION_STATUS } from "@/domain/fiatToCryptoCompliance";
 import {
     buildOrderPricingPatch,
     computeFiatToCryptoQuote,
@@ -25,7 +24,8 @@ const ERROR_STATUS = {
 /**
  * POST /api/fiat-to-crypto/admin/orders/[id]/decision — approve or reject a `paid` order (FCX-26).
  *
- * Body: { decision: 'approve' | 'reject', reason: string, complianceContext?: {...} }
+ * Body: { decision: 'approve' | 'reject', reason: string, complianceContext?: {...}, exchangeRate?, commissionConfig? }
+ * Optional `complianceContext` only fills gaps when the order has no stored AML/sanctions snapshot; order fields win (FCX-39).
  * Demo auth: `x-admin-user-id` and `x-admin-roles` headers. See queue.js for production notes.
  */
 export default function handler(req, res) {
@@ -59,12 +59,6 @@ export default function handler(req, res) {
 
     const order = getFiatToCryptoOrderById(id);
 
-    const defaultCompliance = {
-        kycVerificationStatus: KYC_VERIFICATION_STATUS.VERIFIED,
-        amlCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
-        sanctionsCheckStatus: COMPLIANCE_CHECK_STATUS.CLEARED,
-    };
-
     const result = applyAdminDecisionToPaidOrder({
         order,
         decision: body.decision,
@@ -72,9 +66,7 @@ export default function handler(req, res) {
         adminUserId,
         adminRoles: roles,
         complianceContext:
-            body.complianceContext && typeof body.complianceContext === "object"
-                ? { ...defaultCompliance, ...body.complianceContext }
-                : defaultCompliance,
+            body.complianceContext && typeof body.complianceContext === "object" ? body.complianceContext : undefined,
     });
 
     if (!result.ok) {

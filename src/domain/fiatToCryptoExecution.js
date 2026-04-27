@@ -11,6 +11,7 @@
  * flows and for CI tests that don't want to depend on an external integration.
  */
 
+import { assessAmlSanctionsSnapshotForPurchasing, COMPLIANCE_CHECK_STATUS, KYC_VERIFICATION_STATUS } from "./fiatToCryptoCompliance";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
 
 export const LIQUIDITY_PROVIDER_ID = {
@@ -19,6 +20,7 @@ export const LIQUIDITY_PROVIDER_ID = {
 
 export const PURCHASE_EXECUTION_ERROR_CODES = {
     ORDER_NOT_ELIGIBLE: "order_not_eligible",
+    COMPLIANCE_BLOCKED: "compliance_blocked",
     MISSING_PRICING: "missing_pricing",
     NO_PROVIDER_CONFIGURED: "no_provider_configured",
     PROVIDER_TIMEOUT: "provider_timeout",
@@ -270,6 +272,19 @@ export const executePurchaseWithRetry = async (order, options = {}) => {
             `Order must be in ${FIAT_TO_CRYPTO_ORDER_STATUS.PURCHASING} (got: ${order?.status ?? "none"}).`,
         );
     }
+
+    const compliancePre = assessAmlSanctionsSnapshotForPurchasing({
+        kycVerificationStatus: order.kycVerificationStatus ?? KYC_VERIFICATION_STATUS.PENDING,
+        amlCheckStatus: order.amlCheckStatus ?? COMPLIANCE_CHECK_STATUS.ERROR,
+        sanctionsCheckStatus: order.sanctionsCheckStatus ?? COMPLIANCE_CHECK_STATUS.ERROR,
+    });
+    if (!compliancePre.allowed) {
+        return guardFail(
+            PURCHASE_EXECUTION_ERROR_CODES.COMPLIANCE_BLOCKED,
+            `Compliance snapshot does not allow execution (${compliancePre.reasonCodes.join(", ")}).`,
+        );
+    }
+
     if (!order.netCryptoAmount || !order.exchangeRateApplied) {
         return guardFail(
             PURCHASE_EXECUTION_ERROR_CODES.MISSING_PRICING,

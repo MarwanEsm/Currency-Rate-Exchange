@@ -25,7 +25,8 @@ import {
  *   deposit: DepositRecord,
  *   orderId?: string,        // optional explicit order id; otherwise resolved from deposit.reference
  *   notes?: string,
- *   toleranceBps?: number    // override tolerance for amount comparison
+ *   toleranceBps?: number,  // override tolerance for amount comparison
+ *   complianceScreening?: { amlCheckStatus: string, sanctionsCheckStatus: string }  // FCX-39 — required for a safe path to purchasing after match
  * }
  *
  * Response: { ok, outcome, event, order? } — HTTP 200 for `matched`, 409 for all non-matched
@@ -71,6 +72,20 @@ export default function handler(req, res) {
         order = findOrderForDeposit(deposit, submitted);
     }
 
+    const complianceScreening =
+        body.complianceScreening && typeof body.complianceScreening === "object"
+            ? {
+                  amlCheckStatus:
+                      typeof body.complianceScreening.amlCheckStatus === "string"
+                          ? body.complianceScreening.amlCheckStatus.trim()
+                          : "",
+                  sanctionsCheckStatus:
+                      typeof body.complianceScreening.sanctionsCheckStatus === "string"
+                          ? body.complianceScreening.sanctionsCheckStatus.trim()
+                          : "",
+              }
+            : undefined;
+
     const result = reconcileDeposit({
         deposit,
         order,
@@ -79,6 +94,7 @@ export default function handler(req, res) {
         notes: typeof body.notes === "string" ? body.notes : undefined,
         toleranceBps,
         uuidFactory: () => randomUUID(),
+        ...(complianceScreening ? { complianceScreening } : {}),
     });
 
     saveReconciledDeposit(deposit);
