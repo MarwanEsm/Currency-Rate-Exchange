@@ -1,5 +1,5 @@
 /**
- * Admin review & approval queue for fiat-to-crypto orders (FCX-26).
+ * Admin review & approval queue for fiat-to-crypto orders (FCX-26, FCX-43).
  *
  * Pure helpers: an admin "decides" a `paid` order (approve → move toward `purchasing` once
  * compliance passes, or reject → `failed`). Permissions gate the decision call; every action

@@ -43,11 +43,12 @@ Every order persists the authoritative quote so ops, finance, and audit can reco
 
 ---
 
-## Admin review queue (FCX-26)
+## Admin review queue (FCX-26, FCX-43)
 
 Validated `paid` orders wait for human approval before moving to `purchasing`.
 
 - **Entry point:** `/admin/orders` — lists orders in `paid` via `GET /api/fiat-to-crypto/admin/queue`.
+- **Decision audit:** `GET /api/fiat-to-crypto/admin/decisions/log` returns approve/reject/blocked attempts (newest appended in buffer; UI shows most recent first). Requires `view_order_queue`.
 - **Action:** `POST /api/fiat-to-crypto/admin/orders/:id/decision` with `{ decision: "approve" | "reject", reason }`.
 - **Permissions:** only callers with the `decide_order_approval` permission (roles `order_reviewer`, `operations_manager`, `compliance_officer`) can decide. `read_only_auditor` can view but not decide. See `src/domain/adminPermissions.js`.
 - **Approve:** runs `evaluateFiatToCryptoOrderTransitionWithCompliance` (KYC still **verified**, AML and sanctions **cleared**). If compliance blocks, the approval is refused and the order stays in `paid` — the attempt is recorded with `outcome: "blocked"` in the admin audit log.
@@ -164,7 +165,7 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 | `src/domain/fiatToCryptoOrderProgress.js` | User timeline, notification trigger keys, failure copy, completed delivery summary (FCX-20) |
 | `src/domain/fiatToCryptoIntake.js` + `POST /api/fiat-to-crypto/orders` | Intake validation and creating orders in `submitted` (FCX-25) |
 | `src/domain/adminPermissions.js` | Admin roles and permission checks (FCX-26) |
-| `src/domain/fiatToCryptoAdminQueue.js` + admin API routes | Admin review queue, approve/reject decisions, audit log (FCX-26) |
+| `src/domain/fiatToCryptoAdminQueue.js` + admin API routes + `GET /api/fiat-to-crypto/admin/decisions/log` | Admin review queue (FCX-43), approve/reject decisions, audit log (FCX-26) |
 | `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto engine, configurable model, ops preview, persisted on approve (FCX-22, FCX-42) |
 | `src/domain/fiatToCryptoExecution.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/execute-purchase` | Liquidity-provider purchase, retry loop, execution audit, order patch (FCX-24) |
 | `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` + admin queue `status=submitted` | Deposit matching, amount/currency verification, under/over/mismatch/duplicate handling, audit log, ops UI (FCX-23, FCX-41) |

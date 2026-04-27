@@ -1,5 +1,5 @@
 /**
- * Admin order queue: commission preview + approval use the FCX-42 pricing engine (see `fiatToCryptoPricing.js`).
+ * Admin order queue for review & approval (FCX-43) with commission preview via FCX-42 (`fiatToCryptoPricing.js`).
  */
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
@@ -22,6 +22,12 @@ const buildAdminHeaders = (adminUserId, roles) => ({
     "x-admin-user-id": adminUserId,
     "x-admin-roles": roles.join(","),
 });
+
+const decisionOutcomeLabel = (outcome) => {
+    if (outcome === "blocked") return "Blocked (compliance)";
+    if (outcome === "applied") return "Applied";
+    return String(outcome ?? "—");
+};
 
 const describeCommissionConfig = (config) => {
     if (!config) return "—";
@@ -66,6 +72,10 @@ const AdminOrderQueueScreen = () => {
     const [quote, setQuote] = useState(null);
     const [quoteError, setQuoteError] = useState(null);
     const [quoteBusy, setQuoteBusy] = useState(false);
+
+    const [decisionLogEntries, setDecisionLogEntries] = useState([]);
+    const [decisionLogError, setDecisionLogError] = useState(null);
+    const [decisionLogLoading, setDecisionLogLoading] = useState(false);
 
     const buildCommissionConfig = useCallback(() => {
         const c = { type: commissionType, label: "ops_queue_v1" };
@@ -132,9 +142,43 @@ const AdminOrderQueueScreen = () => {
         }
     }, [adminUserId, canView, roles]);
 
+    const loadDecisionLog = useCallback(async () => {
+        if (!adminUserId || !canView) {
+            setDecisionLogEntries([]);
+            return;
+        }
+        setDecisionLogLoading(true);
+        setDecisionLogError(null);
+        try {
+            const res = await fetch("/api/fiat-to-crypto/admin/decisions/log", {
+                method: "GET",
+                headers: buildAdminHeaders(adminUserId, roles),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                setDecisionLogError(data.error || "Failed to load decision log.");
+                return;
+            }
+            setDecisionLogEntries(Array.isArray(data.entries) ? [...data.entries].reverse() : []);
+        } catch {
+            setDecisionLogError("Network error. Please retry.");
+        } finally {
+            setDecisionLogLoading(false);
+        }
+    }, [adminUserId, canView, roles]);
+
+    const refreshQueuesAndLog = useCallback(async () => {
+        await loadQueue();
+        await loadDecisionLog();
+    }, [loadQueue, loadDecisionLog]);
+
     useEffect(() => {
         loadQueue();
     }, [loadQueue]);
+
+    useEffect(() => {
+        loadDecisionLog();
+    }, [loadDecisionLog]);
 
     const resetDecisionPanel = () => {
         setQuote(null);
@@ -233,7 +277,7 @@ const AdminOrderQueueScreen = () => {
             });
             setActiveOrderId(null);
             resetDecisionPanel();
-            await loadQueue();
+            await refreshQueuesAndLog();
         } catch {
             setDecisionError("Network error. Please retry.");
         } finally {
@@ -297,14 +341,19 @@ const AdminOrderQueueScreen = () => {
                     <button type="button" className={styles.link} onClick={() => router.push("/admin/deposits")}>
                         Deposit reconciliation →
                     </button>
-                    <button type="button" className={styles.link} onClick={loadQueue} disabled={loading}>
-                        {loading ? "Refreshing…" : "Refresh"}
+                    <button
+                        type="button"
+                        className={styles.link}
+                        onClick={refreshQueuesAndLog}
+                        disabled={loading || decisionLogLoading}
+                    >
+                        {loading || decisionLogLoading ? "Refreshing…" : "Refresh"}
                     </button>
                 </div>
 
                 <Headline size={2}>Admin: pending approvals</Headline>
                 <p className={styles.lead}>
-                    Lists fiat-to-crypto orders in <strong>paid</strong> awaiting review (FCX-26). Set{" "}
+                    Lists fiat-to-crypto orders in <strong>paid</strong> awaiting review (FCX-43 / FCX-26). Set{" "}
                     <strong>exchange rate</strong> and <strong>commission model</strong> (FCX-42) — fixed, percentage, or
                     hybrid — then preview gross, fee, net fiat, and net crypto (per-asset precision) before approving;
                     those values are persisted on the order. Rejecting marks the order <strong>failed</strong> with your
@@ -695,6 +744,57 @@ const AdminOrderQueueScreen = () => {
                                             {executeBusyId === order.id ? "Executing…" : "Execute purchase"}
                                         </button>
                                     </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </section>
+
+                <section className={styles.section} aria-labelledby="decision-log-heading">
+                    <h2 id="decision-log-heading" className={styles.sectionTitle}>
+                        Decision audit log (most recent first)
+                    </h2>
+                    <p className={styles.hint}>
+                        Approve, reject, and blocked attempts recorded for compliance review (FCX-43). Same data as{" "}
+                        <code className={styles.code}>GET /api/fiat-to-crypto/admin/decisions/log</code>.
+                    </p>
+                    {decisionLogError && (
+                        <p className={styles.error} role="alert">
+                            {decisionLogError}
+                        </p>
+                    )}
+                    {!canView ? (
+                        <p className={styles.hint}>Your selected roles don’t allow viewing the audit log.</p>
+                    ) : decisionLogEntries.length === 0 ? (
+                        <p className={styles.hint}>No decision events yet.</p>
+                    ) : (
+                        <ul className={styles.list}>
+                            {decisionLogEntries.map((e) => (
+                                <li
+                                    key={`${e.occurredAt}-${e.orderId}-${e.decision}-${e.outcome}`}
+                                    className={styles.auditCard}
+                                >
+                                    <div className={styles.auditHead}>
+                                        <span className={styles.auditOutcome}>{decisionOutcomeLabel(e.outcome)}</span>
+                                        <span>
+                                            <strong>{e.decision}</strong> ·{" "}
+                                            <code className={styles.code}>{e.orderId}</code>
+                                        </span>
+                                    </div>
+                                    <div className={styles.auditMeta}>
+                                        <span>At: {e.occurredAt}</span>
+                                        <span>
+                                            Status: {e.previousStatus} → {e.newStatus}
+                                        </span>
+                                        <span>By: {e.adminUserId}</span>
+                                        <span>Roles: {(e.adminRoles ?? []).join(", ") || "—"}</span>
+                                    </div>
+                                    {Array.isArray(e.complianceReasonCodes) && e.complianceReasonCodes.length > 0 && (
+                                        <p className={styles.auditReason}>
+                                            Compliance: {e.complianceReasonCodes.join(", ")}
+                                        </p>
+                                    )}
+                                    {e.reason ? <p className={styles.auditReason}>Reason: {e.reason}</p> : null}
                                 </li>
                             ))}
                         </ul>
