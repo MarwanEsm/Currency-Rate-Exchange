@@ -1,3 +1,7 @@
+/**
+ * User intake: fiat amount, asset, network, destination address (FCX-40).
+ * Shares validation with the API via `validateFiatToCryptoIntakePayload` (FCX-25).
+ */
 import React, { useContext, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Container from "@/components/layout/container/Container";
@@ -30,6 +34,7 @@ const FiatToCryptoRequestForm = () => {
     const [serverErrors, setServerErrors] = useState([]);
     const [submitting, setSubmitting] = useState(false);
     const [confirmation, setConfirmation] = useState(null);
+    const [referenceCopied, setReferenceCopied] = useState(false);
 
     const networkOptions = useMemo(() => {
         const list = ASSET_ALLOWED_TRANSFER_NETWORKS[targetAssetCode] ?? [];
@@ -63,6 +68,7 @@ const FiatToCryptoRequestForm = () => {
         e.preventDefault();
         setServerErrors([]);
         setConfirmation(null);
+        setReferenceCopied(false);
         const body = runClientValidation();
         if (!body) return;
 
@@ -98,8 +104,10 @@ const FiatToCryptoRequestForm = () => {
                 </button>
                 <Headline size={2}>Fiat-to-crypto request</Headline>
                 <p className={styles.lead}>
-                    Submit the amount, asset, network, and destination wallet. Your request is validated on this
-                    device and again on the server before it is created in <strong>submitted</strong> status (FCX-25).
+                    Enter how much fiat you are sending, which asset you want, the network (when there is more than
+                    one), and where we should deliver it. Values are checked in the browser and on the server; a
+                    successful request is stored as <strong>submitted</strong> and you get a reference ID to keep
+                    (FCX-40).
                 </p>
 
                 {!isAuthenticated && (
@@ -215,8 +223,8 @@ const FiatToCryptoRequestForm = () => {
                         <div className={styles.errors} role="alert">
                             <p className={styles.errorsTitle}>Please fix the following:</p>
                             <ul>
-                                {displayErrors.map((err) => (
-                                    <li key={err}>{err}</li>
+                                {displayErrors.map((err, i) => (
+                                    <li key={`${i}:${err}`}>{err}</li>
                                 ))}
                             </ul>
                         </div>
@@ -228,12 +236,33 @@ const FiatToCryptoRequestForm = () => {
                 </form>
 
                 {confirmation && (
-                    <section className={styles.confirm} aria-live="polite">
+                    <section className={styles.confirm} aria-live="polite" aria-label="Order confirmation">
                         <h2 className={styles.confirmTitle}>Request received</h2>
-                        <p>
-                            Your reference is <code className={styles.ref}>{confirmation.id}</code>. Save this ID
-                            for support and status tracking.
+                        <p className={styles.refLabel}>
+                            <strong>Request reference</strong> — save this for support and tracking:
                         </p>
+                        <div className={styles.refRow}>
+                            <code className={styles.ref} data-testid="order-reference">
+                                {confirmation.id}
+                            </code>
+                            {typeof navigator !== "undefined" && navigator.clipboard?.writeText && (
+                                <button
+                                    type="button"
+                                    className={styles.copyBtn}
+                                    onClick={async () => {
+                                        try {
+                                            await navigator.clipboard.writeText(confirmation.id);
+                                            setReferenceCopied(true);
+                                            setTimeout(() => setReferenceCopied(false), 2500);
+                                        } catch {
+                                            /* ignore */
+                                        }
+                                    }}
+                                >
+                                    {referenceCopied ? "Copied" : "Copy"}
+                                </button>
+                            )}
+                        </div>
                         <p className={styles.meta}>
                             Status: <strong>{confirmation.status}</strong> · {confirmation.targetAssetCode} ·{" "}
                             {confirmation.fiatAmount} {confirmation.fiatCurrency}
