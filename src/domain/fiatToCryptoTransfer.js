@@ -1,5 +1,7 @@
+import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
+
 /**
- * Secure crypto payout to customer destination (FCX-21).
+ * Secure crypto payout to customer destination (FCX-21, FCX-45).
  *
  * This module does **not** sign or broadcast transactions (that belongs in custody / HSM
  * infrastructure). It provides:
@@ -35,6 +37,260 @@ export const CRYPTO_TRANSFER_ERROR_CODES = {
     UNSUPPORTED_OR_MISSING_NETWORK: "unsupported_or_missing_network",
     INVALID_ADDRESS_FOR_NETWORK: "invalid_address_for_network",
     NETWORK_REQUIRED: "network_required",
+};
+
+/** Admin / custody transfer actions (`record_broadcast`, `mark_completed`, `mark_failed`). */
+export const CRYPTO_TRANSFER_ADMIN_ERROR_CODES = {
+    ORDER_NOT_IN_TRANSFERRING: "order_not_in_transferring",
+    INVALID_TX_HASH: "invalid_tx_hash",
+    NETWORK_MISMATCH: "network_mismatch",
+    BROADCAST_ALREADY_RECORDED: "broadcast_already_recorded",
+    BROADCAST_REQUIRED_BEFORE_COMPLETE: "broadcast_required_before_complete",
+    INVALID_DELIVERED_AMOUNT: "invalid_delivered_amount",
+    UNKNOWN_ACTION: "unknown_transfer_action",
+    REASON_REQUIRED: "transfer_failure_reason_required",
+};
+
+const DELIVERED_AMOUNT_RE = /^\d+(?:\.\d+)?$/;
+
+/**
+ * @param {string | undefined | null} txHash
+ * @returns {{ ok: true, normalized: string } | { ok: false, code: string, message: string }}
+ */
+export const validateTransferTxHash = (txHash) => {
+    const raw = String(txHash ?? "").trim();
+    if (raw.length < 8 || raw.length > 128) {
+        return {
+            ok: false,
+            code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.INVALID_TX_HASH,
+            message: "txHash must be between 8 and 128 characters.",
+        };
+    }
+    const hex = raw.startsWith("0x") || raw.startsWith("0X") ? raw.slice(2) : raw;
+    if (!/^[a-fA-F0-9]+$/.test(hex) || hex.length < 8) {
+        return {
+            ok: false,
+            code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.INVALID_TX_HASH,
+            message: "txHash must be hexadecimal (optional 0x prefix).",
+        };
+    }
+    const normalized = raw.startsWith("0x") || raw.startsWith("0X") ? `0x${hex.toLowerCase()}` : hex.toLowerCase();
+    return { ok: true, normalized };
+};
+
+/**
+ * Records an on-chain / custodial broadcast id on an order in `transferring`.
+ *
+ * @param {import("./fiatToCryptoOrder.js").FiatToCryptoOrder} order
+ * @param {{ txHash: string, network?: string | null, broadcastAtIso?: string, actor?: string }} input
+ * @returns {{ ok: true, patch: Record<string, unknown> } | { ok: false, errors: Array<{ code: string, message: string }> }}
+ */
+export const buildTransferBroadcastOrderPatch = (order, input) => {
+    if (!order || order.status !== FIAT_TO_CRYPTO_ORDER_STATUS.TRANSFERRING) {
+        return {
+            ok: false,
+            errors: [
+                {
+                    code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.ORDER_NOT_IN_TRANSFERRING,
+                    message: `Order must be in ${FIAT_TO_CRYPTO_ORDER_STATUS.TRANSFERRING}.`,
+                },
+            ],
+        };
+    }
+
+    const dest = validateCryptoTransferDestination({
+        targetAssetCode: order.targetAssetCode,
+        network: order.network,
+        walletAddress: order.walletAddress,
+    });
+    if (!dest.ok) {
+        return { ok: false, errors: dest.errors };
+    }
+    const canonical = dest.canonicalNetwork;
+
+    const rawNet = input.network === undefined || input.network === null ? "" : String(input.network).trim();
+    if (rawNet !== "") {
+        const resolved = resolveTransferNetwork(order.targetAssetCode, rawNet);
+        if (!resolved.ok || resolved.canonicalNetwork !== canonical) {
+            return {
+                ok: false,
+                errors: [
+                    {
+                        code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.NETWORK_MISMATCH,
+                        message: `network must match the payout chain for this order (${canonical}).`,
+                    },
+                ],
+            };
+        }
+    }
+
+    const tx = validateTransferTxHash(input.txHash);
+    if (!tx.ok) {
+        return { ok: false, errors: [{ code: tx.code, message: tx.message }] };
+    }
+
+    const existing = order.transferTxHash?.trim();
+    if (existing) {
+        if (existing === tx.normalized) {
+            return { ok: true, patch: {} };
+        }
+        return {
+            ok: false,
+            errors: [
+                {
+                    code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.BROADCAST_ALREADY_RECORDED,
+                    message: "A different transferTxHash is already recorded for this order.",
+                },
+            ],
+        };
+    }
+
+    const now = input.broadcastAtIso ?? new Date().toISOString();
+    const broadcastPatch = buildOrderTransferBroadcastPatch({
+        txHash: tx.normalized,
+        network: canonical,
+        broadcastAtIso: now,
+    });
+    return {
+        ok: true,
+        patch: {
+            ...broadcastPatch,
+            updatedAt: now,
+            ...(input.actor ? { lastUpdatedBy: input.actor } : {}),
+        },
+    };
+};
+
+/**
+ * Completes the order after payout is confirmed (custody-owned `transferring` → `completed`).
+ *
+ * @param {import("./fiatToCryptoOrder.js").FiatToCryptoOrder} order
+ * @param {{
+ *   deliveredAssetAmount: string,
+ *   deliveredAssetCode?: string | null,
+ *   transferTxConfirmedAt?: string | null,
+ *   now?: string,
+ *   actor?: string,
+ * }} input
+ * @returns {{ ok: true, patch: Record<string, unknown> } | { ok: false, errors: Array<{ code: string, message: string }> }}
+ */
+export const buildTransferCompletedOrderPatch = (order, input) => {
+    if (!order || order.status !== FIAT_TO_CRYPTO_ORDER_STATUS.TRANSFERRING) {
+        return {
+            ok: false,
+            errors: [
+                {
+                    code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.ORDER_NOT_IN_TRANSFERRING,
+                    message: `Order must be in ${FIAT_TO_CRYPTO_ORDER_STATUS.TRANSFERRING}.`,
+                },
+            ],
+        };
+    }
+
+    if (!order.transferTxHash?.trim()) {
+        return {
+            ok: false,
+            errors: [
+                {
+                    code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.BROADCAST_REQUIRED_BEFORE_COMPLETE,
+                    message: "Record a transferTxHash (broadcast) before completing the order.",
+                },
+            ],
+        };
+    }
+
+    const dest = validateCryptoTransferDestination({
+        targetAssetCode: order.targetAssetCode,
+        network: order.network,
+        walletAddress: order.walletAddress,
+    });
+    if (!dest.ok) {
+        return { ok: false, errors: dest.errors };
+    }
+
+    const amount = String(input.deliveredAssetAmount ?? "").trim();
+    if (!DELIVERED_AMOUNT_RE.test(amount) || Number(amount) <= 0) {
+        return {
+            ok: false,
+            errors: [
+                {
+                    code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.INVALID_DELIVERED_AMOUNT,
+                    message: "deliveredAssetAmount must be a positive decimal string.",
+                },
+            ],
+        };
+    }
+
+    const code = String(
+        input.deliveredAssetCode ?? order.netCryptoAssetCode ?? order.targetAssetCode ?? "",
+    )
+        .trim()
+        .toUpperCase();
+    const now = input.now ?? new Date().toISOString();
+    const confirmedAt = input.transferTxConfirmedAt?.trim() || now;
+
+    return {
+        ok: true,
+        patch: {
+            status: FIAT_TO_CRYPTO_ORDER_STATUS.COMPLETED,
+            completedAt: now,
+            updatedAt: now,
+            transferTxConfirmedAt: confirmedAt,
+            deliveredAssetAmount: amount,
+            deliveredAssetCode: code,
+            ...(input.actor ? { lastUpdatedBy: input.actor } : {}),
+        },
+    };
+};
+
+/**
+ * @param {import("./fiatToCryptoOrder.js").FiatToCryptoOrder} order
+ * @param {{
+ *   failureMessage: string,
+ *   failureCode?: string,
+ *   now?: string,
+ *   actor?: string,
+ * }} input
+ * @returns {{ ok: true, patch: Record<string, unknown> } | { ok: false, errors: Array<{ code: string, message: string }> }}
+ */
+export const buildTransferFailedOrderPatch = (order, input) => {
+    if (!order || order.status !== FIAT_TO_CRYPTO_ORDER_STATUS.TRANSFERRING) {
+        return {
+            ok: false,
+            errors: [
+                {
+                    code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.ORDER_NOT_IN_TRANSFERRING,
+                    message: `Order must be in ${FIAT_TO_CRYPTO_ORDER_STATUS.TRANSFERRING}.`,
+                },
+            ],
+        };
+    }
+
+    const msg = String(input.failureMessage ?? "").trim();
+    if (msg.length < 3) {
+        return {
+            ok: false,
+            errors: [
+                {
+                    code: CRYPTO_TRANSFER_ADMIN_ERROR_CODES.REASON_REQUIRED,
+                    message: "failureMessage must be at least 3 characters.",
+                },
+            ],
+        };
+    }
+
+    const now = input.now ?? new Date().toISOString();
+    return {
+        ok: true,
+        patch: {
+            status: FIAT_TO_CRYPTO_ORDER_STATUS.FAILED,
+            failedAt: now,
+            updatedAt: now,
+            failureCode: input.failureCode ?? "transfer_failed",
+            failureMessage: msg,
+            ...(input.actor ? { lastUpdatedBy: input.actor } : {}),
+        },
+    };
 };
 
 /**

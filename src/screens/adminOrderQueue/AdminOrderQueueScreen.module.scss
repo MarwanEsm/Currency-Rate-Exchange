@@ -333,3 +333,33 @@
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.4;
 }
+
+.payoutForms {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.payoutBlock {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.15);
+
+    .input {
+        flex: 1 1 180px;
+        min-width: 140px;
+    }
+}
+
+.payoutLabel {
+    flex: 0 0 100%;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+}

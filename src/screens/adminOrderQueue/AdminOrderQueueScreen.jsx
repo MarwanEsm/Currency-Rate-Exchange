@@ -1,5 +1,5 @@
 /**
- * Admin order queue for review & approval (FCX-43), pricing (FCX-42), and purchase execution (FCX-44).
+ * Admin order queue: approvals (FCX-43), pricing (FCX-42), execution (FCX-44), payout / transfer (FCX-45).
  */
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
@@ -59,6 +59,7 @@ const AdminOrderQueueScreen = () => {
     const [roles, setRoles] = useState([ADMIN_ROLE.ORDER_REVIEWER]);
     const [orders, setOrders] = useState([]);
     const [purchasingOrders, setPurchasingOrders] = useState([]);
+    const [transferringOrders, setTransferringOrders] = useState([]);
     const [listError, setListError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -112,9 +113,20 @@ const AdminOrderQueueScreen = () => {
     const [executeResultBanner, setExecuteResultBanner] = useState(null);
     const [executeError, setExecuteError] = useState(null);
 
+    const [payoutTxHash, setPayoutTxHash] = useState({});
+    const [payoutDelivered, setPayoutDelivered] = useState({});
+    const [payoutFailReason, setPayoutFailReason] = useState({});
+    const [transferBusyKey, setTransferBusyKey] = useState(/** @type {string | null} */ (null));
+    const [transferError, setTransferError] = useState(null);
+    const [transferBanner, setTransferBanner] = useState(null);
+
     const canView = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.VIEW_ORDER_QUEUE), [roles]);
     const canDecide = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.DECIDE_ORDER_APPROVAL), [roles]);
     const canExecute = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.EXECUTE_PURCHASE), [roles]);
+    const canRecordTransfer = useMemo(
+        () => hasAdminPermission(roles, ADMIN_PERMISSION.RECORD_CRYPTO_TRANSFER),
+        [roles],
+    );
 
     const adminUserId = user?.uid ?? "";
 
@@ -126,12 +138,13 @@ const AdminOrderQueueScreen = () => {
         if (!adminUserId || !canView) {
             setOrders([]);
             setPurchasingOrders([]);
+            setTransferringOrders([]);
             return;
         }
         setLoading(true);
         setListError(null);
         try {
-            const [paidRes, purchasingRes] = await Promise.all([
+            const [paidRes, purchasingRes, transferringRes] = await Promise.all([
                 fetch("/api/fiat-to-crypto/admin/queue?status=paid", {
                     method: "GET",
                     headers: buildAdminHeaders(adminUserId, roles),
@@ -140,15 +153,23 @@ const AdminOrderQueueScreen = () => {
                     method: "GET",
                     headers: buildAdminHeaders(adminUserId, roles),
                 }),
+                fetch("/api/fiat-to-crypto/admin/queue?status=transferring", {
+                    method: "GET",
+                    headers: buildAdminHeaders(adminUserId, roles),
+                }),
             ]);
             const paidData = await paidRes.json().catch(() => ({}));
             const purchasingData = await purchasingRes.json().catch(() => ({}));
-            if (!paidRes.ok || !purchasingRes.ok) {
-                setListError(paidData.error || purchasingData.error || "Failed to load queue.");
+            const transferringData = await transferringRes.json().catch(() => ({}));
+            if (!paidRes.ok || !purchasingRes.ok || !transferringRes.ok) {
+                setListError(
+                    paidData.error || purchasingData.error || transferringData.error || "Failed to load queue.",
+                );
                 return;
             }
             setOrders(Array.isArray(paidData.orders) ? paidData.orders : []);
             setPurchasingOrders(Array.isArray(purchasingData.orders) ? purchasingData.orders : []);
+            setTransferringOrders(Array.isArray(transferringData.orders) ? transferringData.orders : []);
         } catch {
             setListError("Network error. Please retry.");
         } finally {
@@ -400,6 +421,37 @@ const AdminOrderQueueScreen = () => {
         }
     };
 
+    const postTransferAction = async (orderId, body) => {
+        if (!canRecordTransfer) return;
+        setTransferError(null);
+        setTransferBanner(null);
+        setTransferBusyKey(`${orderId}:${body.action}`);
+        try {
+            const res = await fetch(`/api/fiat-to-crypto/admin/orders/${encodeURIComponent(orderId)}/transfer`, {
+                method: "POST",
+                headers: buildAdminHeaders(adminUserId, roles),
+                body: JSON.stringify(body),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const msg = Array.isArray(data.messages) ? data.messages.join("; ") : data.error || "Transfer failed.";
+                setTransferError(msg);
+                return;
+            }
+            setTransferBanner({
+                orderId: data.order?.id ?? orderId,
+                action: body.action,
+                status: data.order?.status,
+                idempotent: Boolean(data.idempotent),
+            });
+            await refreshQueuesAndLog();
+        } catch {
+            setTransferError("Network error. Please retry.");
+        } finally {
+            setTransferBusyKey(null);
+        }
+    };
+
     return (
         <Container>
             <div className={styles.wrap}>
@@ -462,7 +514,8 @@ const AdminOrderQueueScreen = () => {
                     <p className={styles.permSummary}>
                         View: <strong>{canView ? "yes" : "no"}</strong> · Decide:{" "}
                         <strong>{canDecide ? "yes" : "no"}</strong> · Execute purchase:{" "}
-                        <strong>{canExecute ? "yes" : "no"}</strong>
+                        <strong>{canExecute ? "yes" : "no"}</strong> · Record transfer:{" "}
+                        <strong>{canRecordTransfer ? "yes" : "no"}</strong>
                     </p>
                 </section>
 
@@ -723,6 +776,15 @@ const AdminOrderQueueScreen = () => {
                     )}
                 </section>
 
+                {transferBanner && (
+                    <div className={styles.banner} role="status">
+                        Transfer <strong>{transferBanner.action}</strong>
+                        {transferBanner.idempotent ? " (no change)" : ""} for order{" "}
+                        <code className={styles.code}>{transferBanner.orderId}</code> — now{" "}
+                        <strong>{transferBanner.status ?? "—"}</strong>.
+                    </div>
+                )}
+
                 {executeResultBanner && (
                     <div
                         className={executeResultBanner.ok ? styles.banner : styles.errorBanner}
@@ -835,6 +897,150 @@ const AdminOrderQueueScreen = () => {
                                     </div>
                                 </li>
                             ))}
+                        </ul>
+                    )}
+                </section>
+
+                <section className={styles.section} aria-labelledby="payout-heading">
+                    <h2 id="payout-heading" className={styles.sectionTitle}>
+                        Crypto payout (transferring)
+                    </h2>
+                    <p className={styles.hint}>
+                        Record the broadcast tx id, then mark completed when the destination confirms (FCX-45). Destination
+                        was validated at intake; use the canonical network for this asset. You can also fail the order if
+                        payout cannot be completed.
+                    </p>
+                    {transferError && (
+                        <p className={styles.error} role="alert">
+                            {transferError}
+                        </p>
+                    )}
+                    {!canView ? (
+                        <p className={styles.hint}>Your selected roles don’t allow viewing the queue.</p>
+                    ) : transferringOrders.length === 0 ? (
+                        <p className={styles.hint}>No orders are currently in transferring.</p>
+                    ) : (
+                        <ul className={styles.list}>
+                            {transferringOrders.map((order) => {
+                                const bKey = (a) => `${order.id}:${a}`;
+                                const txVal = payoutTxHash[order.id] ?? "";
+                                const delVal = payoutDelivered[order.id] ?? order.netCryptoAmount ?? "";
+                                const failVal = payoutFailReason[order.id] ?? "";
+                                return (
+                                    <li key={order.id} className={styles.orderCard}>
+                                        <div className={styles.orderHead}>
+                                            <span className={styles.orderAmount}>
+                                                To {order.walletAddress.slice(0, 18)}… ·{" "}
+                                                {order.netCryptoAmount ?? "—"}{" "}
+                                                {order.netCryptoAssetCode ?? order.targetAssetCode}
+                                            </span>
+                                            <code className={styles.code}>{order.id}</code>
+                                        </div>
+                                        <div className={styles.orderMeta}>
+                                            <span>Network: {order.network ?? "auto"}</span>
+                                            <span>
+                                                Tx on file: {order.transferTxHash ? <code className={styles.code}>{order.transferTxHash}</code> : "—"}
+                                            </span>
+                                        </div>
+                                        <div className={styles.payoutForms}>
+                                            <div className={styles.payoutBlock}>
+                                                <span className={styles.payoutLabel}>1. Record broadcast</span>
+                                                <input
+                                                    type="text"
+                                                    className={styles.input}
+                                                    placeholder="tx hash / txid"
+                                                    value={txVal}
+                                                    onChange={(e) =>
+                                                        setPayoutTxHash((p) => ({ ...p, [order.id]: e.target.value }))
+                                                    }
+                                                    aria-label={`Broadcast tx for ${order.id}`}
+                                                    disabled={!canRecordTransfer || Boolean(order.transferTxHash)}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className={styles.secondary}
+                                                    disabled={
+                                                        !canRecordTransfer ||
+                                                        Boolean(order.transferTxHash) ||
+                                                        transferBusyKey === bKey("record_broadcast")
+                                                    }
+                                                    onClick={() =>
+                                                        postTransferAction(order.id, {
+                                                            action: "record_broadcast",
+                                                            txHash: txVal,
+                                                        })
+                                                    }
+                                                >
+                                                    {transferBusyKey === bKey("record_broadcast")
+                                                        ? "Saving…"
+                                                        : "Save broadcast"}
+                                                </button>
+                                            </div>
+                                            <div className={styles.payoutBlock}>
+                                                <span className={styles.payoutLabel}>2. Mark completed</span>
+                                                <input
+                                                    type="text"
+                                                    inputMode="decimal"
+                                                    className={styles.input}
+                                                    placeholder="delivered amount"
+                                                    value={delVal}
+                                                    onChange={(e) =>
+                                                        setPayoutDelivered((p) => ({ ...p, [order.id]: e.target.value }))
+                                                    }
+                                                    aria-label={`Delivered amount for ${order.id}`}
+                                                    disabled={!canRecordTransfer}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className={styles.approve}
+                                                    disabled={
+                                                        !canRecordTransfer || transferBusyKey === bKey("mark_completed")
+                                                    }
+                                                    onClick={() =>
+                                                        postTransferAction(order.id, {
+                                                            action: "mark_completed",
+                                                            deliveredAssetAmount: delVal,
+                                                        })
+                                                    }
+                                                >
+                                                    {transferBusyKey === bKey("mark_completed")
+                                                        ? "Completing…"
+                                                        : "Mark completed"}
+                                                </button>
+                                            </div>
+                                            <div className={styles.payoutBlock}>
+                                                <span className={styles.payoutLabel}>Fail payout</span>
+                                                <input
+                                                    type="text"
+                                                    className={styles.input}
+                                                    placeholder="reason (min 3 chars)"
+                                                    value={failVal}
+                                                    onChange={(e) =>
+                                                        setPayoutFailReason((p) => ({ ...p, [order.id]: e.target.value }))
+                                                    }
+                                                    aria-label={`Fail reason for ${order.id}`}
+                                                    disabled={!canRecordTransfer}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className={styles.reject}
+                                                    disabled={
+                                                        !canRecordTransfer || transferBusyKey === bKey("mark_failed")
+                                                    }
+                                                    onClick={() =>
+                                                        postTransferAction(order.id, {
+                                                            action: "mark_failed",
+                                                            failureMessage: failVal,
+                                                        })
+                                                    }
+                                                >
+                                                    {transferBusyKey === bKey("mark_failed") ? "Failing…" : "Mark failed"}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
                 </section>

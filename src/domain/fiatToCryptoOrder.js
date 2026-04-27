@@ -58,11 +58,12 @@
  * or `evaluateFiatToCryptoOrderTransitionWithCompliance` so AML/sanctions and KYC-at-execution
  * rules are enforced and audit entries are emitted.
  *
- * ## Crypto payout (FCX-21)
+ * ## Crypto payout (FCX-21, FCX-45)
  *
  * Before `transferring`, validate destination with `validateCryptoTransferDestination` in
  * `fiatToCryptoTransfer.js`. After broadcast, persist `transferTxHash`, `transferCanonicalNetwork`,
- * and `transferTxBroadcastAt` for order details and support.
+ * and `transferTxBroadcastAt` for order details and support. Custody records broadcast and completion
+ * via `POST /api/fiat-to-crypto/admin/orders/:id/transfer` (see FCX-45).
  *
  * ## User progress & notifications (FCX-20)
  *

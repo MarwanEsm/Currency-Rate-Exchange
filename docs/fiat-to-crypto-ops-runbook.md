@@ -103,6 +103,20 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 
 ---
 
+## Crypto payout to customer wallet (FCX-21, FCX-45)
+
+After liquidity execution, the order is in **`transferring`**. Custody records the payout broadcast and terminal state (no raw signing in this repo — integration is via your custodian/HSM).
+
+- **Queue:** `GET /api/fiat-to-crypto/admin/queue?status=transferring` lists orders awaiting payout metadata or completion.
+- **API:** `POST /api/fiat-to-crypto/admin/orders/:id/transfer` requires **`record_crypto_transfer`** (demo roles: `order_reviewer`, `operations_manager`). Body:
+  - `{ action: "record_broadcast", txHash: string, network?: string }` — persists `transferTxHash`, `transferCanonicalNetwork`, `transferTxBroadcastAt` after destination re-validation.
+  - `{ action: "mark_completed", deliveredAssetAmount: string, deliveredAssetCode?: string, transferTxConfirmedAt?: string }` — requires a prior broadcast; sets `transferring` → `completed` and delivery fields.
+  - `{ action: "mark_failed", failureMessage: string, failureCode?: string }` — `transferring` → `failed` when payout cannot be completed.
+- **Admin UI:** `/admin/orders` → **Crypto payout (transferring)** mirrors these steps.
+- **Domain:** `src/domain/fiatToCryptoTransfer.js` — `validateCryptoTransferDestination`, `buildTransferBroadcastOrderPatch`, `buildTransferCompletedOrderPatch`, `buildTransferFailedOrderPatch`.
+
+---
+
 ## Manual intervention
 
 ### KYC rejected or expired before or at execution
@@ -163,7 +177,7 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 |-------|---------|
 | `src/domain/fiatToCryptoOrder.js` | Statuses, transitions, `FiatToCryptoOrder` model, draft validation, required-field contract (FCX-38) |
 | `src/domain/fiatToCryptoCompliance.js` | KYC / AML / sanctions gates and audit entries |
-| `src/domain/fiatToCryptoTransfer.js` | Payout network config, address validation, tx hash fields, failure policy (FCX-21) |
+| `src/domain/fiatToCryptoTransfer.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/transfer` | Payout validation, broadcast + completion patches, custody API (FCX-21, FCX-45) |
 | `src/domain/fiatToCryptoOrderProgress.js` | User timeline, notification trigger keys, failure copy, completed delivery summary (FCX-20) |
 | `src/domain/fiatToCryptoIntake.js` + `POST /api/fiat-to-crypto/orders` | Intake validation and creating orders in `submitted` (FCX-25) |
 | `src/domain/adminPermissions.js` | Admin roles and permission checks (FCX-26) |
