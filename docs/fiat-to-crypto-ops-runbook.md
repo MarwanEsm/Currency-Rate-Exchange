@@ -1,6 +1,17 @@
-# Fiat-to-crypto operations runbook (FCX-18)
+# Fiat-to-crypto operations runbook (FCX-18, FCX-47)
 
 Operational guidance for safely running fiat-to-crypto flows aligned with `src/domain/fiatToCryptoOrder.js` (lifecycle) and `src/domain/fiatToCryptoCompliance.js` (KYC / AML / sanctions gates).
+
+---
+
+## Automated verification (FCX-47)
+
+- **`npm test`** — full unit and integration suite (Jest).
+- **`npm run test:e2e`** — domain E2E-style tests only (`*.e2e.test.js`), including:
+  - `src/domain/fiatToCryptoOperations.e2e.test.js` — compliance gates, transition graph, draft validation (FCX-18).
+  - `src/domain/fiatToCryptoFulfillment.e2e.test.js` — full demo fulfillment on in-memory persistence: submitted → deposit `matched` → admin approve with locked quote → `executePurchaseWithRetry` → transfer broadcast → completed, with deposit/admin decision/execution audits and user notification triggers.
+
+Browser or live-API E2E is out of scope; rehearse the **Happy path (monitoring)** section manually when wiring new environments.
 
 ---
 
@@ -167,7 +178,7 @@ After liquidity execution, the order is in **`transferring`**. Custody records t
 - [ ] **Secrets & env** for production isolated from staging; least-privilege access for treasury and custody tools.
 - [ ] **On-call** roster and escalation path for compliance holds and custody failures.
 - [ ] **Rollback:** feature flags or circuit breaker to stop **new** `submitted` orders without blocking in-flight reconciliation (define per deployment).
-- [ ] **Tests:** `npm test` passes including `src/domain/fiatToCryptoOperations.e2e.test.js`.
+- [ ] **Tests:** `npm test` and `npm run test:e2e` pass, including `src/domain/fiatToCryptoOperations.e2e.test.js` and `src/domain/fiatToCryptoFulfillment.e2e.test.js` (FCX-47).
 
 ---
 
@@ -193,4 +204,5 @@ After liquidity execution, the order is in **`transferring`**. Custody records t
 | `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto engine, configurable model, ops preview, persisted on approve (FCX-22, FCX-42) |
 | `src/domain/fiatToCryptoExecution.js` + `POST …/execute-purchase` + `GET …/execution/log` + `GET …/execution/providers` | Liquidity-provider purchase, retry loop, execution audit, provider discovery (FCX-24, FCX-44) |
 | `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` + admin queue `status=submitted` | Deposit matching, amount/currency verification, under/over/mismatch/duplicate handling, audit log, ops UI (FCX-23, FCX-41) |
-| `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated happy path, failure path, edge cases |
+| `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated compliance / transition / draft edge cases (FCX-18) |
+| `src/domain/fiatToCryptoFulfillment.e2e.test.js` | Full fulfillment path on in-memory store + audit/notification checks (FCX-47) |

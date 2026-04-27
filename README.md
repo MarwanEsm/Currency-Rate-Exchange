@@ -109,7 +109,7 @@ The main UI is **`src/screens/currenciesList/CurrenciesList.jsx`**: accessible `
 
 - Lint: `npm run lint`
 - Tests: `npm test`
-- Fiat-to-crypto domain E2E-style tests: `npm run test:e2e`
+- Fiat-to-crypto domain E2E-style tests: `npm run test:e2e` (FCX-18 compliance graph + **FCX-47** full fulfillment path on in-memory persistence)
 - Build: `npm run build`
 
 ## Project Structure
@@ -120,7 +120,7 @@ The main UI is **`src/screens/currenciesList/CurrenciesList.jsx`**: accessible `
 - `src/firebase/`: Firebase config and auth context.
 - `src/utils/`: shared hooks, conversion helpers, exchange-rate cache, and responsive helpers.
 - `src/services/exchangeRateProvider.js`: reusable provider client for exchange-rate requests, normalization, and typed error handling.
-- `src/domain/`: fiat-to-crypto order lifecycle, compliance gates, secure transfer validation (FCX-21), user progress/notifications (FCX-20), and FCX-18 E2E-style tests.
+- `src/domain/`: fiat-to-crypto order lifecycle, compliance gates, secure transfer validation (FCX-21), user progress/notifications (FCX-20), FCX-18 E2E-style tests, and FCX-47 fulfillment E2E (`fiatToCryptoFulfillment.e2e.test.js`).
 - `src/domain/fiatToCryptoOrder.js`: canonical **statuses** (`submitted` → `paid` → `purchasing` → `transferring` → `completed` / `failed`), **transition + owner** matrix, **`FiatToCryptoOrder` data shape** (user, fiat, asset, wallet, fees, audit, transfer, execution, deposit fields), and **`validateFiatToCryptoOrderDraft`** — code-backed source of truth for ops (FCX-38).
 - `pages/orders/progress.jsx` + `GET /api/fiat-to-crypto/orders/[id]`: **purchase status** — timeline, notification event log, failure guidance, delivery summary; live mode with `?id=` + `x-user-id` (FCX-46).
 - `pages/orders/new.jsx` + `POST /api/fiat-to-crypto/orders`: fiat-to-crypto **intake** (fiat amount, asset, network, destination) with client + server validation, confirmation with request reference (FCX-25, FCX-40).
