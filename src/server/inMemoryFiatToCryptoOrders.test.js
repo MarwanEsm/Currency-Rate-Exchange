@@ -1,3 +1,5 @@
+import { FIAT_TO_CRYPTO_ORDER_STATUS } from "../domain/fiatToCryptoOrder";
+import { resetOrderProgressNotificationLogForTests, getOrderProgressNotificationLogSnapshot } from "../domain/fiatToCryptoOrderProgress";
 import {
     __clearInMemoryFiatToCryptoOrdersForTests,
     getFiatToCryptoOrderById,
@@ -5,7 +7,6 @@ import {
     saveSubmittedFiatToCryptoOrder,
     updateFiatToCryptoOrder,
 } from "./inMemoryFiatToCryptoOrders";
-import { FIAT_TO_CRYPTO_ORDER_STATUS } from "../domain/fiatToCryptoOrder";
 
 const makeOrder = (id, status, updatedAt) => ({
     id,
@@ -23,6 +24,7 @@ const makeOrder = (id, status, updatedAt) => ({
 describe("inMemoryFiatToCryptoOrders", () => {
     beforeEach(() => {
         __clearInMemoryFiatToCryptoOrdersForTests();
+        resetOrderProgressNotificationLogForTests();
     });
 
     it("lists orders by status, sorted by updatedAt", () => {
@@ -49,5 +51,14 @@ describe("inMemoryFiatToCryptoOrders", () => {
 
     it("returns undefined when updating a non-existent order", () => {
         expect(updateFiatToCryptoOrder("missing", { status: "failed" })).toBeUndefined();
+    });
+
+    it("records notification events on create and on status change (FCX-46)", () => {
+        saveSubmittedFiatToCryptoOrder(makeOrder("n", FIAT_TO_CRYPTO_ORDER_STATUS.SUBMITTED, "2026-04-20T10:00:00.000Z"));
+        expect(getOrderProgressNotificationLogSnapshot().length).toBeGreaterThanOrEqual(1);
+        updateFiatToCryptoOrder("n", { status: FIAT_TO_CRYPTO_ORDER_STATUS.PAID, updatedAt: "2026-04-20T10:30:00.000Z" });
+        expect(getOrderProgressNotificationLogSnapshot().some((e) => e.toStatus === FIAT_TO_CRYPTO_ORDER_STATUS.PAID)).toBe(
+            true,
+        );
     });
 });

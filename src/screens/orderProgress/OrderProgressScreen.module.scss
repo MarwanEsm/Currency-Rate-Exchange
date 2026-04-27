@@ -22,6 +22,11 @@
     font-size: 0.95rem;
     text-decoration: underline;
     text-underline-offset: 0.15em;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }
 
 .lead {
@@ -132,4 +137,38 @@
     margin: 0.75rem 0 0;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.65);
+}
+
+.warn {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 193, 7, 0.12);
+    border: 1px solid rgba(255, 193, 7, 0.35);
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+.error {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 107, 107, 0.45);
+    background: rgba(255, 80, 80, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+.hint {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+}
+
+.hintInline {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.notifyTime {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.6);
 }

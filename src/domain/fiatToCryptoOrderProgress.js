@@ -1,8 +1,9 @@
 /**
- * User-visible order progress, notifications, and completion copy (FCX-20).
+ * User-visible order progress, notifications, and completion copy (FCX-20, FCX-46).
  *
- * Backend workers should call `getOrderProgressNotificationTriggers` when persisting transitions
- * to enqueue email/push/in-app events. UI uses `buildUserOrderStatusTimeline` and related helpers.
+ * Call `appendOrderProgressNotificationEvents` whenever an order’s `status` changes so channels can
+ * replay the same trigger keys (demo: in-memory buffer; production: durable outbox). UI uses
+ * `buildUserOrderStatusTimeline` and related helpers.
  */
 
 import { COMPLIANCE_BLOCK_REASON_CODES } from "./fiatToCryptoCompliance";
@@ -116,6 +117,79 @@ export const getOrderProgressNotificationTriggers = (fromStatus, toStatus) => {
         return [ORDER_PROGRESS_NOTIFICATION_TRIGGER.ORDER_FAILED];
     }
     return [];
+};
+
+/**
+ * @typedef {{
+ *   schemaVersion: 1,
+ *   occurredAt: string,
+ *   orderId: string,
+ *   userId: string,
+ *   trigger: string,
+ *   fromStatus: string | null,
+ *   toStatus: string,
+ * }} OrderProgressNotificationEvent
+ */
+
+/** @type {OrderProgressNotificationEvent[]} */
+const orderProgressNotificationBuffer = [];
+const ORDER_PROGRESS_NOTIFICATION_BUFFER_MAX = 500;
+
+/** @returns {ReadonlyArray<OrderProgressNotificationEvent>} */
+export const getOrderProgressNotificationLogSnapshot = () => [...orderProgressNotificationBuffer];
+
+/** @returns {ReadonlyArray<OrderProgressNotificationEvent>} */
+export const getOrderProgressNotificationEventsForOrder = (orderId) => {
+    const id = String(orderId ?? "").trim();
+    if (!id) return [];
+    return orderProgressNotificationBuffer.filter((e) => e.orderId === id);
+};
+
+/** Tests only. */
+export const resetOrderProgressNotificationLogForTests = () => {
+    orderProgressNotificationBuffer.length = 0;
+};
+
+/**
+ * Records one row per trigger for a lifecycle transition (FCX-46).
+ *
+ * @param {{
+ *   orderId: string,
+ *   userId: string,
+ *   fromStatus: FiatToCryptoOrderStatus | null | undefined,
+ *   toStatus: FiatToCryptoOrderStatus,
+ *   occurredAt?: string,
+ * }} input
+ */
+export const appendOrderProgressNotificationEvents = (input) => {
+    const orderId = String(input.orderId ?? "").trim();
+    const userId = String(input.userId ?? "").trim();
+    const toStatus = input.toStatus;
+    if (!orderId || !userId || !toStatus) return;
+
+    const triggers = getOrderProgressNotificationTriggers(input.fromStatus ?? null, toStatus);
+    if (triggers.length === 0) return;
+
+    const occurredAt = input.occurredAt ?? new Date().toISOString();
+    const fromStatus = input.fromStatus ?? null;
+
+    for (const trigger of triggers) {
+        orderProgressNotificationBuffer.push({
+            schemaVersion: /** @type {const} */ (1),
+            occurredAt,
+            orderId,
+            userId,
+            trigger,
+            fromStatus,
+            toStatus,
+        });
+    }
+    if (orderProgressNotificationBuffer.length > ORDER_PROGRESS_NOTIFICATION_BUFFER_MAX) {
+        orderProgressNotificationBuffer.splice(
+            0,
+            orderProgressNotificationBuffer.length - ORDER_PROGRESS_NOTIFICATION_BUFFER_MAX,
+        );
+    }
 };
 
 /**

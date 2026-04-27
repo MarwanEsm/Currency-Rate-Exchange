@@ -267,8 +267,18 @@ const FiatToCryptoRequestForm = () => {
                             Status: <strong>{confirmation.status}</strong> · {confirmation.targetAssetCode} ·{" "}
                             {confirmation.fiatAmount} {confirmation.fiatCurrency}
                         </p>
-                        <button type="button" className={styles.secondary} onClick={() => router.push("/orders/progress")}>
-                            View status demo
+                        <button
+                            type="button"
+                            className={styles.secondary}
+                            onClick={() =>
+                                router.push(
+                                    confirmation?.id
+                                        ? `/orders/progress?id=${encodeURIComponent(confirmation.id)}`
+                                        : "/orders/progress",
+                                )
+                            }
+                        >
+                            Track this request
                         </button>
                     </section>
                 )}

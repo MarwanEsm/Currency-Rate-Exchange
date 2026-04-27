@@ -1,8 +1,12 @@
-import React, { useMemo, useState } from "react";
+/**
+ * User-facing purchase status: live tracking (FCX-46) or interactive demo (FCX-20).
+ */
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Container from "@/components/layout/container/Container";
 import Headline from "@/components/elements/headline/Headline";
 import OrderProgressTimeline from "@/components/fiatToCrypto/OrderProgressTimeline";
+import { AuthContext } from "@/firebase/authContext";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "@/domain/fiatToCryptoOrder";
 import {
     buildCompletedOrderDeliverySummary,
@@ -31,9 +35,63 @@ const getDemoPreviousStatus = (status, failureTimelineIndex) => {
 
 const OrderProgressScreen = () => {
     const router = useRouter();
+    const { user, isAuthenticated } = useContext(AuthContext);
+
+    const orderIdFromQuery = useMemo(() => {
+        const q = router.query?.id;
+        if (typeof q === "string") return q.trim();
+        if (Array.isArray(q) && typeof q[0] === "string") return q[0].trim();
+        return "";
+    }, [router.query?.id]);
+
+    const isLive = Boolean(orderIdFromQuery);
+
     const [status, setStatus] = useState(FIAT_TO_CRYPTO_ORDER_STATUS.PURCHASING);
     const [failureTimelineIndex, setFailureTimelineIndex] = useState(3);
     const [failureCode, setFailureCode] = useState("");
+
+    const [liveOrder, setLiveOrder] = useState(null);
+    const [liveNotifications, setLiveNotifications] = useState([]);
+    const [liveLoading, setLiveLoading] = useState(false);
+    const [liveError, setLiveError] = useState(null);
+
+    const loadLiveOrder = useCallback(async () => {
+        if (!orderIdFromQuery || !user?.uid) {
+            setLiveOrder(null);
+            setLiveNotifications([]);
+            return;
+        }
+        setLiveLoading(true);
+        setLiveError(null);
+        try {
+            const res = await fetch(`/api/fiat-to-crypto/orders/${encodeURIComponent(orderIdFromQuery)}`, {
+                method: "GET",
+                headers: { "x-user-id": user.uid },
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                setLiveError(data.error || "Could not load order.");
+                setLiveOrder(null);
+                setLiveNotifications([]);
+                return;
+            }
+            setLiveOrder(data.order ?? null);
+            setLiveNotifications(Array.isArray(data.notifications) ? data.notifications : []);
+        } catch {
+            setLiveError("Network error. Please retry.");
+            setLiveOrder(null);
+            setLiveNotifications([]);
+        } finally {
+            setLiveLoading(false);
+        }
+    }, [orderIdFromQuery, user?.uid]);
+
+    useEffect(() => {
+        if (!router.isReady) return;
+        if (isLive && user?.uid) {
+            loadLiveOrder();
+        }
+    }, [router.isReady, isLive, user?.uid, loadLiveOrder]);
 
     const demoOrder = useMemo(
         () => ({
@@ -49,20 +107,34 @@ const OrderProgressScreen = () => {
         [status, failureCode],
     );
 
+    const effectiveOrder = isLive && liveOrder ? liveOrder : demoOrder;
+    const effectiveStatus = effectiveOrder?.status ?? FIAT_TO_CRYPTO_ORDER_STATUS.SUBMITTED;
+
     const timeline = useMemo(
         () =>
-            buildUserOrderStatusTimeline(status, {
+            buildUserOrderStatusTimeline(effectiveStatus, {
                 failureTimelineIndex:
-                    status === FIAT_TO_CRYPTO_ORDER_STATUS.FAILED ? failureTimelineIndex : undefined,
+                    effectiveStatus === FIAT_TO_CRYPTO_ORDER_STATUS.FAILED && !isLive
+                        ? failureTimelineIndex
+                        : undefined,
             }),
-        [status, failureTimelineIndex],
+        [effectiveStatus, failureTimelineIndex, isLive],
     );
 
-    const failureGuidance = useMemo(() => getUserFacingFailureGuidance(demoOrder), [demoOrder]);
-    const completedSummary = useMemo(() => buildCompletedOrderDeliverySummary(demoOrder), [demoOrder]);
+    const failureGuidance = useMemo(() => getUserFacingFailureGuidance(effectiveOrder), [effectiveOrder]);
+    const completedSummary = useMemo(() => buildCompletedOrderDeliverySummary(effectiveOrder), [effectiveOrder]);
 
-    const prev = getDemoPreviousStatus(status, failureTimelineIndex);
-    const notificationTriggers = getOrderProgressNotificationTriggers(prev, status);
+    const prev = isLive
+        ? null
+        : getDemoPreviousStatus(status, failureTimelineIndex);
+    const notificationTriggers = isLive
+        ? []
+        : getOrderProgressNotificationTriggers(prev, status);
+
+    const sortedLiveNotifications = useMemo(
+        () => [...liveNotifications].sort((a, b) => String(b.occurredAt).localeCompare(String(a.occurredAt))),
+        [liveNotifications],
+    );
 
     return (
         <Container>
@@ -74,85 +146,149 @@ const OrderProgressScreen = () => {
                     <button type="button" className={styles.back} onClick={() => router.push("/orders/new")}>
                         New request
                     </button>
+                    {isLive && (
+                        <button
+                            type="button"
+                            className={styles.back}
+                            onClick={() => loadLiveOrder()}
+                            disabled={liveLoading || !user?.uid}
+                        >
+                            {liveLoading ? "Refreshing…" : "Refresh status"}
+                        </button>
+                    )}
                 </div>
                 <Headline size={2}>Purchase status</Headline>
                 <p className={styles.lead}>
-                    Demo view for FCX-20: timeline, notification hooks, failure guidance, and delivery summary.
-                </p>
-
-                <div className={styles.controls}>
-                    <label className={styles.field}>
-                        <span>Order status</span>
-                        <select
-                            className={styles.select}
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            aria-label="Simulate order status"
-                        >
-                            {STATUS_OPTIONS.map((s) => (
-                                <option key={s} value={s}>
-                                    {s}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    {status === FIAT_TO_CRYPTO_ORDER_STATUS.FAILED && (
+                    {isLive ? (
                         <>
-                            <label className={styles.field}>
-                                <span>Failure stage index (0–4)</span>
-                                <input
-                                    className={styles.input}
-                                    type="number"
-                                    min={0}
-                                    max={4}
-                                    value={failureTimelineIndex}
-                                    onChange={(e) => setFailureTimelineIndex(Number(e.target.value))}
-                                    aria-label="Failure timeline index"
-                                />
-                            </label>
-                            <label className={styles.field}>
-                                <span>Failure code (optional)</span>
-                                <input
-                                    className={styles.input}
-                                    type="text"
-                                    value={failureCode}
-                                    onChange={(e) => setFailureCode(e.target.value)}
-                                    placeholder="e.g. kyc_rejected"
-                                    aria-label="Failure code"
-                                />
-                            </label>
+                            Live tracking for order <code className={styles.code}>{orderIdFromQuery}</code> (FCX-46).
+                            Notification events are recorded when your order moves between statuses.
+                        </>
+                    ) : (
+                        <>
+                            Interactive demo (FCX-20): choose a status to preview the timeline and triggers. Open{" "}
+                            <strong>View status</strong> from a submitted request to see your real order here.
                         </>
                     )}
-                </div>
+                </p>
+
+                {isLive && !isAuthenticated && (
+                    <p className={styles.warn} role="status">
+                        Log in as the same account that created the request to load this order.
+                    </p>
+                )}
+
+                {isLive && liveError && (
+                    <p className={styles.error} role="alert">
+                        {liveError}
+                    </p>
+                )}
+
+                {!isLive && (
+                    <div className={styles.controls}>
+                        <label className={styles.field}>
+                            <span>Order status (demo)</span>
+                            <select
+                                className={styles.select}
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                                aria-label="Simulate order status"
+                            >
+                                {STATUS_OPTIONS.map((s) => (
+                                    <option key={s} value={s}>
+                                        {s}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+
+                        {status === FIAT_TO_CRYPTO_ORDER_STATUS.FAILED && (
+                            <>
+                                <label className={styles.field}>
+                                    <span>Failure stage index (0–4)</span>
+                                    <input
+                                        className={styles.input}
+                                        type="number"
+                                        min={0}
+                                        max={4}
+                                        value={failureTimelineIndex}
+                                        onChange={(e) => setFailureTimelineIndex(Number(e.target.value))}
+                                        aria-label="Failure timeline index"
+                                    />
+                                </label>
+                                <label className={styles.field}>
+                                    <span>Failure code (optional)</span>
+                                    <input
+                                        className={styles.input}
+                                        type="text"
+                                        value={failureCode}
+                                        onChange={(e) => setFailureCode(e.target.value)}
+                                        placeholder="e.g. kyc_rejected"
+                                        aria-label="Failure code"
+                                    />
+                                </label>
+                            </>
+                        )}
+                    </div>
+                )}
 
                 <section className={styles.section} aria-labelledby="timeline-heading">
                     <h2 id="timeline-heading" className={styles.sectionTitle}>
                         Status timeline
                     </h2>
-                    <OrderProgressTimeline steps={timeline} />
+                    {isLive && liveLoading && !liveOrder ? (
+                        <p className={styles.hint}>Loading…</p>
+                    ) : (
+                        <OrderProgressTimeline steps={timeline} />
+                    )}
                 </section>
 
                 <section className={styles.section} aria-labelledby="notify-heading">
                     <h2 id="notify-heading" className={styles.sectionTitle}>
-                        Notification triggers (on reaching this status)
+                        Notifications
                     </h2>
-                    <ul className={styles.list}>
-                        {notificationTriggers.length === 0 ? (
-                            <li>No automated triggers mapped for this transition in the demo.</li>
+                    {isLive ? (
+                        sortedLiveNotifications.length === 0 ? (
+                            <p className={styles.hint}>No notification events recorded yet for this order.</p>
                         ) : (
-                            notificationTriggers.map((key) => (
-                                <li key={key}>
-                                    <code className={styles.code}>{key}</code>
-                                    {" — "}
-                                    {ORDER_PROGRESS_NOTIFICATION_DEFINITIONS[key]?.summary ?? "—"}
-                                </li>
-                            ))
-                        )}
-                    </ul>
+                            <ul className={styles.list}>
+                                {sortedLiveNotifications.map((n, idx) => (
+                                    <li key={`${n.occurredAt}-${n.trigger}-${n.toStatus}-${idx}`}>
+                                        <span className={styles.notifyTime}>{n.occurredAt}</span>
+                                        {" · "}
+                                        <code className={styles.code}>{n.trigger}</code>
+                                        {" — "}
+                                        {ORDER_PROGRESS_NOTIFICATION_DEFINITIONS[n.trigger]?.summary ?? "—"}
+                                        {n.fromStatus != null ? (
+                                            <>
+                                                {" "}
+                                                <span className={styles.hintInline}>
+                                                    ({n.fromStatus} → {n.toStatus})
+                                                </span>
+                                            </>
+                                        ) : null}
+                                    </li>
+                                ))}
+                            </ul>
+                        )
+                    ) : (
+                        <ul className={styles.list}>
+                            {notificationTriggers.length === 0 ? (
+                                <li>No automated triggers mapped for this transition in the demo.</li>
+                            ) : (
+                                notificationTriggers.map((key) => (
+                                    <li key={key}>
+                                        <code className={styles.code}>{key}</code>
+                                        {" — "}
+                                        {ORDER_PROGRESS_NOTIFICATION_DEFINITIONS[key]?.summary ?? "—"}
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    )}
                 </section>
 
-                {status === FIAT_TO_CRYPTO_ORDER_STATUS.FAILED && failureGuidance && (
+                {effectiveStatus === FIAT_TO_CRYPTO_ORDER_STATUS.FAILED && failureGuidance && (
                     <section className={styles.alert} role="alert" aria-labelledby="fail-heading">
                         <h2 id="fail-heading" className={styles.sectionTitle}>
                             {failureGuidance.title}
@@ -167,7 +303,7 @@ const OrderProgressScreen = () => {
                     </section>
                 )}
 
-                {status === FIAT_TO_CRYPTO_ORDER_STATUS.COMPLETED && completedSummary && (
+                {effectiveStatus === FIAT_TO_CRYPTO_ORDER_STATUS.COMPLETED && completedSummary && (
                     <section className={styles.success} aria-labelledby="done-heading">
                         <h2 id="done-heading" className={styles.sectionTitle}>
                             {completedSummary.headline}

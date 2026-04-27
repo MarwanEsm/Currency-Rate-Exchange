@@ -65,10 +65,11 @@
  * and `transferTxBroadcastAt` for order details and support. Custody records broadcast and completion
  * via `POST /api/fiat-to-crypto/admin/orders/:id/transfer` (see FCX-45).
  *
- * ## User progress & notifications (FCX-20)
+ * ## User progress & notifications (FCX-20, FCX-46)
  *
- * See `fiatToCryptoOrderProgress.js` for timelines, notification trigger keys, failure copy, and
- * completed-order delivery summaries for the user-facing experience.
+ * See `fiatToCryptoOrderProgress.js` for timelines, notification triggers, failure copy, delivery
+ * summaries, and the notification log. Users load live status via `GET /api/fiat-to-crypto/orders/:id`
+ * (demo: `x-user-id` header matches `order.userId`).
  */
 
 export const FIAT_TO_CRYPTO_ORDER_STATUS = {
@@ -268,7 +269,7 @@ export const getAllowedFiatToCryptoOrderNextStatuses = (status) => {
  * - `failureCode` / `failureMessage` should be set when entering `failed` for supportability.
  * - **Transfer tracking (FCX-21):** `transferTxHash` is the broadcast id (e.g. txid); `transferCanonicalNetwork`
  *   matches `CRYPTO_TRANSFER_NETWORK_ID` values; `transferTxBroadcastAt` / `transferTxConfirmedAt` are ISO timestamps.
- * - **User progress (FCX-20):** `deliveredAssetAmount` / `deliveredAssetCode` populate the completed-state summary alongside `transferTxHash`.
+ * - **User progress (FCX-20, FCX-46):** `deliveredAssetAmount` / `deliveredAssetCode` populate the completed-state summary alongside `transferTxHash`. Status transitions append notification events for user channels.
  * - **Pricing (FCX-22):** `grossFiatAmount`, `feeFiatAmount`, `netFiatAmount`, `netCryptoAmount`,
  *   `exchangeRateApplied`, and `commissionConfigSnapshot` persist the authoritative quote. These are
  *   populated at intake when an exchange rate is supplied and refreshed when the admin approves the

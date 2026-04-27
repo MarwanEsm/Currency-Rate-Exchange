@@ -2,6 +2,8 @@
  * Demo persistence for FCX-25 (in-memory). Replace with a database in production.
  */
 
+import { appendOrderProgressNotificationEvents } from "../domain/fiatToCryptoOrderProgress";
+
 /** @type {Map<string, import("../domain/fiatToCryptoOrder.js").FiatToCryptoOrder>} */
 const ordersById = new Map();
 
@@ -10,6 +12,12 @@ const ordersById = new Map();
  */
 export const saveSubmittedFiatToCryptoOrder = (order) => {
     ordersById.set(order.id, order);
+    appendOrderProgressNotificationEvents({
+        orderId: order.id,
+        userId: order.userId,
+        fromStatus: null,
+        toStatus: order.status,
+    });
     return order;
 };
 
@@ -44,6 +52,14 @@ export const updateFiatToCryptoOrder = (id, patch) => {
     if (!existing) return undefined;
     const updated = { ...existing, ...patch };
     ordersById.set(id, updated);
+    if (patch.status !== undefined && patch.status !== existing.status) {
+        appendOrderProgressNotificationEvents({
+            orderId: id,
+            userId: updated.userId,
+            fromStatus: existing.status,
+            toStatus: patch.status,
+        });
+    }
     return updated;
 };
 

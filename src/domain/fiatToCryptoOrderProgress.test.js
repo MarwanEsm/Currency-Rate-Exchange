@@ -1,11 +1,14 @@
 import { COMPLIANCE_BLOCK_REASON_CODES } from "./fiatToCryptoCompliance";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
 import {
+    appendOrderProgressNotificationEvents,
     buildCompletedOrderDeliverySummary,
     buildUserOrderStatusTimeline,
+    getOrderProgressNotificationEventsForOrder,
     getOrderProgressNotificationTriggers,
     getUserFacingFailureGuidance,
     ORDER_PROGRESS_NOTIFICATION_TRIGGER,
+    resetOrderProgressNotificationLogForTests,
     USER_ORDER_TIMELINE_STATUS_ORDER,
 } from "./fiatToCryptoOrderProgress";
 
@@ -84,6 +87,29 @@ describe("fiatToCryptoOrderProgress (FCX-20)", () => {
             expect(s?.deliveredLine).toMatch(/0\.01543210/);
             expect(s?.deliveredLine).toMatch(/BTC/);
             expect(s?.transactionReference).toBe("0xabc123");
+        });
+    });
+
+    describe("FCX-46 notification log", () => {
+        beforeEach(() => {
+            resetOrderProgressNotificationLogForTests();
+        });
+
+        it("appendOrderProgressNotificationEvents records rows per transition", () => {
+            appendOrderProgressNotificationEvents({
+                orderId: "o1",
+                userId: "u1",
+                fromStatus: null,
+                toStatus: FIAT_TO_CRYPTO_ORDER_STATUS.SUBMITTED,
+            });
+            expect(getOrderProgressNotificationEventsForOrder("o1")).toHaveLength(1);
+            appendOrderProgressNotificationEvents({
+                orderId: "o1",
+                userId: "u1",
+                fromStatus: FIAT_TO_CRYPTO_ORDER_STATUS.SUBMITTED,
+                toStatus: FIAT_TO_CRYPTO_ORDER_STATUS.PAID,
+            });
+            expect(getOrderProgressNotificationEventsForOrder("o1").length).toBe(2);
         });
     });
 });

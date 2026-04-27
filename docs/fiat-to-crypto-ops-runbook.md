@@ -171,6 +171,14 @@ After liquidity execution, the order is in **`transferring`**. Custody records t
 
 ---
 
+## User status & notifications (FCX-46)
+
+- **UI:** `/orders/progress?id={orderId}` loads the order when the browser sends `x-user-id` (demo: Firebase UID). Without `id`, the page remains an interactive FCX-20 demo.
+- **API:** `GET /api/fiat-to-crypto/orders/:id` returns `{ order, notifications }` for the owner only. `notifications` is the in-memory audit of `ORDER_PROGRESS_NOTIFICATION_TRIGGER` keys emitted when `status` changed (via `saveSubmittedFiatToCryptoOrder` / `updateFiatToCryptoOrder`). Production should persist the same payload to an outbox and deliver email/push/in-app.
+- **Intake:** After submit, **Track this request** deep-links to the live progress view.
+
+---
+
 ## Related code
 
 | Asset | Purpose |
@@ -178,7 +186,7 @@ After liquidity execution, the order is in **`transferring`**. Custody records t
 | `src/domain/fiatToCryptoOrder.js` | Statuses, transitions, `FiatToCryptoOrder` model, draft validation, required-field contract (FCX-38) |
 | `src/domain/fiatToCryptoCompliance.js` | KYC / AML / sanctions gates and audit entries |
 | `src/domain/fiatToCryptoTransfer.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/transfer` | Payout validation, broadcast + completion patches, custody API (FCX-21, FCX-45) |
-| `src/domain/fiatToCryptoOrderProgress.js` | User timeline, notification trigger keys, failure copy, completed delivery summary (FCX-20) |
+| `src/domain/fiatToCryptoOrderProgress.js` + `GET /api/fiat-to-crypto/orders/:id` | User timeline, notification log on status change, failure copy, delivery summary; owner fetch (FCX-20, FCX-46) |
 | `src/domain/fiatToCryptoIntake.js` + `POST /api/fiat-to-crypto/orders` | Intake validation and creating orders in `submitted` (FCX-25) |
 | `src/domain/adminPermissions.js` | Admin roles and permission checks (FCX-26) |
 | `src/domain/fiatToCryptoAdminQueue.js` + admin API routes + `GET /api/fiat-to-crypto/admin/decisions/log` | Admin review queue (FCX-43), approve/reject decisions, audit log (FCX-26) |
