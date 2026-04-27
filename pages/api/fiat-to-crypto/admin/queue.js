@@ -3,13 +3,18 @@ import { selectPendingExecutableOrders } from "@/domain/fiatToCryptoAdminQueue";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "@/domain/fiatToCryptoOrder";
 import { listFiatToCryptoOrdersByStatus } from "@/server/inMemoryFiatToCryptoOrders";
 
-const ALLOWED_STATUSES = new Set([FIAT_TO_CRYPTO_ORDER_STATUS.PAID, FIAT_TO_CRYPTO_ORDER_STATUS.PURCHASING]);
+const ALLOWED_STATUSES = new Set([
+    FIAT_TO_CRYPTO_ORDER_STATUS.SUBMITTED,
+    FIAT_TO_CRYPTO_ORDER_STATUS.PAID,
+    FIAT_TO_CRYPTO_ORDER_STATUS.PURCHASING,
+]);
 
 /**
- * GET /api/fiat-to-crypto/admin/queue?status=paid|purchasing — admin queue (FCX-26 + FCX-24).
+ * GET /api/fiat-to-crypto/admin/queue?status=submitted|paid|purchasing — admin queue (FCX-26 + FCX-24 + FCX-41).
  *
- * Default status is `paid` (orders awaiting approval). `purchasing` returns orders approved and
- * ready for liquidity-provider execution so the admin screen can render a separate section.
+ * `submitted` lists orders awaiting fiat funding / deposit match (FCX-41). Default status is `paid`
+ * (orders awaiting approval). `purchasing` returns orders approved and ready for liquidity-provider
+ * execution so the admin screen can render a separate section.
  *
  * Demo auth: admin identity and roles arrive via `x-admin-user-id` and `x-admin-roles` (comma-
  * separated). Production must resolve both from a verified session, not headers.

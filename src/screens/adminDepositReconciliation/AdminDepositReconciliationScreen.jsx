@@ -1,8 +1,12 @@
+/**
+ * Operations UI for fiat deposit verification & reconciliation (FCX-41). Domain engine: FCX-23.
+ */
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Container from "@/components/layout/container/Container";
 import Headline from "@/components/elements/headline/Headline";
 import { AuthContext } from "@/firebase/authContext";
+import { COMPLIANCE_CHECK_STATUS } from "@/domain/fiatToCryptoCompliance";
 import { ADMIN_ROLE, ADMIN_PERMISSION, hasAdminPermission } from "@/domain/adminPermissions";
 import { DEPOSIT_RECONCILIATION_OUTCOME } from "@/domain/fiatToCryptoDeposit";
 import styles from "./AdminDepositReconciliationScreen.module.scss";
@@ -52,6 +56,8 @@ const AdminDepositReconciliationScreen = () => {
     const [orderIdOverride, setOrderIdOverride] = useState("");
     const [notes, setNotes] = useState("");
     const [toleranceBps, setToleranceBps] = useState("0");
+    const [amlCheckStatus, setAmlCheckStatus] = useState(COMPLIANCE_CHECK_STATUS.CLEARED);
+    const [sanctionsCheckStatus, setSanctionsCheckStatus] = useState(COMPLIANCE_CHECK_STATUS.CLEARED);
 
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
@@ -60,6 +66,10 @@ const AdminDepositReconciliationScreen = () => {
     const [events, setEvents] = useState([]);
     const [logError, setLogError] = useState(null);
     const [logLoading, setLogLoading] = useState(false);
+
+    const [submittedOrders, setSubmittedOrders] = useState([]);
+    const [submittedLoading, setSubmittedLoading] = useState(false);
+    const [submittedError, setSubmittedError] = useState(null);
 
     const canView = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.VIEW_ORDER_QUEUE), [roles]);
     const canReconcile = useMemo(() => hasAdminPermission(roles, ADMIN_PERMISSION.RECONCILE_DEPOSIT), [roles]);
@@ -97,9 +107,35 @@ const AdminDepositReconciliationScreen = () => {
         }
     }, [adminUserId, canView, roles]);
 
+    const loadSubmittedOrders = useCallback(async () => {
+        if (!adminUserId || !canView) {
+            setSubmittedOrders([]);
+            return;
+        }
+        setSubmittedLoading(true);
+        setSubmittedError(null);
+        try {
+            const res = await fetch("/api/fiat-to-crypto/admin/queue?status=submitted", {
+                method: "GET",
+                headers: buildAdminHeaders(adminUserId, roles),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                setSubmittedError(data.error || "Failed to load submitted orders.");
+                return;
+            }
+            setSubmittedOrders(Array.isArray(data.orders) ? data.orders : []);
+        } catch {
+            setSubmittedError("Network error. Please retry.");
+        } finally {
+            setSubmittedLoading(false);
+        }
+    }, [adminUserId, canView, roles]);
+
     useEffect(() => {
         loadLog();
-    }, [loadLog]);
+        loadSubmittedOrders();
+    }, [loadLog, loadSubmittedOrders]);
 
     const fillDemoValues = () => {
         setDeposit({
@@ -132,6 +168,10 @@ const AdminDepositReconciliationScreen = () => {
                 notes: notes.trim() || undefined,
                 ...(orderIdOverride.trim() ? { orderId: orderIdOverride.trim() } : {}),
                 ...(Number.isFinite(toleranceNum) && toleranceNum >= 0 ? { toleranceBps: toleranceNum } : {}),
+                complianceScreening: {
+                    amlCheckStatus,
+                    sanctionsCheckStatus,
+                },
             };
             const res = await fetch("/api/fiat-to-crypto/admin/deposits/reconcile", {
                 method: "POST",
@@ -154,6 +194,7 @@ const AdminDepositReconciliationScreen = () => {
                 });
             }
             await loadLog();
+            await loadSubmittedOrders();
         } catch {
             setSubmitError("Network error. Please retry.");
         } finally {
@@ -171,17 +212,48 @@ const AdminDepositReconciliationScreen = () => {
                     <button type="button" className={styles.link} onClick={() => router.push("/admin/orders")}>
                         Admin: order queue →
                     </button>
-                    <button type="button" className={styles.link} onClick={loadLog} disabled={logLoading}>
-                        {logLoading ? "Refreshing log…" : "Refresh log"}
+                    <button
+                        type="button"
+                        className={styles.link}
+                        onClick={() => {
+                            void loadLog();
+                            void loadSubmittedOrders();
+                        }}
+                        disabled={logLoading || submittedLoading}
+                    >
+                        {logLoading || submittedLoading ? "Refreshing…" : "Refresh log & queue"}
                     </button>
                 </div>
 
                 <Headline size={2}>Admin: deposit reconciliation</Headline>
                 <p className={styles.lead}>
-                    Match incoming fiat deposits to <strong>submitted</strong> orders, verify amount and currency,
-                    and record the reconciliation event (FCX-23). Only <strong>matched</strong> deposits auto-move
-                    the order to <strong>paid</strong>; every other outcome is logged for manual workflow.
+                    Match incoming fiat to <strong>submitted</strong> orders, verify <strong>amount and currency</strong>{" "}
+                    before the order can be funded, and store <strong>timestamped</strong> reconciliation events
+                    (FCX-41). The engine (FCX-23) records every outcome; only <strong>matched</strong> moves the order
+                    to <strong>paid</strong> when the payment is within tolerance.
                 </p>
+
+                <section className={styles.workflow} aria-labelledby="workflow-heading">
+                    <h2 id="workflow-heading" className={styles.sectionTitle}>
+                        Under / over / mismatch workflow
+                    </h2>
+                    <ul className={styles.workflowList}>
+                        <li>
+                            <strong>Matched</strong> — amount and currency line up (within bps tolerance). Order
+                            becomes <code className={styles.code}>paid</code>; AML/sanctions at funding are stored for
+                            later approval to purchase.
+                        </li>
+                        <li>
+                            <strong>Amount under / over</strong> — order stays <code className={styles.code}>submitted</code>{" "}
+                            with the deposit on record. Ops: top-up, partial refund, adjust in policy, or fail the
+                            order after review.
+                        </li>
+                        <li>
+                            <strong>Currency mismatch</strong> — never auto-matches. Hold, contact customer, return or
+                            re-book per procedure.
+                        </li>
+                    </ul>
+                </section>
 
                 {!isAuthenticated && (
                     <p className={styles.warn} role="status">
@@ -213,6 +285,57 @@ const AdminDepositReconciliationScreen = () => {
                         View log: <strong>{canView ? "yes" : "no"}</strong> · Reconcile deposit:{" "}
                         <strong>{canReconcile ? "yes" : "no"}</strong>
                     </p>
+                </section>
+
+                <section className={styles.section} aria-labelledby="pending-heading">
+                    <h2 id="pending-heading" className={styles.sectionTitle}>
+                        Submitted orders (awaiting funding)
+                    </h2>
+                    <p className={styles.hint}>
+                        Use the order <strong>id</strong> as the bank <strong>reference</strong> when the wire memo
+                        allows, or set &quot;override order id&quot; below. Amount/currency on the order must match the
+                        deposit after tolerance for a <code className={styles.code}>matched</code> result.
+                    </p>
+                    {submittedError && (
+                        <p className={styles.error} role="alert">
+                            {submittedError}
+                        </p>
+                    )}
+                    {!canView ? (
+                        <p className={styles.hint}>Select a role with view access to list pending orders.</p>
+                    ) : submittedLoading ? (
+                        <p className={styles.hint}>Loading…</p>
+                    ) : submittedOrders.length === 0 ? (
+                        <p className={styles.hint}>No submitted orders in the queue.</p>
+                    ) : (
+                        <ul className={styles.pendingList}>
+                            {submittedOrders.map((o) => (
+                                <li key={o.id} className={styles.pendingRow}>
+                                    <div>
+                                        <code className={styles.code}>{o.id}</code>
+                                        <span className={styles.pendingAmt}>
+                                            {o.fiatAmount} {o.fiatCurrency}
+                                        </span>
+                                    </div>
+                                    <div className={styles.pendingActions}>
+                                        <button
+                                            type="button"
+                                            className={styles.copyMini}
+                                            onClick={async () => {
+                                                try {
+                                                    await navigator.clipboard?.writeText(o.id);
+                                                } catch {
+                                                    /* ignore */
+                                                }
+                                            }}
+                                        >
+                                            Copy id
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </section>
 
                 <section className={styles.section} aria-labelledby="form-heading">
@@ -309,6 +432,38 @@ const AdminDepositReconciliationScreen = () => {
                             placeholder="Optional — e.g. matched against bank slip #12345"
                         />
                     </label>
+                    <div className={styles.formGrid}>
+                        <label className={styles.field}>
+                            <span>AML result (stored on match → paid)</span>
+                            <select
+                                className={styles.input}
+                                value={amlCheckStatus}
+                                onChange={(e) => setAmlCheckStatus(e.target.value)}
+                                aria-label="AML screening result at funding"
+                            >
+                                {Object.values(COMPLIANCE_CHECK_STATUS).map((v) => (
+                                    <option key={v} value={v}>
+                                        {v}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className={styles.field}>
+                            <span>Sanctions result (stored on match → paid)</span>
+                            <select
+                                className={styles.input}
+                                value={sanctionsCheckStatus}
+                                onChange={(e) => setSanctionsCheckStatus(e.target.value)}
+                                aria-label="Sanctions screening result at funding"
+                            >
+                                {Object.values(COMPLIANCE_CHECK_STATUS).map((v) => (
+                                    <option key={v} value={v}>
+                                        {v}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
                     {submitError && (
                         <p className={styles.error} role="alert">
                             {submitError}
@@ -337,6 +492,9 @@ const AdminDepositReconciliationScreen = () => {
                         role="status"
                     >
                         <strong>{outcomeLabel(lastResult.outcome)}</strong>
+                        {lastResult.event?.reconciledAt ? (
+                            <> · recorded at {lastResult.event.reconciledAt}</>
+                        ) : null}
                         {lastResult.event?.varianceMinor ? (
                             <> · variance {lastResult.event.varianceMinor} {lastResult.event.depositCurrency}</>
                         ) : null}

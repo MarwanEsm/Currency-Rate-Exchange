@@ -19,7 +19,7 @@ import {
 
 /**
  * POST /api/fiat-to-crypto/admin/deposits/reconcile — match & verify an incoming fiat deposit
- * against a pending order (FCX-23).
+ * against a pending order (FCX-23, FCX-41).
  *
  * Body: {
  *   deposit: DepositRecord,

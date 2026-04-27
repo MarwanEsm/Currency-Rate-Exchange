@@ -1,8 +1,9 @@
 /**
- * Fiat deposit verification & reconciliation (FCX-23).
+ * Fiat deposit verification & reconciliation (FCX-23, FCX-41).
  *
  * Purpose: let operations match an incoming bank / PSP deposit to a `submitted` order, verify the
- * paid amount and currency, and record a reconciliation event. The engine is deliberately
+ * paid amount and currency, and record a reconciliation event. **FCX-41** covers the integrated
+ * ops experience (admin UI + APIs that call this engine). The engine is deliberately
  * transport-agnostic — callers (API routes, webhook handlers, ops scripts) pass plain deposit
  * objects and lists of candidate orders.
  *

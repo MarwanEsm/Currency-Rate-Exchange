@@ -33,6 +33,70 @@
     margin: 0.5rem 0 1.25rem;
 }
 
+.workflow {
+    margin-bottom: 1.75rem;
+    padding: 1rem 1.1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.workflowList {
+    margin: 0.5rem 0 0;
+    padding-left: 1.15rem;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.9rem;
+    line-height: 1.55;
+
+    li {
+        margin-bottom: 0.45rem;
+    }
+}
+
+.pendingList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pendingRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 0.9rem;
+}
+
+.pendingAmt {
+    margin-left: 0.65rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.pendingActions {
+    flex-shrink: 0;
+}
+
+.copyMini {
+    padding: 0.3rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
 .warn {
     padding: 0.75rem 1rem;
     border-radius: 8px;

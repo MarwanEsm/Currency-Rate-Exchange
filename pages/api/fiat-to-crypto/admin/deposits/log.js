@@ -2,7 +2,7 @@ import { ADMIN_PERMISSION, hasAdminPermission, normalizeAdminRoles } from "@/dom
 import { getDepositReconciliationAuditLogSnapshot } from "@/domain/fiatToCryptoDeposit";
 
 /**
- * GET /api/fiat-to-crypto/admin/deposits/log — full reconciliation audit log for ops review (FCX-23).
+ * GET /api/fiat-to-crypto/admin/deposits/log — full reconciliation audit log for ops review (FCX-23, FCX-41).
  * In production this must read from a durable audit sink, not an in-memory buffer.
  */
 export default function handler(req, res) {

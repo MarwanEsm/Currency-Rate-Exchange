@@ -58,7 +58,7 @@ Validated `paid` orders wait for human approval before moving to `purchasing`.
 
 ---
 
-## Deposit verification & reconciliation (FCX-23)
+## Deposit verification & reconciliation (FCX-23, FCX-41)
 
 Before an order can move from `submitted` to `paid`, ops must match the incoming bank / PSP deposit to the order and verify that amount and currency match the quote. The engine is pure and transport-agnostic so webhook handlers, ops scripts, and the admin UI all share one policy.
 
@@ -78,7 +78,7 @@ Before an order can move from `submitted` to `paid`, ops must match the incoming
 - **API:**
     - `POST /api/fiat-to-crypto/admin/deposits/reconcile` — requires the `reconcile_deposit` permission (roles `order_reviewer`, `operations_manager`). Returns HTTP 200 on `matched`, 409 on any other recorded outcome, 400 on payload errors.
     - `GET /api/fiat-to-crypto/admin/deposits/log` — returns all reconciliation events for audit (requires `view_order_queue`).
-- **Admin UI:** `/admin/deposits` renders a form to enter deposit details (id, amount, currency, reference, processor, tolerance bps, notes) and a reverse-chronological log of past events. The orders screen links to it, and vice versa.
+- **Admin UI (FCX-41):** `/admin/deposits` lists **submitted** orders from `GET /api/fiat-to-crypto/admin/queue?status=submitted`, a form to enter deposit details (including AML/sanctions at funding for `matched`), and a reverse-chronological log of past events. The orders screen links to it, and vice versa.
 
 **Ops signals:** rising `amount_under` rate → check processor fee deduction; `currency_mismatch` spikes → customer routing / UX bug on intake; persistent `no_matching_order` → investigate reference generation at checkout; `duplicate_deposit` → webhook replay, confirm idempotency on the processor side.
 
@@ -167,5 +167,5 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 | `src/domain/fiatToCryptoAdminQueue.js` + admin API routes | Admin review queue, approve/reject decisions, audit log (FCX-26) |
 | `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto calculation engine, ops pricing preview (FCX-22) |
 | `src/domain/fiatToCryptoExecution.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/execute-purchase` | Liquidity-provider purchase, retry loop, execution audit, order patch (FCX-24) |
-| `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` | Deposit matching, amount/currency verification, under/over/mismatch/duplicate handling, audit log (FCX-23) |
+| `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` + admin queue `status=submitted` | Deposit matching, amount/currency verification, under/over/mismatch/duplicate handling, audit log, ops UI (FCX-23, FCX-41) |
 | `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated happy path, failure path, edge cases |
