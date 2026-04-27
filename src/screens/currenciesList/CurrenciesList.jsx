@@ -4,7 +4,6 @@ import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
 import Logo from "../../components/elements/logo/Logo";
 import styles from "./CurrenciesList.module.scss";
-import Button from "../../components/elements/button/Button";
 import { Row, Col } from 'reactstrap';
 import { useRouter } from "next/router";
 import { AuthContext } from "../../firebase/authContext";
@@ -344,6 +343,7 @@ const CurrenciesList = () => {
                         pattern="[0-9]*"
                         autoComplete="off"
                         placeholder="Amount"
+                        className={styles.amountInput}
                         value={formatWholeAmountForDisplay(amount)}
                         aria-invalid={amountValidationMessage ? "true" : "false"}
                         aria-keyshortcuts="Enter"
@@ -434,18 +434,20 @@ const CurrenciesList = () => {
             )}
 
             <div className={styles.convertRow}>
-                <Button
-                    className={styles.convertRowButton}
+                <button
+                    type="button"
+                    className={`${styles.convertSubmit} ${styles.convertRowButton}`}
                     onClick={onConvert}
                     disabled={isConvertDisabled}
                 >
                     {hasConverted && formattedConverted !== null
                         ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
                         : "Convert"}
-                </Button>
+                </button>
                 {showRate ? (
-                    <Button
-                        className={styles.convertRowButton}
+                    <button
+                        type="button"
+                        className={`${styles.convertSecondary} ${styles.convertRowButton}`}
                         onClick={retryRates}
                         disabled={isLoading}
                         aria-label={rateRefreshButtonAriaLabel}
@@ -468,10 +470,16 @@ const CurrenciesList = () => {
                                 {isLoading ? "Refreshing…" : "Refresh rate"}
                             </span>
                         </span>
-                    </Button>
+                    </button>
                 ) : null}
             </div>
-            {isAuthenticated && <Button variant="secondary" onClick={handleLogout}>Log out</Button>}
+            {isAuthenticated ? (
+                <div className={styles.logoutRow}>
+                    <button type="button" className={styles.logoutButton} onClick={handleLogout}>
+                        Log out
+                    </button>
+                </div>
+            ) : null}
         </div>
     </Container>;
 };

@@ -1,38 +1,32 @@
 .container {
-    position: relative;
+    composes: pageWrap from "../../style/darkAppPage.module.scss";
+    text-align: center;
 }
 
 .container label {
     margin: 15px 0;
 }
 
-
-.container button {
-    margin-top: 60px;
+.navStack {
+    composes: navStack from "../../style/darkAppPage.module.scss";
 }
 
-.progressLink {
-    display: block;
-    margin: 1rem auto 0;
-    padding: 0.35rem 0.75rem;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.88);
-    cursor: pointer;
-    font-size: 0.95rem;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+.navPrimary {
+    composes: submit from "../../style/darkAppPage.module.scss";
+    margin-top: 0;
+    width: 100%;
 }
 
-.container h2 {
-    margin-bottom: 40px;
+.navSecondary {
+    composes: secondary from "../../style/darkAppPage.module.scss";
+    width: 100%;
 }
 
 .modal {
     display: flex;
 }
 
-@media screen and (max-width:690px) {
+@media screen and (max-width: 690px) {
     .container h2 {
         font-size: 20px;
     }

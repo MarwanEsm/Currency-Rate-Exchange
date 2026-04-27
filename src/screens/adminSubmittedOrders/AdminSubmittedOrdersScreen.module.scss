@@ -1,35 +1,17 @@
 .wrap {
-    max-width: 40rem;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 3rem;
+    composes: pageWrap from "../../style/darkAppPage.module.scss";
 }
 
 .back {
-    display: inline-block;
-    margin-bottom: 1rem;
-    padding: 0.35rem 0;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.85);
-    cursor: pointer;
-    font-size: 0.95rem;
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
+    composes: back from "../../style/darkAppPage.module.scss";
 }
 
 .lead {
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.5;
-    margin: 0.5rem 0 1rem;
+    composes: lead from "../../style/darkAppPage.module.scss";
 }
 
 .note {
-    padding: 0.65rem 0.85rem;
-    border-radius: 6px;
-    background: rgba(100, 149, 237, 0.12);
-    border: 1px solid rgba(100, 149, 237, 0.35);
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.9rem;
+    composes: calloutInfo from "../../style/darkAppPage.module.scss";
 }
 
 .toolbar {
@@ -37,22 +19,11 @@
 }
 
 .refresh {
-    padding: 0.45rem 0.9rem;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: rgba(0, 0, 0, 0.25);
-    color: rgba(255, 255, 255, 0.92);
-    cursor: pointer;
-    font-size: 0.9rem;
-
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+    composes: secondary from "../../style/darkAppPage.module.scss";
 }
 
 .error {
-    color: #ff9b9b;
+    composes: calloutError from "../../style/darkAppPage.module.scss";
     margin: 0.75rem 0;
 }
 

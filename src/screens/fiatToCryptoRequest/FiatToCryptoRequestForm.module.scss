@@ -1,32 +1,17 @@
 .wrap {
-    max-width: 36rem;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 3rem;
+    composes: pageWrap from "../../style/darkAppPage.module.scss";
 }
 
 .back {
-    display: inline-block;
-    margin-bottom: 1rem;
-    padding: 0.35rem 0;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.85);
-    cursor: pointer;
-    font-size: 0.95rem;
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
+    composes: back from "../../style/darkAppPage.module.scss";
 }
 
 .lead {
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.5;
-    margin: 0.5rem 0 1.25rem;
+    composes: lead from "../../style/darkAppPage.module.scss";
 }
 
 .inlineLink {
-    color: #7eb8ff;
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
+    composes: inlineLink from "../../style/darkAppPage.module.scss";
 }
 
 .section {
@@ -88,21 +73,11 @@
 }
 
 .info {
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    background: rgba(100, 149, 237, 0.12);
-    border: 1px solid rgba(100, 149, 237, 0.35);
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 1rem;
+    composes: calloutInfo from "../../style/darkAppPage.module.scss";
 }
 
 .warn {
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    background: rgba(255, 193, 7, 0.12);
-    border: 1px solid rgba(255, 193, 7, 0.35);
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 1rem;
+    composes: calloutWarning from "../../style/darkAppPage.module.scss";
 }
 
 .form {
@@ -112,44 +87,23 @@
 }
 
 .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-
-    span {
-        font-size: 0.88rem;
-        color: rgba(255, 255, 255, 0.72);
-    }
+    composes: field from "../../style/darkAppPage.module.scss";
 }
 
-.input,
-.textarea {
-    padding: 0.5rem 0.65rem;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
-    font-size: 0.95rem;
-    font-family: inherit;
+.input {
+    composes: input from "../../style/darkAppPage.module.scss";
 }
 
 .textarea {
-    resize: vertical;
-    min-height: 4.5rem;
+    composes: textarea from "../../style/darkAppPage.module.scss";
 }
 
 .hint {
-    margin: 0;
-    font-size: 0.88rem;
-    color: rgba(255, 255, 255, 0.65);
+    composes: hint from "../../style/darkAppPage.module.scss";
 }
 
 .errors {
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 107, 107, 0.45);
-    background: rgba(255, 80, 80, 0.08);
-    color: rgba(255, 255, 255, 0.9);
+    composes: calloutError from "../../style/darkAppPage.module.scss";
 }
 
 .errorsTitle {
@@ -163,20 +117,7 @@
 }
 
 .submit {
-    margin-top: 0.25rem;
-    padding: 0.65rem 1.25rem;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    background: linear-gradient(135deg, #4a90d9, #357abd);
-    color: #fff;
-
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+    composes: submit from "../../style/darkAppPage.module.scss";
 }
 
 .confirm {
@@ -227,6 +168,7 @@
     color: rgba(255, 255, 255, 0.92);
     font-size: 0.88rem;
     cursor: pointer;
+    font-family: inherit;
 
     &:hover {
         background: rgba(0, 0, 0, 0.4);
@@ -247,16 +189,5 @@
 }
 
 .secondary {
-    padding: 0.45rem 0.9rem;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: transparent;
-    color: rgba(255, 255, 255, 0.9);
-    cursor: pointer;
-    font-size: 0.9rem;
-
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+    composes: secondary from "../../style/darkAppPage.module.scss";
 }

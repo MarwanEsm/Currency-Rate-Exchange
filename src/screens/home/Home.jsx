@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import Header from "@/components/layout/header/Header";
 import Logo from "@/components/elements/logo/Logo";
-import Button from "@/components/elements/button/Button";
 import Link from "@/components/elements/link/Link";
 import Container from "@/components/layout/container/Container";
 import styles from "./Home.module.scss";
@@ -139,30 +138,38 @@ const Home = () => {
             <div className={styles.container}>
                 <Header />
                 <Logo onClick={() => router.push("/currencies")} />
-                <button
-                    type="button"
-                    className={styles.progressLink}
-                    onClick={() => router.push("/currencies")}
-                >
-                    Fiat exchange rates
-                </button>
-                <button
-                    type="button"
-                    className={styles.progressLink}
-                    onClick={() => router.push("/orders/new")}
-                >
-                    Buy crypto with fiat
-                </button>
-                {showAdminNav ? (
+                <div className={styles.navStack}>
                     <button
                         type="button"
-                        className={styles.progressLink}
-                        onClick={() => router.push("/admin/orders")}
+                        className={styles.navSecondary}
+                        onClick={() => router.push("/currencies")}
                     >
-                        Admin: new requests
+                        Fiat exchange rates
                     </button>
-                ) : null}
-                <Button onClick={() => setShowLoginModal(true)}>Log in</Button>
+                    <button
+                        type="button"
+                        className={styles.navPrimary}
+                        onClick={() => router.push("/orders/new")}
+                    >
+                        Buy crypto with fiat
+                    </button>
+                    {showAdminNav ? (
+                        <button
+                            type="button"
+                            className={styles.navSecondary}
+                            onClick={() => router.push("/admin/orders")}
+                        >
+                            Admin: new requests
+                        </button>
+                    ) : null}
+                    <button
+                        type="button"
+                        className={styles.navSecondary}
+                        onClick={() => setShowLoginModal(true)}
+                    >
+                        Log in
+                    </button>
+                </div>
                 <Link onClick={() => setShowRegistrationModal(true)} />
             </div>
 

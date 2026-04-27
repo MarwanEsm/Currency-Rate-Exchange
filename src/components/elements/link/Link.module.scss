@@ -1,5 +1,6 @@
 .container {
     text-align: center;
+    margin-top: 1.25rem;
 }
 
 .container label {
@@ -7,35 +8,28 @@
     font-size: 14px;
     margin: 10px 0 10px 0;
     font-weight: 500;
+    color: rgba(255, 255, 255, 0.78);
 }
 
 .container label span {
-    color: #f18900;
+    color: #7eb8ff;
     font-size: 14px;
 }
 
 .linkLike {
     font-size: 13px;
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
     display: inline-block;
     position: relative;
-    color: white;
+    color: #7eb8ff;
     border: 0;
     background: transparent;
     padding: 0;
+    cursor: pointer;
+    font-family: inherit;
 }
 
-.linkLike::before {
-    content: "";
-    width: 100%;
-    height: 2px;
-    background-color: white;
-    position: absolute;
-    left: 0;
-    transform: translateY(-50%);
-    transition: width 0.3s ease;
-}
-
-.linkLike:hover::before {
-    width: 0;
+.linkLike:hover {
+    color: #a8d0ff;
 }
