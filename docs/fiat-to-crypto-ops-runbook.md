@@ -28,7 +28,7 @@ Operational guidance for safely running fiat-to-crypto flows aligned with `src/d
 
 ---
 
-## Commission & net-crypto pricing (FCX-22)
+## Commission & net-crypto pricing (FCX-22, FCX-42)
 
 Every order persists the authoritative quote so ops, finance, and audit can reconstruct exactly how much fee was applied and how much crypto was delivered.
 
@@ -36,8 +36,8 @@ Every order persists the authoritative quote so ops, finance, and audit can reco
 - **Commission models:** `fixed`, `percentage` (basis points), or `hybrid` (fixed + percentage). Optional `minFiat` / `maxFiat` floor/cap. Configurable per-request via the API or fall back to `DEFAULT_COMMISSION_CONFIG` ($0.50 + 1.5%, $1.00 floor).
 - **Precision:** BigInt internal math with half-up rounding. Fiat rounds to 2 decimals; crypto rounds per `ASSET_PRECISION` (BTC/ETH 8 decimals, USDC/USDT 2 decimals, default 8). `dustMinor` flags deliverables below the dust threshold.
 - **Persisted per order:** `grossFiatAmount`, `feeFiatAmount`, `netFiatAmount`, `exchangeRateApplied`, `netCryptoAmount`, `netCryptoAssetCode`, `commissionConfigSnapshot`, `pricingComputedAt`, optional `pricingWarnings`. Set at intake when `exchangeRate` is provided, refreshed when the admin approves with a locked rate.
-- **Ops pricing preview:** `POST /api/fiat-to-crypto/admin/orders/:id/pricing` with `{ exchangeRate, commissionConfig? }` returns the quote without mutating the order. The admin queue screen uses this to show gross/fee/net/net-crypto before the reviewer clicks Approve.
-- **Approval path:** `POST /api/fiat-to-crypto/admin/orders/:id/decision` on `approve` now accepts optional `exchangeRate` + `commissionConfig`. When supplied, the endpoint runs `computeFiatToCryptoQuote` and merges the resulting pricing patch onto the order via `updateFiatToCryptoOrder`.
+- **Ops pricing preview (FCX-42):** `POST /api/fiat-to-crypto/admin/orders/:id/pricing` with `{ exchangeRate, commissionConfig? }` returns the quote without mutating the order. The **admin queue** screen lets operations choose the commission model and parameters, then shows gross / fee / net fiat / net crypto (per-asset precision) before Approve.
+- **Approval path:** `POST /api/fiat-to-crypto/admin/orders/:id/decision` on `approve` requires `exchangeRate` and runs `computeFiatToCryptoQuote` before recording the decision audit; optional `commissionConfig` (else default). The pricing patch is merged onto the order via `updateFiatToCryptoOrder`.
 
 **Change-control signals:** a change to `DEFAULT_COMMISSION_CONFIG` or to `ASSET_PRECISION` must go through finance review because it affects every order without an explicit `commissionConfig`. Audit entries capture the snapshot at decision time — historical orders are unaffected.
 
@@ -165,7 +165,7 @@ After approval an order lives in `purchasing` with a locked `exchangeRateApplied
 | `src/domain/fiatToCryptoIntake.js` + `POST /api/fiat-to-crypto/orders` | Intake validation and creating orders in `submitted` (FCX-25) |
 | `src/domain/adminPermissions.js` | Admin roles and permission checks (FCX-26) |
 | `src/domain/fiatToCryptoAdminQueue.js` + admin API routes | Admin review queue, approve/reject decisions, audit log (FCX-26) |
-| `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto calculation engine, ops pricing preview (FCX-22) |
+| `src/domain/fiatToCryptoPricing.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/pricing` | Commission & net-crypto engine, configurable model, ops preview, persisted on approve (FCX-22, FCX-42) |
 | `src/domain/fiatToCryptoExecution.js` + `POST /api/fiat-to-crypto/admin/orders/[id]/execute-purchase` | Liquidity-provider purchase, retry loop, execution audit, order patch (FCX-24) |
 | `src/domain/fiatToCryptoDeposit.js` + `POST /api/fiat-to-crypto/admin/deposits/reconcile` + `GET …/deposits/log` + admin queue `status=submitted` | Deposit matching, amount/currency verification, under/over/mismatch/duplicate handling, audit log, ops UI (FCX-23, FCX-41) |
 | `src/domain/fiatToCryptoOperations.e2e.test.js` | Automated happy path, failure path, edge cases |

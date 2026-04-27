@@ -1,3 +1,6 @@
+/**
+ * Admin order queue: commission preview + approval use the FCX-42 pricing engine (see `fiatToCryptoPricing.js`).
+ */
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Container from "@/components/layout/container/Container";
@@ -5,7 +8,11 @@ import Headline from "@/components/elements/headline/Headline";
 import { AuthContext } from "@/firebase/authContext";
 import { ADMIN_ROLE, ADMIN_PERMISSION, hasAdminPermission } from "@/domain/adminPermissions";
 import { ADMIN_DECISION } from "@/domain/fiatToCryptoAdminQueue";
-import { DEFAULT_COMMISSION_CONFIG } from "@/domain/fiatToCryptoPricing";
+import {
+    COMMISSION_MODEL_TYPE,
+    DEFAULT_COMMISSION_CONFIG,
+    validateCommissionConfig,
+} from "@/domain/fiatToCryptoPricing";
 import styles from "./AdminOrderQueueScreen.module.scss";
 
 const ROLE_OPTIONS = Object.values(ADMIN_ROLE);
@@ -19,12 +26,17 @@ const buildAdminHeaders = (adminUserId, roles) => ({
 const describeCommissionConfig = (config) => {
     if (!config) return "—";
     const parts = [];
-    if (config.type === "fixed" || config.type === "hybrid") parts.push(`fixed ${config.fixedFiat}`);
-    if (config.type === "percentage" || config.type === "hybrid")
-        parts.push(`${(config.percentageBps / 100).toFixed(2)}%`);
+    if (config.type === "fixed" || config.type === "hybrid") {
+        if (config.fixedFiat != null) parts.push(`fixed ${config.fixedFiat}`);
+    }
+    if (config.type === "percentage" || config.type === "hybrid") {
+        if (config.percentageBps != null) {
+            parts.push(`${(Number(config.percentageBps) / 100).toFixed(2)}%`);
+        }
+    }
     if (config.minFiat) parts.push(`min ${config.minFiat}`);
     if (config.maxFiat) parts.push(`max ${config.maxFiat}`);
-    return parts.join(" + ") || config.type;
+    return parts.join(" + ") || String(config.type);
 };
 
 const AdminOrderQueueScreen = () => {
@@ -44,9 +56,32 @@ const AdminOrderQueueScreen = () => {
     const [decisionBanner, setDecisionBanner] = useState(null);
 
     const [exchangeRate, setExchangeRate] = useState("");
+    const [commissionType, setCommissionType] = useState(/** @type {string} */ (COMMISSION_MODEL_TYPE.HYBRID));
+    const [fixedFiat, setFixedFiat] = useState(DEFAULT_COMMISSION_CONFIG.fixedFiat);
+    const [percentageBps, setPercentageBps] = useState(String(DEFAULT_COMMISSION_CONFIG.percentageBps));
+    const [minFiat, setMinFiat] = useState(DEFAULT_COMMISSION_CONFIG.minFiat);
+    const [maxFiat, setMaxFiat] = useState(
+        DEFAULT_COMMISSION_CONFIG.maxFiat != null ? String(DEFAULT_COMMISSION_CONFIG.maxFiat) : "",
+    );
     const [quote, setQuote] = useState(null);
     const [quoteError, setQuoteError] = useState(null);
     const [quoteBusy, setQuoteBusy] = useState(false);
+
+    const buildCommissionConfig = useCallback(() => {
+        const c = { type: commissionType, label: "ops_queue_v1" };
+        if (commissionType === COMMISSION_MODEL_TYPE.FIXED || commissionType === COMMISSION_MODEL_TYPE.HYBRID) {
+            c.fixedFiat = (fixedFiat || "0").trim();
+        }
+        if (commissionType === COMMISSION_MODEL_TYPE.PERCENTAGE || commissionType === COMMISSION_MODEL_TYPE.HYBRID) {
+            const bps = Number.parseInt(percentageBps, 10);
+            c.percentageBps = Number.isFinite(bps) ? bps : 0;
+        }
+        const m = minFiat.trim();
+        if (m) c.minFiat = m;
+        const x = maxFiat.trim();
+        if (x) c.maxFiat = x;
+        return c;
+    }, [commissionType, fixedFiat, percentageBps, minFiat, maxFiat]);
 
     const [executeBusyId, setExecuteBusyId] = useState(null);
     const [executeSimulatedOutcome, setExecuteSimulatedOutcome] = useState("");
@@ -107,17 +142,32 @@ const AdminOrderQueueScreen = () => {
         setExchangeRate("");
         setReason("");
         setDecisionError(null);
+        setCommissionType(COMMISSION_MODEL_TYPE.HYBRID);
+        setFixedFiat(DEFAULT_COMMISSION_CONFIG.fixedFiat);
+        setPercentageBps(String(DEFAULT_COMMISSION_CONFIG.percentageBps));
+        setMinFiat(DEFAULT_COMMISSION_CONFIG.minFiat);
+        setMaxFiat(
+            DEFAULT_COMMISSION_CONFIG.maxFiat != null ? String(DEFAULT_COMMISSION_CONFIG.maxFiat) : "",
+        );
     };
 
     const fetchPreview = async (orderId) => {
         if (!orderId || !exchangeRate || !canView) return;
         setQuoteBusy(true);
         setQuoteError(null);
+        const commissionConfig = buildCommissionConfig();
+        const localErrors = validateCommissionConfig(commissionConfig);
+        if (localErrors.length > 0) {
+            setQuoteError(localErrors.join("; "));
+            setQuote(null);
+            setQuoteBusy(false);
+            return;
+        }
         try {
             const res = await fetch(`/api/fiat-to-crypto/admin/orders/${encodeURIComponent(orderId)}/pricing`, {
                 method: "POST",
                 headers: buildAdminHeaders(adminUserId, roles),
-                body: JSON.stringify({ exchangeRate, commissionConfig: DEFAULT_COMMISSION_CONFIG }),
+                body: JSON.stringify({ exchangeRate, commissionConfig }),
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
@@ -144,13 +194,21 @@ const AdminOrderQueueScreen = () => {
             setDecisionError("Enter an exchange rate (positive decimal) before approving.");
             return;
         }
+        if (decision === ADMIN_DECISION.APPROVE) {
+            const commissionConfig = buildCommissionConfig();
+            const localErrors = validateCommissionConfig(commissionConfig);
+            if (localErrors.length > 0) {
+                setDecisionError(localErrors.join("; "));
+                return;
+            }
+        }
         setDecisionBusy(true);
         setDecisionError(null);
         try {
             const payload = { decision, reason };
             if (decision === ADMIN_DECISION.APPROVE) {
                 payload.exchangeRate = exchangeRate;
-                payload.commissionConfig = DEFAULT_COMMISSION_CONFIG;
+                payload.commissionConfig = buildCommissionConfig();
             }
             const res = await fetch(`/api/fiat-to-crypto/admin/orders/${encodeURIComponent(activeOrderId)}/decision`, {
                 method: "POST",
@@ -246,9 +304,11 @@ const AdminOrderQueueScreen = () => {
 
                 <Headline size={2}>Admin: pending approvals</Headline>
                 <p className={styles.lead}>
-                    Lists fiat-to-crypto orders in <strong>paid</strong> awaiting review (FCX-26). Preview the
-                    commission &amp; net-crypto quote (FCX-22) before approving; rejecting marks the order{" "}
-                    <strong>failed</strong> with your reason.
+                    Lists fiat-to-crypto orders in <strong>paid</strong> awaiting review (FCX-26). Set{" "}
+                    <strong>exchange rate</strong> and <strong>commission model</strong> (FCX-42) — fixed, percentage, or
+                    hybrid — then preview gross, fee, net fiat, and net crypto (per-asset precision) before approving;
+                    those values are persisted on the order. Rejecting marks the order <strong>failed</strong> with your
+                    reason.
                 </p>
 
                 {!isAuthenticated && (
@@ -383,8 +443,81 @@ const AdminOrderQueueScreen = () => {
                                                             aria-label="Exchange rate"
                                                         />
                                                     </label>
+                                                    <div className={styles.commissionForm}>
+                                                        <label className={styles.field}>
+                                                            <span>Commission model</span>
+                                                            <select
+                                                                className={styles.input}
+                                                                value={commissionType}
+                                                                onChange={(e) => setCommissionType(e.target.value)}
+                                                                aria-label="Commission model"
+                                                            >
+                                                                <option value={COMMISSION_MODEL_TYPE.FIXED}>
+                                                                    Fixed (fiat)
+                                                                </option>
+                                                                <option value={COMMISSION_MODEL_TYPE.PERCENTAGE}>
+                                                                    Percentage of gross
+                                                                </option>
+                                                                <option value={COMMISSION_MODEL_TYPE.HYBRID}>
+                                                                    Hybrid (fixed + %)
+                                                                </option>
+                                                            </select>
+                                                        </label>
+                                                        {(commissionType === COMMISSION_MODEL_TYPE.FIXED ||
+                                                            commissionType === COMMISSION_MODEL_TYPE.HYBRID) && (
+                                                            <label className={styles.field}>
+                                                                <span>Fixed fee ({order.fiatCurrency})</span>
+                                                                <input
+                                                                    type="text"
+                                                                    inputMode="decimal"
+                                                                    className={styles.input}
+                                                                    value={fixedFiat}
+                                                                    onChange={(e) => setFixedFiat(e.target.value)}
+                                                                    aria-label="Fixed commission in fiat"
+                                                                />
+                                                            </label>
+                                                        )}
+                                                        {(commissionType === COMMISSION_MODEL_TYPE.PERCENTAGE ||
+                                                            commissionType === COMMISSION_MODEL_TYPE.HYBRID) && (
+                                                            <label className={styles.field}>
+                                                                <span>Basis points (100 = 1.00%)</span>
+                                                                <input
+                                                                    type="text"
+                                                                    inputMode="numeric"
+                                                                    className={styles.input}
+                                                                    value={percentageBps}
+                                                                    onChange={(e) => setPercentageBps(e.target.value.replace(/\D/g, ""))}
+                                                                    aria-label="Commission basis points"
+                                                                />
+                                                            </label>
+                                                        )}
+                                                        <label className={styles.field}>
+                                                            <span>Min fee (fiat, optional floor)</span>
+                                                            <input
+                                                                type="text"
+                                                                inputMode="decimal"
+                                                                className={styles.input}
+                                                                value={minFiat}
+                                                                onChange={(e) => setMinFiat(e.target.value)}
+                                                                aria-label="Minimum commission in fiat"
+                                                            />
+                                                        </label>
+                                                        <label className={styles.field}>
+                                                            <span>Max fee (fiat, optional cap)</span>
+                                                            <input
+                                                                type="text"
+                                                                inputMode="decimal"
+                                                                className={styles.input}
+                                                                value={maxFiat}
+                                                                onChange={(e) => setMaxFiat(e.target.value)}
+                                                                aria-label="Maximum commission in fiat"
+                                                            />
+                                                        </label>
+                                                    </div>
                                                     <p className={styles.hint}>
-                                                        Commission: {describeCommissionConfig(DEFAULT_COMMISSION_CONFIG)}
+                                                        Active commission: {describeCommissionConfig(buildCommissionConfig())} ·
+                                                        Rounding: fiat 2 dp; crypto per asset (
+                                                        {order.targetAssetCode} in engine).
                                                     </p>
                                                     <div className={styles.previewButtons}>
                                                         <button

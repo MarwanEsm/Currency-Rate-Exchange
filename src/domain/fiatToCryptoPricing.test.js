@@ -17,6 +17,22 @@ const baseInput = (overrides = {}) => ({
     ...overrides,
 });
 
+describe("FCX-42 — commission & net-crypto engine contract", () => {
+    it("persists gross, fee, and net in the order patch with asset-rounded net crypto", () => {
+        const q = computeFiatToCryptoQuote(
+            baseInput({
+                commissionConfig: { type: COMMISSION_MODEL_TYPE.PERCENTAGE, percentageBps: 200, minFiat: "0.00" },
+            }),
+        );
+        const patch = buildOrderPricingPatch(q);
+        expect(patch.grossFiatAmount).toBe("100.00");
+        expect(Number(patch.feeFiatAmount)).toBeGreaterThan(0);
+        expect(patch.netFiatAmount).toBeDefined();
+        expect(patch.netCryptoAmount).toMatch(/^\d+(\.\d+)?$/);
+        expect(patch.commissionConfigSnapshot.type).toBe("percentage");
+    });
+});
+
 describe("validateCommissionConfig", () => {
     it("accepts the default hybrid config", () => {
         expect(validateCommissionConfig(DEFAULT_COMMISSION_CONFIG)).toEqual([]);

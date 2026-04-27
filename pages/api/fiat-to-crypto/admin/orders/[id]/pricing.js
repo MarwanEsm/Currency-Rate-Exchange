@@ -7,11 +7,10 @@ import {
 import { getFiatToCryptoOrderById } from "@/server/inMemoryFiatToCryptoOrders";
 
 /**
- * POST /api/fiat-to-crypto/admin/orders/[id]/pricing — ops pricing preview (FCX-22).
+ * POST /api/fiat-to-crypto/admin/orders/[id]/pricing — ops pricing preview (FCX-22, FCX-42).
  *
  * Does not mutate the order; returns the quote an approval would lock in, so operations can review
- * commission and net crypto amount before committing (Acceptance criterion: outputs visible to ops
- * before execution).
+ * commission and net crypto amount before committing (FCX-42: visible before execution / purchase).
  *
  * Body: { exchangeRate: string, commissionConfig?: CommissionConfig }
  */

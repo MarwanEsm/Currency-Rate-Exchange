@@ -1,10 +1,12 @@
 /**
- * Commission & net-crypto calculation engine (FCX-22).
+ * Commission & net-crypto calculation engine (FCX-22, FCX-42).
  *
  * Pure domain logic. BigInt-based decimal arithmetic keeps money math exact regardless of
  * floating-point quirks; the engine emits final values already rounded to the right precision
  * per asset (fiat 2 decimals, crypto per `ASSET_PRECISION`), plus a snapshot of every input so
- * ops and auditors can reconstruct each quote.
+ * ops and auditors can reconstruct each quote. **FCX-42** is the product story for configurable
+ * commission (fixed / percentage / hybrid), persisted gross/fee/net, asset precision, and
+ * pre-execution visibility via the admin pricing preview API and queue UI.
  */
 
 export const COMMISSION_MODEL_TYPE = {
