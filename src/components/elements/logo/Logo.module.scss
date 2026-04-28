@@ -16,6 +16,9 @@
     margin: 30px auto;
     width: 150px;
     height: 150px;
+    overflow: hidden;
+    border-radius: 10px;
+    isolation: isolate;
 }
 
 .logoAppWrap[role="button"] {
@@ -34,6 +37,9 @@
 
 .imageAppInner {
     margin: 0 auto;
+    display: block;
+    max-width: 150px;
+    max-height: 150px;
 }
 
 .logoAppTintRight {

@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import classNames from "classnames";
 import Currency from "../../../assets/Currency.png";
 import styles from "./Logo.module.scss";
 
@@ -30,7 +29,7 @@ const Logo = ({ onClick, variant = "default" }) => {
             >
                 <Image
                     {...commonImg}
-                    className={classNames(styles.image, styles.imageAppInner)}
+                    className={styles.imageAppInner}
                 />
                 <span className={styles.logoAppTintRight} aria-hidden="true" />
             </div>
