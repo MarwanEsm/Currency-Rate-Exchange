@@ -264,6 +264,30 @@
     margin-top: 30px;
 }
 
+.fundActionsRow {
+    margin-top: 1.25rem;
+}
+
+.fundCtaWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    text-align: center;
+}
+
+.fundCtaBtn {
+    composes: submit from "../../style/darkAppPage.module.scss";
+    margin-top: 0;
+    min-width: 12rem;
+}
+
+.fundCtaHint {
+    margin: 0;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.58);
+}
+
 .convertPrimaryWrap {
     display: flex;
     justify-content: center;

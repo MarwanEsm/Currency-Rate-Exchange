@@ -3,6 +3,7 @@ import CurrencySelect from "../../components/elements/currencySelector/CurrencyS
 import Container from "../../components/layout/container/Container";
 import Headline from "../../components/elements/headline/Headline";
 import Logo from "../../components/elements/logo/Logo";
+import FundFiatModal from "./FundFiatModal";
 import styles from "./CurrenciesList.module.scss";
 import { Row, Col } from 'reactstrap';
 import { useRouter } from "next/router";
@@ -66,6 +67,7 @@ const CurrenciesList = () => {
     const [amountTouched, setAmountTouched] = useState(false);
     const [convertInvalidAttempt, setConvertInvalidAttempt] = useState(false);
     const [inputAdjustmentNotice, setInputAdjustmentNotice] = useState(false);
+    const [fundModalOpen, setFundModalOpen] = useState(false);
     const {
         numericRate,
         providerError,
@@ -578,7 +580,45 @@ const CurrenciesList = () => {
                     </Col>
                 ) : null}
             </Row>
+
+            {hasConverted &&
+            formattedConverted !== null &&
+            showPair &&
+            !duplicateCurrencySelection &&
+            !providerErrorMessage ? (
+                <Row className={`justify-content-center ${styles.fundActionsRow}`}>
+                    <Col xs={12} md={10} lg={8}>
+                        <div className={styles.fundCtaWrap}>
+                            <button
+                                type="button"
+                                className={styles.fundCtaBtn}
+                                onClick={() => setFundModalOpen(true)}
+                            >
+                                Buy / deposit
+                            </button>
+                            <p className={styles.fundCtaHint}>Fund your wallet via SEPA or card.</p>
+                        </div>
+                    </Col>
+                </Row>
+            ) : null}
         </div>
+
+        <FundFiatModal
+            isOpen={fundModalOpen}
+            onClose={() => setFundModalOpen(false)}
+            fromCurrencyCode={fromCurrency?.value}
+            toCurrencyCode={toCurrency?.value}
+            amountLabel={
+                fromCurrency?.value && amount !== ""
+                    ? `${formatWholeAmountForDisplay(amount)} ${fromCurrency.value}`
+                    : ""
+            }
+            convertedLabel={
+                toCurrency?.value && formattedConverted !== null
+                    ? `${formattedConverted} ${toCurrency.value}`
+                    : ""
+            }
+        />
     </Container>;
 };
 
