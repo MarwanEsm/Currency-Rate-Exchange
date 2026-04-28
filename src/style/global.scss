@@ -14,6 +14,10 @@ body {
     overflow-y: auto;
 }
 
+/* App chrome is dark; avoid Bootstrap’s default near-black body/heading colors on these routes. */
+#__next {
+    color: rgba(255, 255, 255, 0.92);
+}
 
 h1,
 h2,
@@ -22,4 +26,5 @@ h4,
 h5,
 h6 {
     text-align: center;
+    color: rgba(255, 255, 255, 0.95);
 }

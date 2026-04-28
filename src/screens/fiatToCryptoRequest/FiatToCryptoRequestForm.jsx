@@ -132,7 +132,9 @@ const FiatToCryptoRequestForm = () => {
                 <button type="button" className={styles.back} onClick={() => router.push("/")}>
                     ← Home
                 </button>
-                <Headline size={2}>Fiat-to-crypto</Headline>
+                <Headline size={2} className={styles.pageTitle}>
+                    Fiat-to-crypto
+                </Headline>
 
                 <p className={styles.lead}>
                     <strong>Before you log in:</strong> you can check rates only —{" "}

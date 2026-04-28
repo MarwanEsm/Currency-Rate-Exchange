@@ -8,6 +8,33 @@
     composes: back from "../../style/darkAppPage.module.scss";
 }
 
+.accountNav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.navLink {
+    composes: inlineLink from "../../style/darkAppPage.module.scss";
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0;
+}
+
+.navLink:hover {
+    color: #a8d0ff;
+}
+
+.navSep {
+    color: rgba(255, 255, 255, 0.35);
+    user-select: none;
+}
+
 .listContainer h2 {
     color: rgba(255, 255, 255, 0.95);
     margin: 1.25rem auto 1.5rem;
@@ -519,17 +546,6 @@ button.convertRowButton {
     max-width: 100%;
     min-height: 42px;
     padding: 10px 12px;
-}
-
-.logoutRow {
-    margin-top: 1.75rem;
-    display: flex;
-    justify-content: center;
-}
-
-.logoutButton {
-    composes: secondary from "../../style/darkAppPage.module.scss";
-    min-width: 250px;
 }
 
 .srOnly {

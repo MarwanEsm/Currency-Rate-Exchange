@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../../elements/button/Button";
 import styles from "./ResetPassword.module.scss";
 
 const ResetPassword = ({ onPasswordReset }) => {
@@ -56,6 +55,7 @@ const ResetPassword = ({ onPasswordReset }) => {
                     id="reset-email"
                     type="email"
                     placeholder="Enter email"
+                    className={styles.fieldInput}
                     value={email}
                     onChange={enterEmail}
                     autoComplete="email"
@@ -86,9 +86,9 @@ const ResetPassword = ({ onPasswordReset }) => {
                     {statusMessage}
                 </p>
 
-                <Button type="submit" fullWidth disabled={invalid}>
+                <button type="submit" className={styles.submitBtn} disabled={invalid}>
                     {isSubmitting ? "Sending..." : "Reset Password"}
-                </Button>
+                </button>
             </div>
         </form>
     </div>

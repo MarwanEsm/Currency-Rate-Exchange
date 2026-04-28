@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../../elements/button/Button";
 import styles from "./Login.module.scss";
 
 // TODO: Validate the email and password
@@ -23,6 +22,7 @@ const Login = ({ onPasswordReset, onLogin }) => {
                     type="email"
                     placeholder="name@example.com"
                     name="email"
+                    className={styles.fieldInput}
                     onChange={handleChange}
                     value={loginCredentials.email}
                     autoComplete="email"
@@ -33,6 +33,7 @@ const Login = ({ onPasswordReset, onLogin }) => {
                     type="password"
                     placeholder="Password"
                     name="password"
+                    className={styles.fieldInput}
                     onChange={handleChange}
                     value={loginCredentials.password}
                     autoComplete="current-password"
@@ -42,9 +43,14 @@ const Login = ({ onPasswordReset, onLogin }) => {
                     Forgot password?
                 </button>
 
-                <Button type="submit" fullWidth disabled={invalid} onClick={() => onLogin(loginCredentials)}>
+                <button
+                    type="button"
+                    className={styles.submitBtn}
+                    disabled={invalid}
+                    onClick={() => onLogin(loginCredentials)}
+                >
                     Log in
-                </Button>
+                </button>
             </div>
         </div>
     );

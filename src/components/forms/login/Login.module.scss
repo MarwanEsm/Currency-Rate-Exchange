@@ -1,9 +1,10 @@
 .container {
     max-height: 100vh;
-    padding: 100px 20px;
+    padding: 48px 24px;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: rgba(255, 255, 255, 0.92);
 }
 
 .formContainer {
@@ -12,41 +13,45 @@
     padding: 0 5%;
 }
 
-.formContainer input:not([type="checkbox"]) {
+.fieldInput {
+    composes: input from "../../../style/darkAppPage.module.scss";
     width: 100%;
-    border-radius: 6px;
-    height: 40px;
-    margin-bottom: 15px;
-    padding: 8px;
-    border: 1px solid #ccc;
     box-sizing: border-box;
+    margin-bottom: 15px;
+    min-height: 40px;
 }
 
-.formContainer input[type="checkbox"] {
-    margin-right: 8px;
-}
-
-.formContainer input:focus-visible {
-    outline: none !important;
+.fieldInput:focus-visible {
+    outline: 2px solid rgba(74, 144, 217, 0.65);
+    outline-offset: 1px;
 }
 
 .formContainer label {
     font-weight: bolder;
-    color: #e8e8e8;
+    color: rgba(255, 255, 255, 0.82);
     margin-bottom: 4px;
 }
 
 .linkLike {
     font-size: 14px;
     text-decoration: underline;
+    text-underline-offset: 0.15em;
     padding-top: 10px;
-    color: #eeeeee;
+    color: #7eb8ff;
     font-weight: bolder;
     border: 0;
     background: transparent;
+    cursor: pointer;
+    font-family: inherit;
 }
 
-.formContainer button {
+.linkLike:hover {
+    color: #a8d0ff;
+}
+
+.submitBtn {
+    composes: submit from "../../../style/darkAppPage.module.scss";
+    width: 100%;
     margin-top: 20px;
     margin-bottom: 20px;
 }

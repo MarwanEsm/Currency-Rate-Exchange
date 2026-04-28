@@ -1,9 +1,10 @@
 .container {
     max-height: 100vh;
-    padding: 50px 20px;
+    padding: 32px 24px;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: rgba(255, 255, 255, 0.92);
 }
 
 .formContainer {
@@ -12,41 +13,42 @@
     padding: 0 5%;
 }
 
-.formContainer input:not([type="checkbox"]) {
+.fieldInput {
+    composes: input from "../../../style/darkAppPage.module.scss";
     width: 100%;
-    border-radius: 6px;
-    height: 40px;
-    margin-bottom: 15px;
-    padding: 8px;
-    border: 1px solid #ccc;
     box-sizing: border-box;
+    margin-bottom: 15px;
+    min-height: 40px;
+}
+
+.fieldInput:focus-visible {
+    outline: 2px solid rgba(74, 144, 217, 0.65);
+    outline-offset: 1px;
 }
 
 .formContainer input[type="checkbox"] {
     margin-right: 8px;
-}
-
-
-.formContainer input:focus-visible {
-    outline: none
+    accent-color: #4a90d9;
 }
 
 .formContainer label {
     font-weight: bold;
-    color: #333;
+    color: rgba(255, 255, 255, 0.82);
     margin-bottom: 4px;
 }
 
-
-.formContainer button {
+.submitBtn {
+    composes: submit from "../../../style/darkAppPage.module.scss";
+    width: 100%;
     margin-top: 20px;
 }
 
 .formContainer span {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
     margin-top: 20px;
     display: block;
+    color: rgba(255, 255, 255, 0.82);
 }
 
 .popupContent {

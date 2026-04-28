@@ -2,6 +2,11 @@
     composes: pageWrap from "../../style/darkAppPage.module.scss";
 }
 
+/* Left-align main title; global h* is centered — this page uses text-align: left from pageWrap. */
+.pageTitle {
+    text-align: left;
+}
+
 .back {
     composes: back from "../../style/darkAppPage.module.scss";
 }

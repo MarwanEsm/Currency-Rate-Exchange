@@ -300,7 +300,23 @@ const CurrenciesList = () => {
                 >
                     ← Home
                 </button>
-            ) : null}
+            ) : (
+                <nav className={styles.accountNav} aria-label="Account navigation">
+                    <button
+                        type="button"
+                        className={styles.navLink}
+                        onClick={() => router.push("/orders/new")}
+                    >
+                        Buy crypto with fiat
+                    </button>
+                    <span className={styles.navSep} aria-hidden="true">
+                        ·
+                    </span>
+                    <button type="button" className={styles.navLink} onClick={handleLogout}>
+                        Log out
+                    </button>
+                </nav>
+            )}
 
             <Row className="justify-content-center">
                 <Col lg={8} md={8} sm={10}>
@@ -558,13 +574,6 @@ const CurrenciesList = () => {
                     </Col>
                 ) : null}
             </Row>
-            {isAuthenticated ? (
-                <div className={styles.logoutRow}>
-                    <button type="button" className={styles.logoutButton} onClick={handleLogout}>
-                        Log out
-                    </button>
-                </div>
-            ) : null}
         </div>
     </Container>;
 };

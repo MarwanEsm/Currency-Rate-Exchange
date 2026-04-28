@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../../elements/button/Button";
 import styles from "./SignUp.module.scss";
 
 const SignUp = ({ onRegistration }) => {
@@ -51,6 +50,7 @@ const SignUp = ({ onRegistration }) => {
                     type="text"
                     placeholder="First Name"
                     name="firstName"
+                    className={styles.fieldInput}
                     value={state.firstName}
                     onChange={changeInput}
                     autoComplete="given-name"
@@ -60,6 +60,7 @@ const SignUp = ({ onRegistration }) => {
                     type="text"
                     placeholder="Last Name"
                     name="lastName"
+                    className={styles.fieldInput}
                     value={state.lastName}
                     onChange={changeInput}
                     autoComplete="family-name"
@@ -69,6 +70,7 @@ const SignUp = ({ onRegistration }) => {
                     type="email"
                     placeholder="Email"
                     name="email"
+                    className={styles.fieldInput}
                     value={state.email}
                     onChange={changeInput}
                     autoComplete="email"
@@ -78,6 +80,7 @@ const SignUp = ({ onRegistration }) => {
                     type="password"
                     placeholder="Password"
                     name="password"
+                    className={styles.fieldInput}
                     value={state.password}
                     onChange={changeInput}
                     autoComplete="new-password"
@@ -87,6 +90,7 @@ const SignUp = ({ onRegistration }) => {
                     type="password"
                     placeholder="Confirm Password"
                     name="passwordConfirmation"
+                    className={styles.fieldInput}
                     value={state.passwordConfirmation}
                     onChange={changeInput}
                     autoComplete="new-password"
@@ -101,9 +105,9 @@ const SignUp = ({ onRegistration }) => {
                     Agree to the terms and conditions
                 </span>
 
-                <Button type="submit" fullWidth disabled={isInvalid}>
+                <button type="submit" className={styles.submitBtn} disabled={isInvalid}>
                     Register
-                </Button>
+                </button>
 
             </div>
         </form>
