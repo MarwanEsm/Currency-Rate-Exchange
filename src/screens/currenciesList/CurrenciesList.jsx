@@ -43,6 +43,16 @@ const AmountInfoIcon = () => (
     </svg>
 );
 
+const RateUpdateClockIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path
+            fill="currentColor"
+            fillRule="evenodd"
+            d="M8 14A6 6 0 108 2a6 6 0 000 12zm.5-9H7v3.25l2.62 1.53.52-.89L8.5 8.07V5z"
+        />
+    </svg>
+);
+
 const CurrenciesList = () => {
 
     const [fromCurrency, setFromCurrency] = useState(null)
@@ -182,22 +192,15 @@ const CurrenciesList = () => {
     const showRate = Boolean(showPair && !providerErrorMessage && !isLoading && formattedRate !== null);
     const showStaleIndicator = Boolean(showRate && isStale);
 
-    const rateRefreshButtonAriaLabel = useMemo(() => {
-        const parts = ["Refresh exchange rate"];
-        if (showStaleIndicator) parts.push("Stale rate");
-        if (rateMetaUpdatedLine) parts.push(rateMetaUpdatedLine);
-        return parts.join(". ");
-    }, [showStaleIndicator, rateMetaUpdatedLine]);
-
     const emptyStateMessage = useMemo(() => {
         if (fromCurrency && toCurrency) return null;
         if (!fromCurrency && !toCurrency) {
-            return "Select a source & target currency to see the rate.";
+            return "Select both currencies.";
         }
         if (!fromCurrency) {
-            return "Select a source currency to see the rate.";
+            return "Select a source currency.";
         }
-        return "Select a target currency to see the rate.";
+        return "Select a target currency.";
     }, [fromCurrency, toCurrency]);
 
     const exchangeRateGroupAriaLabel = useMemo(() => {
@@ -308,7 +311,7 @@ const CurrenciesList = () => {
 
             <Row className="justify-content-center">
 
-                <Col lg={4} md={4} sm={6}>
+                <Col lg={5} md={5} sm={6}>
                     <CurrencySelect
                         url={"https://api.coinbase.com/v2/currencies"}
                         placeholder={"From Currency"}
@@ -326,7 +329,7 @@ const CurrenciesList = () => {
                     />
                 </Col>
 
-                <Col lg={4} md={4} sm={6}>
+                <Col lg={5} md={5} sm={6}>
                     <CurrencySelect
                         url={"https://api.coinbase.com/v2/currencies"}
                         placeholder={"To Currency"}
@@ -347,7 +350,7 @@ const CurrenciesList = () => {
 
             <Row className="justify-content-center">
 
-                <Col lg={4} md={4} sm={6} className={styles.inputWrapper}>
+                <Col lg={5} md={5} sm={6} className={styles.inputWrapper}>
                     {showAmountHelperText ? (
                         <span id="amount-helper-text" className={styles.srOnly}>
                             {AMOUNT_FIELD_HELPER}
@@ -365,6 +368,28 @@ const CurrenciesList = () => {
                         </span>
                     ) : null}
                     <div className={styles.amountInputRow}>
+                        {showAmountHelperText ? (
+                            <div className={styles.amountInfoWrap}>
+                                <button
+                                    type="button"
+                                    className={`${styles.amountInfoBtn}${showInputAdjustmentNotice ? ` ${styles.amountInfoBtnHighlight}` : ""}`}
+                                    aria-label="Amount field help: open for formatting rules"
+                                >
+                                    <AmountInfoIcon />
+                                </button>
+                                <div
+                                    id="amount-field-help-tooltip"
+                                    role="tooltip"
+                                    className={styles.amountInfoTooltip}
+                                    data-testid="amount-info-tooltip"
+                                >
+                                    <p className={styles.tooltipParagraph}>{AMOUNT_FIELD_HELPER}</p>
+                                    {showInputAdjustmentNotice ? (
+                                        <p className={styles.tooltipAdjustment}>{AMOUNT_INPUT_ADJUSTMENT_NOTICE}</p>
+                                    ) : null}
+                                </div>
+                            </div>
+                        ) : null}
                         <div className={styles.amountField}>
                             {fromCurrency?.value ? (
                                 <strong className={styles.amountCurrency} aria-hidden="true">
@@ -401,28 +426,6 @@ const CurrenciesList = () => {
                                 onKeyDown={onAmountKeyDown}
                             />
                         </div>
-                        {showAmountHelperText ? (
-                            <div className={styles.amountInfoWrap}>
-                                <button
-                                    type="button"
-                                    className={`${styles.amountInfoBtn}${showInputAdjustmentNotice ? ` ${styles.amountInfoBtnHighlight}` : ""}`}
-                                    aria-label="Amount field help: open for formatting rules"
-                                >
-                                    <AmountInfoIcon />
-                                </button>
-                                <div
-                                    id="amount-field-help-tooltip"
-                                    role="tooltip"
-                                    className={styles.amountInfoTooltip}
-                                    data-testid="amount-info-tooltip"
-                                >
-                                    <p className={styles.tooltipParagraph}>{AMOUNT_FIELD_HELPER}</p>
-                                    {showInputAdjustmentNotice ? (
-                                        <p className={styles.tooltipAdjustment}>{AMOUNT_INPUT_ADJUSTMENT_NOTICE}</p>
-                                    ) : null}
-                                </div>
-                            </div>
-                        ) : null}
                     </div>
                     {amountValidationMessage ? (
                         <div
@@ -438,8 +441,8 @@ const CurrenciesList = () => {
 
 
                 <Col
-                    lg={4}
-                    md={4}
+                    lg={5}
+                    md={5}
                     sm={6}
                     className={`${styles.exchangeRateWrapper} text-center`}
                 >
@@ -487,32 +490,48 @@ const CurrenciesList = () => {
                         : "Convert"}
                 </button>
                 {showRate ? (
-                    <button
-                        type="button"
-                        className={`${styles.convertSecondary} ${styles.convertRowButton}`}
-                        onClick={retryRates}
-                        disabled={isLoading}
-                        aria-label={rateRefreshButtonAriaLabel}
-                        data-testid="rate-refresh-action-button"
-                    >
-                        <span className={styles.rateRefreshButtonInner}>
-                            {showStaleIndicator ? (
-                                <span
-                                    className={styles.staleBadge}
-                                    role="status"
-                                    data-testid="stale-rate-badge"
-                                >
-                                    Stale rate
-                                </span>
-                            ) : null}
-                            {rateMetaUpdatedLine ? (
-                                <span className={styles.rateRefreshMeta}>{rateMetaUpdatedLine}</span>
-                            ) : null}
-                            <span className={styles.rateRefreshActionLabel}>
-                                {isLoading ? "Refreshing…" : "Refresh rate"}
+                    <div className={styles.rateRefreshCluster}>
+                        {showStaleIndicator ? (
+                            <span
+                                className={styles.staleBadge}
+                                role="status"
+                                data-testid="stale-rate-badge"
+                            >
+                                Stale rate
                             </span>
-                        </span>
-                    </button>
+                        ) : null}
+                        {rateMetaUpdatedLine ? (
+                            <div className={styles.rateMetaPopoverWrap}>
+                                <button
+                                    type="button"
+                                    className={styles.rateMetaTriggerBtn}
+                                    aria-describedby="rate-refresh-meta-tooltip"
+                                    aria-label="When exchange rates were last updated"
+                                    data-testid="rate-refresh-meta-trigger"
+                                >
+                                    <RateUpdateClockIcon />
+                                </button>
+                                <div
+                                    id="rate-refresh-meta-tooltip"
+                                    role="tooltip"
+                                    className={styles.rateRefreshMetaPopover}
+                                    data-testid="rate-refresh-meta-tooltip"
+                                >
+                                    {rateMetaUpdatedLine}
+                                </div>
+                            </div>
+                        ) : null}
+                        <button
+                            type="button"
+                            className={`${styles.convertSecondary} ${styles.convertRowButton}`}
+                            onClick={retryRates}
+                            disabled={isLoading}
+                            aria-label="Refresh exchange rate"
+                            data-testid="rate-refresh-action-button"
+                        >
+                            {isLoading ? "Refreshing…" : "Refresh rate"}
+                        </button>
+                    </div>
                 ) : null}
             </div>
             {isAuthenticated ? (

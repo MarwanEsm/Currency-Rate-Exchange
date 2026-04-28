@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { EXCHANGE_RATE_ERROR_CODES } from "@/services/exchangeRateProvider";
@@ -163,7 +163,7 @@ describe("CurrenciesList", () => {
         await userEvent.click(await screen.findByText("Euro"));
 
         expect(await screen.findByText(/1 USD = 0[,.]912345 EUR/)).toBeInTheDocument();
-        expect(screen.getByTestId("rate-refresh-action-button")).toHaveTextContent(/rates updated/i);
+        expect(screen.getByTestId("rate-refresh-meta-tooltip")).toHaveTextContent(/rates updated/i);
         expect(screen.queryByText(/^As of/i)).not.toBeInTheDocument();
         expect(screen.getByRole("group", { name: /as of/i })).toBeInTheDocument();
     });
@@ -235,13 +235,13 @@ describe("CurrenciesList", () => {
         await userEvent.click(screen.getByLabelText("Select target currency"));
         await userEvent.click(await screen.findByText("Euro"));
 
-        const refreshPanel = await screen.findByTestId("rate-refresh-action-button");
-        expect(refreshPanel).toHaveTextContent(/stale rate/i);
-        expect(within(refreshPanel).getByTestId("stale-rate-badge")).toHaveTextContent(/stale rate/i);
+        const refreshBtn = await screen.findByTestId("rate-refresh-action-button");
+        expect(screen.getByTestId("stale-rate-badge")).toHaveTextContent(/stale rate/i);
         expect(screen.getByRole("group", { name: /stale rate/i })).toBeInTheDocument();
-        expect(refreshPanel).toHaveTextContent(/rates updated 5m ago/i);
+        expect(screen.getByTestId("rate-refresh-meta-tooltip")).toHaveTextContent(/rates updated 5m ago/i);
+        expect(refreshBtn).not.toHaveTextContent(/rates updated/i);
 
-        await userEvent.click(refreshPanel);
+        await userEvent.click(refreshBtn);
         expect(retryRatesMock).toHaveBeenCalledTimes(1);
     });
 
@@ -666,12 +666,10 @@ describe("CurrenciesList", () => {
             render(<CurrenciesList />);
 
             const empty = await screen.findByTestId("exchange-rate-empty");
-            expect(empty).toHaveTextContent(
-                /select a source (&|and) target currency to see the rate\./i,
-            );
+            expect(empty).toHaveTextContent(/select both currencies\./i);
             expect(empty).toHaveAttribute("role", "status");
             expect(
-                screen.getByRole("group", { name: /exchange rate.*select a source (&|and) target currency/i }),
+                screen.getByRole("group", { name: /exchange rate: select both currencies/i }),
             ).toBeInTheDocument();
         });
 
@@ -682,7 +680,7 @@ describe("CurrenciesList", () => {
             await userEvent.click(await screen.findByText("US Dollar"));
 
             const empty = await screen.findByTestId("exchange-rate-empty");
-            expect(empty).toHaveTextContent(/select a target currency to see the rate\./i);
+            expect(empty).toHaveTextContent(/select a target currency\./i);
         });
 
         it("shows a loading indicator with role=status and a visible spinner during fetch", async () => {

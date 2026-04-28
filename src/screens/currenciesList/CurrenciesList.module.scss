@@ -1,5 +1,7 @@
 .listContainer {
     composes: pageWrap from "../../style/darkAppPage.module.scss";
+    /* Slightly wider than other pages so the currency selects breathe a little on desktop */
+    max-width: min(46rem, 100%);
 }
 
 .backToHome {
@@ -23,20 +25,17 @@
 
 .inputWrapper {
     position: relative;
+    overflow: visible;
 }
 
 .amountInputRow {
-    display: flex;
-    align-items: stretch;
-    gap: 0.4rem;
+    position: relative;
     width: 100%;
 }
 
-/* Wraps only the input so the currency suffix stays vertically centered on the field, not the whole column (avoids overlap with helper text). */
+/* Full-width field (matches currency column). Info sits left of row via translate, outside layout flow. */
 .amountField {
     position: relative;
-    flex: 1;
-    min-width: 0;
     width: 100%;
 }
 
@@ -69,9 +68,11 @@
 }
 
 .amountInfoWrap {
-    position: relative;
-    flex-shrink: 0;
-    align-self: center;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(calc(-100% - 0.4rem), -50%);
+    z-index: 2;
 }
 
 .amountInfoBtn {
@@ -107,7 +108,7 @@
 
 .amountInfoTooltip {
     position: absolute;
-    right: 0;
+    left: 0;
     top: calc(100% + 6px);
     z-index: 20;
     width: min(17.5rem, calc(100vw - 2rem));
@@ -247,42 +248,94 @@ button.convertRowButton {
     box-sizing: border-box;
 }
 
-.rateRefreshButtonInner {
-    display: flex;
-    flex-direction: column;
+.rateRefreshCluster {
+    display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    max-width: 280px;
-    text-align: center;
-    color: inherit;
+    gap: 8px;
+    max-width: min(100%, 22rem);
 }
 
-.rateRefreshMeta {
+.rateMetaPopoverWrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.rateMetaTriggerBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.88);
+    cursor: pointer;
+    font: inherit;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba(74, 144, 217, 0.85);
+        outline-offset: 2px;
+    }
+}
+
+.rateRefreshMetaPopover {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translate(-50%, -4px);
+    z-index: 25;
+    width: max-content;
+    max-width: min(17.5rem, calc(100vw - 2rem));
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(22, 28, 36, 0.98);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    color: rgba(255, 255, 255, 0.92);
     font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1.35;
-    opacity: 0.92;
-    white-space: nowrap;
-    overflow-x: auto;
-    max-width: 100%;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
+    white-space: normal;
+    text-align: center;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
 }
 
-.rateRefreshActionLabel {
-    font-size: 1rem;
-    font-weight: bold;
-    line-height: 1.2;
-    letter-spacing: normal;
+.rateMetaPopoverWrap:hover .rateRefreshMetaPopover,
+.rateMetaPopoverWrap:focus-within .rateRefreshMetaPopover {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
 }
 
-.rateRefreshButtonInner .staleBadge {
+.rateRefreshCluster > .staleBadge {
     margin: 0;
-    color: rgba(255, 255, 255, 0.95);
-    background: rgba(74, 144, 217, 0.35);
-    border: 1px solid rgba(74, 144, 217, 0.55);
-    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rateRefreshMetaPopover {
+        transition: none;
+        transform: translate(-50%, 0);
+    }
+
+    .rateMetaPopoverWrap:hover .rateRefreshMetaPopover,
+    .rateMetaPopoverWrap:focus-within .rateRefreshMetaPopover {
+        transform: translate(-50%, 0);
+    }
 }
 
 .rateLoading,
