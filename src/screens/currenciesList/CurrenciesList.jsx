@@ -44,11 +44,14 @@ const AmountInfoIcon = () => (
 );
 
 const RateUpdateClockIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
         <path
-            fill="currentColor"
-            fillRule="evenodd"
-            d="M8 14A6 6 0 108 2a6 6 0 000 12zm.5-9H7v3.25l2.62 1.53.52-.89L8.5 8.07V5z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            d="M12 8.25V12l3 1.75"
         />
     </svg>
 );
