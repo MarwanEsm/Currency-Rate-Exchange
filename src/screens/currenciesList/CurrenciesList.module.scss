@@ -244,8 +244,31 @@
 }
 
 .convertSubmit {
-    composes: submit from "../../style/darkAppPage.module.scss";
     margin-top: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(74, 144, 217, 0.55);
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+    font-size: 0.95rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+
+    &:hover:not(:disabled) {
+        background: rgba(74, 144, 217, 0.14);
+        border-color: rgba(74, 144, 217, 0.8);
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba(74, 144, 217, 0.65);
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }
 
 .convertSecondary {
@@ -490,7 +513,12 @@ button.convertRowButton {
 }
 
 .listContainer .convertPrimaryWrap button.convertRowButton {
-    min-width: min(250px, 100%);
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
 }
 
 .logoutRow {

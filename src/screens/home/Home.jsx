@@ -137,7 +137,7 @@ const Home = () => {
             }
             <div className={styles.container}>
                 <Header />
-                <Logo onClick={() => router.push("/currencies")} />
+                <Logo variant="app" onClick={() => router.push("/currencies")} />
                 <div className={styles.navStack}>
                     <button
                         type="button"

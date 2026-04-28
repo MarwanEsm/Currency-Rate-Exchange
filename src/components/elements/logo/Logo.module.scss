@@ -10,8 +10,46 @@
     cursor: pointer;
 }
 
+/* In-app variant: aligns orange half with UI blues via tint layer (full-color asset unchanged elsewhere). */
+.logoAppWrap {
+    position: relative;
+    margin: 30px auto;
+    width: 150px;
+    height: 150px;
+}
+
+.logoAppWrap[role="button"] {
+    cursor: pointer;
+}
+
+.logoAppWrap:hover {
+    transform: scale(1.1);
+}
+
+.logoAppWrap:focus-visible {
+    outline: 2px solid rgba(74, 144, 217, 0.65);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+.imageAppInner {
+    margin: 0 auto;
+}
+
+.logoAppTintRight {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(145deg, #4a90d9 0%, #357abd 100%);
+    mix-blend-mode: hue;
+    pointer-events: none;
+}
+
 @media screen and (max-width: 669px) {
-    .image {
+    .image,
+    .logoAppWrap .imageAppInner {
         min-width: 17%;
         min-height: 17%;
     }

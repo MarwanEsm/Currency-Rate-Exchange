@@ -310,7 +310,7 @@ const CurrenciesList = () => {
                 </Col>
             </Row>
 
-            <Logo onClick={() => router.push("/")} />
+            <Logo variant="app" onClick={() => router.push("/")} />
 
             <Row className="justify-content-center">
 
