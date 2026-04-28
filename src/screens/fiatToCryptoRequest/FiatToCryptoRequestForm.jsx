@@ -129,8 +129,13 @@ const FiatToCryptoRequestForm = () => {
     return (
         <Container>
             <div className={styles.wrap}>
-                <button type="button" className={styles.back} onClick={() => router.push("/")}>
-                    ← Home
+                <button
+                    type="button"
+                    className={styles.back}
+                    onClick={() => router.push(isAuthenticated ? "/currencies" : "/")}
+                    aria-label={isAuthenticated ? "Back to fiat exchange rates" : "Back to home page"}
+                >
+                    {isAuthenticated ? "← Fiat exchange rates" : "← Home"}
                 </button>
                 <Headline size={2} className={styles.pageTitle}>
                     Fiat-to-crypto

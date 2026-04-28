@@ -3,7 +3,7 @@ import Image from "next/image";
 import Currency from "../../../assets/Currency.png";
 import styles from "./Logo.module.scss";
 
-const Logo = ({ onClick, variant = "default" }) => {
+const Logo = ({ onClick, variant = "default", ariaLabel }) => {
     const commonImg = {
         src: Currency,
         alt: "Currency-Exchange",
@@ -26,6 +26,7 @@ const Logo = ({ onClick, variant = "default" }) => {
                 }}
                 role={onClick ? "button" : undefined}
                 tabIndex={onClick ? 0 : undefined}
+                aria-label={onClick ? (ariaLabel ?? "Go to exchange rates") : undefined}
             >
                 <Image
                     {...commonImg}

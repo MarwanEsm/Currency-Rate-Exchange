@@ -326,7 +326,11 @@ const CurrenciesList = () => {
                 </Col>
             </Row>
 
-            <Logo variant="app" onClick={() => router.push("/")} />
+            <Logo
+                variant="app"
+                onClick={() => router.push(isAuthenticated ? "/currencies" : "/")}
+                ariaLabel={isAuthenticated ? "Go to fiat exchange rates (home)" : "Go to home page"}
+            />
 
             <Row className="justify-content-center">
 
