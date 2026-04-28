@@ -288,6 +288,41 @@
     color: rgba(255, 255, 255, 0.58);
 }
 
+.fundAuthNotice {
+    composes: calloutWarning from "../../style/darkAppPage.module.scss";
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 26rem;
+    text-align: left;
+}
+
+.fundAuthNoticeText {
+    margin: 0 0 0.85rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.fundAuthNoticeActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.fundAuthPrimaryBtn {
+    composes: submit from "../../style/darkAppPage.module.scss";
+    margin-top: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.88rem;
+}
+
+.fundAuthDismissBtn {
+    composes: secondary from "../../style/darkAppPage.module.scss";
+    padding: 0.45rem 0.75rem;
+    font-size: 0.82rem;
+}
+
 .convertPrimaryWrap {
     display: flex;
     justify-content: center;

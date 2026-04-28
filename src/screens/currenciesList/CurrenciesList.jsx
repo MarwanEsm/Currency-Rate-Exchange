@@ -68,6 +68,7 @@ const CurrenciesList = () => {
     const [convertInvalidAttempt, setConvertInvalidAttempt] = useState(false);
     const [inputAdjustmentNotice, setInputAdjustmentNotice] = useState(false);
     const [fundModalOpen, setFundModalOpen] = useState(false);
+    const [fundAuthNoticeVisible, setFundAuthNoticeVisible] = useState(false);
     const {
         numericRate,
         providerError,
@@ -87,9 +88,13 @@ const CurrenciesList = () => {
     }, [fromCurrency, toCurrency]);
     /* eslint-enable react-hooks/set-state-in-effect */
 
-    const { logout, isAuthenticated } = useContext(AuthContext)
+    const { logout, isAuthenticated } = useContext(AuthContext);
 
-    const router = useRouter()
+    useEffect(() => {
+        if (isAuthenticated) setFundAuthNoticeVisible(false);
+    }, [isAuthenticated]);
+
+    const router = useRouter();
 
     const numericAmount = useMemo(() => parseDigitsAmount(amount), [amount]);
 
@@ -167,6 +172,16 @@ const CurrenciesList = () => {
         } catch (error) {
             console.error("logout failed", error);
         }
+    };
+
+    const handleFundClick = () => {
+        if (!isAuthenticated) {
+            setFundAuthNoticeVisible(true);
+            setFundModalOpen(false);
+            return;
+        }
+        setFundAuthNoticeVisible(false);
+        setFundModalOpen(true);
     };
 
     const formattedRate = useMemo(() => {
@@ -592,11 +607,34 @@ const CurrenciesList = () => {
                             <button
                                 type="button"
                                 className={styles.fundCtaBtn}
-                                onClick={() => setFundModalOpen(true)}
+                                onClick={handleFundClick}
                             >
                                 Buy / deposit
                             </button>
-                            <p className={styles.fundCtaHint}>Fund your wallet via SEPA or card.</p>
+                            <p className={styles.fundCtaHint}>Fund your wallet with a card.</p>
+                            {fundAuthNoticeVisible ? (
+                                <div className={styles.fundAuthNotice} role="alert">
+                                    <p className={styles.fundAuthNoticeText}>
+                                        To pay by card and add funds, please log in or create an account first.
+                                    </p>
+                                    <div className={styles.fundAuthNoticeActions}>
+                                        <button
+                                            type="button"
+                                            className={styles.fundAuthPrimaryBtn}
+                                            onClick={() => router.push("/")}
+                                        >
+                                            Go to home — log in or register
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={styles.fundAuthDismissBtn}
+                                            onClick={() => setFundAuthNoticeVisible(false)}
+                                        >
+                                            Dismiss
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : null}
                         </div>
                     </Col>
                 </Row>
