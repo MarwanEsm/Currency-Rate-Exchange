@@ -472,7 +472,32 @@ const CurrenciesList = () => {
                             </button>
                         </div>
                     )}
-                    {showRate ? (
+                </Col>
+            </Row>
+
+            {duplicateCurrencySelection && (
+                <div className={styles.duplicateCurrencyMessage} role="alert">
+                    Source and target currencies must be different. Choose another target currency.
+                </div>
+            )}
+
+            <Row className={`justify-content-center ${styles.convertActionsRow}`}>
+                <Col lg={showRate ? 5 : 10} md={showRate ? 5 : 10} sm={showRate ? 6 : 12}>
+                    <div className={styles.convertPrimaryWrap}>
+                        <button
+                            type="button"
+                            className={`${styles.convertSubmit} ${styles.convertRowButton}`}
+                            onClick={onConvert}
+                            disabled={isConvertDisabled}
+                        >
+                            {hasConverted && formattedConverted !== null
+                                ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
+                                : "Convert"}
+                        </button>
+                    </div>
+                </Col>
+                {showRate ? (
+                    <Col lg={5} md={5} sm={6}>
                         <div className={styles.rateRefreshCluster}>
                             <div className={styles.rateRefreshToolbar}>
                                 <button
@@ -530,33 +555,7 @@ const CurrenciesList = () => {
                                 ) : null}
                             </div>
                         </div>
-                    ) : null}
-                </Col>
-            </Row>
-
-            {duplicateCurrencySelection && (
-                <div className={styles.duplicateCurrencyMessage} role="alert">
-                    Source and target currencies must be different. Choose another target currency.
-                </div>
-            )}
-
-            <Row className={`justify-content-center ${styles.convertActionsRow}`}>
-                <Col lg={showRate ? 5 : 10} md={showRate ? 5 : 10} sm={showRate ? 6 : 12}>
-                    <div className={styles.convertPrimaryWrap}>
-                        <button
-                            type="button"
-                            className={`${styles.convertSubmit} ${styles.convertRowButton}`}
-                            onClick={onConvert}
-                            disabled={isConvertDisabled}
-                        >
-                            {hasConverted && formattedConverted !== null
-                                ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
-                                : "Convert"}
-                        </button>
-                    </div>
-                </Col>
-                {showRate ? (
-                    <Col lg={5} md={5} sm={6} className={styles.convertRowSpacer} aria-hidden="true" />
+                    </Col>
                 ) : null}
             </Row>
             {isAuthenticated ? (

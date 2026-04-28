@@ -243,11 +243,6 @@
     width: 100%;
 }
 
-.convertRowSpacer {
-    pointer-events: none;
-    user-select: none;
-}
-
 .convertSubmit {
     composes: submit from "../../style/darkAppPage.module.scss";
     margin-top: 0;
@@ -272,7 +267,7 @@ button.convertRowButton {
     box-sizing: border-box;
 }
 
-/* Like amount row: toolbar is full-width; clock is absolutely positioned beyond the edge so it doesn't steal button width */
+/* Toolbar is full-width of cluster; clock is absolutely positioned beyond the edge */
 .rateRefreshToolbar {
     position: relative;
     width: 100%;
