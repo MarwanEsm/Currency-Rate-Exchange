@@ -4,23 +4,11 @@ import styles from "./FundFiatModal.module.scss";
 
 const STEP = {
     REVIEW: "review",
-    CARD: "card",
-    DONE: "done",
-};
-
-const digitsOnly = (s) => String(s ?? "").replace(/\D/g, "");
-
-/** Groups card digits as 4×4×4×4 for display only (demo UI — production uses PSP-hosted fields). */
-const formatCardGroups = (raw) => {
-    const d = digitsOnly(raw).slice(0, 16);
-    const parts = [];
-    for (let i = 0; i < d.length; i += 4) parts.push(d.slice(i, i + 4));
-    return parts.join(" ").trim();
+    CHECKOUT: "checkout",
 };
 
 /**
- * Card-only fiat top-up flow (demo UI). Production should use Stripe Checkout, Stripe Elements,
- * or another PCI-compliant PSP — never submit raw PAN to your own API without certification.
+ * Hosted Stripe Checkout — card capture happens on Stripe’s domain (PCI-safe).
  */
 const FundFiatModal = ({
     isOpen,
@@ -29,22 +17,19 @@ const FundFiatModal = ({
     toCurrencyCode,
     amountLabel,
     convertedLabel,
+    paymentCurrencyCode,
+    paymentAmountWhole,
+    pairLabel,
 }) => {
     const [step, setStep] = useState(STEP.REVIEW);
-    const [cardholderName, setCardholderName] = useState("");
-    const [cardNumberDigits, setCardNumberDigits] = useState("");
-    const [expiry, setExpiry] = useState("");
-    const [cvc, setCvc] = useState("");
-    const [formError, setFormError] = useState(null);
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [checkoutError, setCheckoutError] = useState(null);
 
     useEffect(() => {
         if (!isOpen) {
             setStep(STEP.REVIEW);
-            setCardholderName("");
-            setCardNumberDigits("");
-            setExpiry("");
-            setCvc("");
-            setFormError(null);
+            setCheckoutLoading(false);
+            setCheckoutError(null);
         }
     }, [isOpen]);
 
@@ -53,38 +38,47 @@ const FundFiatModal = ({
         return `${fromCurrencyCode} → ${toCurrencyCode}`;
     }, [fromCurrencyCode, toCurrencyCode]);
 
-    const cardDisplayValue = formatCardGroups(cardNumberDigits);
+    const paymentReady = useMemo(() => {
+        const cur = String(paymentCurrencyCode ?? "").trim().toUpperCase();
+        return /^[A-Z]{3}$/.test(cur) && Number.isFinite(paymentAmountWhole) && paymentAmountWhole > 0;
+    }, [paymentCurrencyCode, paymentAmountWhole]);
 
-    const handleCardNumberChange = (e) => {
-        setCardNumberDigits(digitsOnly(e.target.value).slice(0, 16));
-    };
-
-    const handleExpiryChange = (e) => {
-        let d = digitsOnly(e.target.value).slice(0, 4);
-        if (d.length >= 2) d = `${d.slice(0, 2)}/${d.slice(2)}`;
-        setExpiry(d);
-    };
-
-    const handleCvcChange = (e) => {
-        setCvc(digitsOnly(e.target.value).slice(0, 4));
-    };
-
-    const validateCardStep = () => {
-        const nameOk = cardholderName.trim().length >= 2;
-        const panOk = cardNumberDigits.length >= 13;
-        const expOk = /^\d{2}\/\d{2}$/.test(expiry);
-        const cvcOk = cvc.length >= 3;
-        if (!nameOk || !panOk || !expOk || !cvcOk) {
-            setFormError("Please enter cardholder name, a valid card number, expiry (MM/YY), and security code.");
-            return false;
+    const handleStripeCheckout = async () => {
+        setCheckoutError(null);
+        if (!paymentReady) {
+            setCheckoutError("Enter an amount and choose currencies before paying.");
+            return;
         }
-        setFormError(null);
-        return true;
-    };
-
-    const handlePayClick = () => {
-        if (!validateCardStep()) return;
-        setStep(STEP.DONE);
+        setCheckoutLoading(true);
+        try {
+            const res = await fetch("/api/stripe/create-checkout-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    currency: paymentCurrencyCode.trim().toUpperCase(),
+                    amountWhole: paymentAmountWhole,
+                    pairLabel: pairLabel || pairSummary || "",
+                }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const msg =
+                    typeof data.message === "string"
+                        ? data.message
+                        : typeof data.error === "string"
+                          ? data.error
+                          : "Could not start checkout.";
+                throw new Error(msg);
+            }
+            if (typeof data.url !== "string" || !data.url) {
+                throw new Error("Invalid checkout response.");
+            }
+            window.location.href = data.url;
+        } catch (e) {
+            setCheckoutError(e && typeof e === "object" && "message" in e ? String(e.message) : "Checkout failed.");
+        } finally {
+            setCheckoutLoading(false);
+        }
     };
 
     if (!isOpen) return null;
@@ -117,111 +111,53 @@ const FundFiatModal = ({
                 {step === STEP.REVIEW ? (
                     <>
                         <p className={styles.lead}>
-                            Pay with a debit or credit card (Visa, Mastercard, and other supported brands). You may be
-                            asked to confirm with your bank (3‑D Secure).
+                            Pay securely with{" "}
+                            <strong>Stripe Checkout</strong> — cards (Visa, Mastercard, etc.), Apple Pay / Google Pay
+                            where enabled, and strong customer authentication (PSD2 / 3‑D Secure) handled by Stripe.
                         </p>
                         <div className={styles.callout}>
-                            <strong>Demo flow:</strong> the next step collects card details in the browser for layout
-                            only. In production, use your PSP’s hosted checkout or tokenisation — never raw card data on
-                            your server without PCI compliance.
+                            Recommended for Germany/EU: charges settle through Stripe; enable EUR and connect your Stripe
+                            account in the Dashboard. Use test keys (<code className={styles.code}>sk_test_…</code>)
+                            until you go live.
                         </div>
                         <div className={styles.primaryAction}>
-                            <button type="button" className={styles.continueBtn} onClick={() => setStep(STEP.CARD)}>
-                                Continue to card details
+                            <button type="button" className={styles.continueBtn} onClick={() => setStep(STEP.CHECKOUT)}>
+                                Continue
                             </button>
                         </div>
                     </>
                 ) : null}
 
-                {step === STEP.CARD ? (
+                {step === STEP.CHECKOUT ? (
                     <div className={styles.cardStep}>
                         <button type="button" className={styles.backBtn} onClick={() => setStep(STEP.REVIEW)}>
                             ← Back
                         </button>
-                        <h3 className={styles.detailTitle}>Card details</h3>
-                        <p className={styles.pciNote}>
-                            For testing UI only — integrate Stripe Checkout / Elements before accepting real payments.
+                        <h3 className={styles.detailTitle}>Stripe Checkout</h3>
+                        <p className={styles.detailText}>
+                            You’ll leave this site briefly to enter payment details on Stripe’s hosted page.
+                            Your card details never touch our servers.
                         </p>
-
-                        <div className={styles.form}>
-                            <label className={styles.field}>
-                                <span>Name on card</span>
-                                <input
-                                    type="text"
-                                    className={styles.input}
-                                    autoComplete="cc-name"
-                                    value={cardholderName}
-                                    onChange={(e) => setCardholderName(e.target.value)}
-                                    placeholder="As shown on card"
-                                />
-                            </label>
-                            <label className={styles.field}>
-                                <span>Card number</span>
-                                <input
-                                    type="text"
-                                    className={styles.input}
-                                    inputMode="numeric"
-                                    autoComplete="cc-number"
-                                    value={cardDisplayValue}
-                                    onChange={handleCardNumberChange}
-                                    placeholder="0000 0000 0000 0000"
-                                />
-                            </label>
-                            <div className={styles.rowTwo}>
-                                <label className={styles.field}>
-                                    <span>Expires</span>
-                                    <input
-                                        type="text"
-                                        className={styles.input}
-                                        inputMode="numeric"
-                                        autoComplete="cc-exp"
-                                        value={expiry}
-                                        onChange={handleExpiryChange}
-                                        placeholder="MM/YY"
-                                    />
-                                </label>
-                                <label className={styles.field}>
-                                    <span>Security code</span>
-                                    <input
-                                        type="text"
-                                        className={styles.input}
-                                        inputMode="numeric"
-                                        autoComplete="cc-csc"
-                                        value={cvc}
-                                        onChange={handleCvcChange}
-                                        placeholder="CVC"
-                                    />
-                                </label>
-                            </div>
-                        </div>
-
-                        {formError ? (
-                            <p className={styles.formError} role="alert">
-                                {formError}
+                        {!paymentReady ? (
+                            <p className={styles.formError} role="status">
+                                Cannot charge: invalid amount or currency. Complete your conversion above first.
                             </p>
                         ) : null}
-
+                        {checkoutError ? (
+                            <p className={styles.formError} role="alert">
+                                {checkoutError}
+                            </p>
+                        ) : null}
                         <div className={styles.primaryAction}>
-                            <button type="button" className={styles.payBtn} onClick={handlePayClick}>
-                                Pay securely
+                            <button
+                                type="button"
+                                className={styles.payBtn}
+                                onClick={handleStripeCheckout}
+                                disabled={checkoutLoading || !paymentReady}
+                            >
+                                {checkoutLoading ? "Redirecting…" : "Continue to Stripe Checkout"}
                             </button>
                         </div>
-                    </div>
-                ) : null}
-
-                {step === STEP.DONE ? (
-                    <div className={styles.doneStep}>
-                        <div className={styles.doneIcon} aria-hidden="true">
-                            ✓
-                        </div>
-                        <h3 className={styles.detailTitle}>Payment authorised (demo)</h3>
-                        <p className={styles.detailText}>
-                            In production, your PSP would confirm the charge and fund your wallet. Connect Stripe,
-                            Adyen, or similar to complete this step for real money.
-                        </p>
-                        <button type="button" className={styles.continueBtn} onClick={onClose}>
-                            Close
-                        </button>
                     </div>
                 ) : null}
             </div>

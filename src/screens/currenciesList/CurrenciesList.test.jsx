@@ -24,7 +24,12 @@ jest.mock("@/utils/useExchangeRates", () => ({
 }));
 
 jest.mock("next/router", () => ({
-    useRouter: () => ({ push: jest.fn() }),
+    useRouter: () => ({
+        push: jest.fn(),
+        replace: jest.fn(),
+        isReady: true,
+        query: {},
+    }),
 }));
 
 describe("CurrenciesList", () => {

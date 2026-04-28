@@ -69,6 +69,7 @@ const CurrenciesList = () => {
     const [inputAdjustmentNotice, setInputAdjustmentNotice] = useState(false);
     const [fundModalOpen, setFundModalOpen] = useState(false);
     const [fundAuthNoticeVisible, setFundAuthNoticeVisible] = useState(false);
+    const [stripeReturnBanner, setStripeReturnBanner] = useState(null);
     const {
         numericRate,
         providerError,
@@ -90,11 +91,23 @@ const CurrenciesList = () => {
 
     const { logout, isAuthenticated } = useContext(AuthContext);
 
+    const router = useRouter();
+
     useEffect(() => {
         if (isAuthenticated) setFundAuthNoticeVisible(false);
     }, [isAuthenticated]);
 
-    const router = useRouter();
+    useEffect(() => {
+        if (!router.isReady) return;
+        const status = router.query?.stripe_status;
+        if (status === "success") {
+            setStripeReturnBanner("success");
+            router.replace?.("/currencies", undefined, { shallow: true });
+        } else if (status === "cancel") {
+            setStripeReturnBanner("cancel");
+            router.replace?.("/currencies", undefined, { shallow: true });
+        }
+    }, [router.isReady, router.query?.stripe_status, router]);
 
     const numericAmount = useMemo(() => parseDigitsAmount(amount), [amount]);
 
@@ -334,6 +347,26 @@ const CurrenciesList = () => {
                     </button>
                 </nav>
             )}
+
+            {stripeReturnBanner === "success" ? (
+                <div className={styles.stripeBannerOk} role="status">
+                    <p className={styles.stripeBannerText}>
+                        Checkout completed in Stripe (test mode uses test cards). Confirm payment status in your Stripe
+                        Dashboard.
+                    </p>
+                    <button type="button" className={styles.stripeBannerDismiss} onClick={() => setStripeReturnBanner(null)}>
+                        Dismiss
+                    </button>
+                </div>
+            ) : null}
+            {stripeReturnBanner === "cancel" ? (
+                <div className={styles.stripeBannerNeutral} role="status">
+                    <p className={styles.stripeBannerText}>Checkout was cancelled — no charge was made.</p>
+                    <button type="button" className={styles.stripeBannerDismiss} onClick={() => setStripeReturnBanner(null)}>
+                        Dismiss
+                    </button>
+                </div>
+            ) : null}
 
             <Row className="justify-content-center">
                 <Col lg={8} md={8} sm={10}>
@@ -654,6 +687,13 @@ const CurrenciesList = () => {
             convertedLabel={
                 toCurrency?.value && formattedConverted !== null
                     ? `${formattedConverted} ${toCurrency.value}`
+                    : ""
+            }
+            paymentCurrencyCode={fromCurrency?.value ?? ""}
+            paymentAmountWhole={numericAmount}
+            pairLabel={
+                fromCurrency?.value && toCurrency?.value
+                    ? `${fromCurrency.value} → ${toCurrency.value}`
                     : ""
             }
         />
