@@ -469,6 +469,62 @@ const CurrenciesList = () => {
                             </button>
                         </div>
                     )}
+                    {showRate ? (
+                        <div className={styles.rateRefreshCluster}>
+                            <div className={styles.rateRefreshToolbar}>
+                                <button
+                                    type="button"
+                                    className={`${styles.convertSecondary} ${styles.convertRowButton} ${styles.rateRefreshAction}`}
+                                    onClick={retryRates}
+                                    disabled={isLoading}
+                                    aria-label={
+                                        showStaleIndicator
+                                            ? "Refresh exchange rate. Stale rate snapshot."
+                                            : "Refresh exchange rate"
+                                    }
+                                    data-testid="rate-refresh-action-button"
+                                >
+                                    <span className={styles.rateRefreshButtonInner}>
+                                        {showStaleIndicator ? (
+                                            <span
+                                                className={styles.staleBadge}
+                                                role="status"
+                                                data-testid="stale-rate-badge"
+                                            >
+                                                Stale rate
+                                            </span>
+                                        ) : null}
+                                        <span className={styles.rateRefreshPrimaryLabel}>
+                                            {isLoading ? "Refreshing…" : "Refresh rate"}
+                                        </span>
+                                    </span>
+                                </button>
+                            </div>
+                            {rateMetaUpdatedLine ? (
+                                <div className={styles.rateRefreshClockRow}>
+                                    <div className={styles.rateMetaPopoverWrap}>
+                                        <button
+                                            type="button"
+                                            className={styles.rateMetaTriggerBtn}
+                                            aria-describedby="rate-refresh-meta-tooltip"
+                                            aria-label="When exchange rates were last updated"
+                                            data-testid="rate-refresh-meta-trigger"
+                                        >
+                                            <RateUpdateClockIcon />
+                                        </button>
+                                        <div
+                                            id="rate-refresh-meta-tooltip"
+                                            role="tooltip"
+                                            className={styles.rateRefreshMetaPopover}
+                                            data-testid="rate-refresh-meta-tooltip"
+                                        >
+                                            {rateMetaUpdatedLine}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : null}
+                        </div>
+                    ) : null}
                 </Col>
             </Row>
 
@@ -478,62 +534,25 @@ const CurrenciesList = () => {
                 </div>
             )}
 
-            <div className={styles.convertRow}>
-                <button
-                    type="button"
-                    className={`${styles.convertSubmit} ${styles.convertRowButton}`}
-                    onClick={onConvert}
-                    disabled={isConvertDisabled}
-                >
-                    {hasConverted && formattedConverted !== null
-                        ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
-                        : "Convert"}
-                </button>
-                {showRate ? (
-                    <div className={styles.rateRefreshCluster}>
-                        {showStaleIndicator ? (
-                            <span
-                                className={styles.staleBadge}
-                                role="status"
-                                data-testid="stale-rate-badge"
-                            >
-                                Stale rate
-                            </span>
-                        ) : null}
-                        {rateMetaUpdatedLine ? (
-                            <div className={styles.rateMetaPopoverWrap}>
-                                <button
-                                    type="button"
-                                    className={styles.rateMetaTriggerBtn}
-                                    aria-describedby="rate-refresh-meta-tooltip"
-                                    aria-label="When exchange rates were last updated"
-                                    data-testid="rate-refresh-meta-trigger"
-                                >
-                                    <RateUpdateClockIcon />
-                                </button>
-                                <div
-                                    id="rate-refresh-meta-tooltip"
-                                    role="tooltip"
-                                    className={styles.rateRefreshMetaPopover}
-                                    data-testid="rate-refresh-meta-tooltip"
-                                >
-                                    {rateMetaUpdatedLine}
-                                </div>
-                            </div>
-                        ) : null}
+            <Row className={`justify-content-center ${styles.convertActionsRow}`}>
+                <Col lg={showRate ? 5 : 10} md={showRate ? 5 : 10} sm={showRate ? 6 : 12}>
+                    <div className={styles.convertPrimaryWrap}>
                         <button
                             type="button"
-                            className={`${styles.convertSecondary} ${styles.convertRowButton}`}
-                            onClick={retryRates}
-                            disabled={isLoading}
-                            aria-label="Refresh exchange rate"
-                            data-testid="rate-refresh-action-button"
+                            className={`${styles.convertSubmit} ${styles.convertRowButton}`}
+                            onClick={onConvert}
+                            disabled={isConvertDisabled}
                         >
-                            {isLoading ? "Refreshing…" : "Refresh rate"}
+                            {hasConverted && formattedConverted !== null
+                                ? `${formattedConverted} ${toCurrency?.value ?? ""}`.trim()
+                                : "Convert"}
                         </button>
                     </div>
+                </Col>
+                {showRate ? (
+                    <Col lg={5} md={5} sm={6} className={styles.convertRowSpacer} aria-hidden="true" />
                 ) : null}
-            </div>
+            </Row>
             {isAuthenticated ? (
                 <div className={styles.logoutRow}>
                     <button type="button" className={styles.logoutButton} onClick={handleLogout}>

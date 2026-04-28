@@ -221,13 +221,19 @@
     text-align: center;
 }
 
-.convertRow {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch;
-    gap: 12px;
+.convertActionsRow {
     margin-top: 30px;
+}
+
+.convertPrimaryWrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.convertRowSpacer {
+    pointer-events: none;
+    user-select: none;
 }
 
 .convertSubmit {
@@ -249,12 +255,61 @@ button.convertRowButton {
 }
 
 .rateRefreshCluster {
-    display: inline-flex;
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.rateRefreshToolbar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
+    box-sizing: border-box;
+}
+
+.rateRefreshToolbar .rateRefreshAction {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.rateRefreshClockRow {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.rateRefreshButtonInner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    max-width: min(100%, 22rem);
+    width: 100%;
+    min-width: 0;
+}
+
+.rateRefreshPrimaryLabel {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: normal;
+    white-space: nowrap;
+}
+
+.rateRefreshAction .staleBadge {
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .rateMetaPopoverWrap {
@@ -292,8 +347,9 @@ button.convertRowButton {
 .rateRefreshMetaPopover {
     position: absolute;
     bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translate(-50%, -4px);
+    right: 0;
+    left: auto;
+    transform: translateY(-4px);
     z-index: 25;
     width: max-content;
     max-width: min(17.5rem, calc(100vw - 2rem));
@@ -319,22 +375,19 @@ button.convertRowButton {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
 }
 
-.rateRefreshCluster > .staleBadge {
-    margin: 0;
-}
 
 @media (prefers-reduced-motion: reduce) {
     .rateRefreshMetaPopover {
         transition: none;
-        transform: translate(-50%, 0);
+        transform: translateY(0);
     }
 
     .rateMetaPopoverWrap:hover .rateRefreshMetaPopover,
     .rateMetaPopoverWrap:focus-within .rateRefreshMetaPopover {
-        transform: translate(-50%, 0);
+        transform: translateY(0);
     }
 }
 
@@ -414,8 +467,8 @@ button.convertRowButton {
     margin-top: 2rem;
 }
 
-.listContainer > .convertRow button {
-    min-width: 250px;
+.listContainer .convertPrimaryWrap button.convertRowButton {
+    min-width: min(250px, 100%);
 }
 
 .logoutRow {
