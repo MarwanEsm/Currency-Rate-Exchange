@@ -394,6 +394,16 @@ const CurrenciesList = () => {
                             </div>
                         ) : null}
                         <div className={styles.amountField}>
+                            {amountValidationMessage ? (
+                                <div
+                                    id="amount-validation-message"
+                                    className={styles.amountValidationMessage}
+                                    role="status"
+                                    aria-live="polite"
+                                >
+                                    {amountValidationMessage}
+                                </div>
+                            ) : null}
                             {fromCurrency?.value ? (
                                 <strong className={styles.amountCurrency} aria-hidden="true">
                                     {fromCurrency.value}
@@ -430,16 +440,6 @@ const CurrenciesList = () => {
                             />
                         </div>
                     </div>
-                    {amountValidationMessage ? (
-                        <div
-                            id="amount-validation-message"
-                            className={styles.amountValidationMessage}
-                            role="status"
-                            aria-live="polite"
-                        >
-                            {amountValidationMessage}
-                        </div>
-                    ) : null}
                 </Col>
 
 
