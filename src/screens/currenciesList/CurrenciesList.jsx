@@ -184,12 +184,12 @@ const CurrenciesList = () => {
 
     const relativeAgeLabel = useMemo(() => formatRelativeAge(ageMs), [ageMs]);
 
-    const rateMetaUpdatedLine = useMemo(() => {
-        if (relativeAgeLabel && fetchedAtLabel) {
-            return `Rates updated ${relativeAgeLabel} (${fetchedAtLabel})`;
-        }
-        if (fetchedAtLabel) return `Rates updated ${fetchedAtLabel}`;
-        return null;
+    const rateRefreshMetaLines = useMemo(() => {
+        if (!fetchedAtLabel) return null;
+        return {
+            summary: relativeAgeLabel ? `Rates updated ${relativeAgeLabel}` : "Rates updated",
+            dateLine: fetchedAtLabel,
+        };
     }, [relativeAgeLabel, fetchedAtLabel]);
 
     const showRate = Boolean(showPair && !providerErrorMessage && !isLoading && formattedRate !== null);
@@ -502,7 +502,7 @@ const CurrenciesList = () => {
                                         </span>
                                     </span>
                                 </button>
-                                {rateMetaUpdatedLine ? (
+                                {rateRefreshMetaLines ? (
                                     <div className={styles.rateMetaPopoverWrap}>
                                         <button
                                             type="button"
@@ -519,7 +519,12 @@ const CurrenciesList = () => {
                                             className={styles.rateRefreshMetaPopover}
                                             data-testid="rate-refresh-meta-tooltip"
                                         >
-                                            {rateMetaUpdatedLine}
+                                            <span className={styles.rateRefreshMetaPopoverSummary}>
+                                                {rateRefreshMetaLines.summary}
+                                            </span>
+                                            <span className={styles.rateRefreshMetaPopoverDate}>
+                                                {rateRefreshMetaLines.dateLine}
+                                            </span>
                                         </div>
                                     </div>
                                 ) : null}
