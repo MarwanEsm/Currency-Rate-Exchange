@@ -255,23 +255,21 @@ button.convertRowButton {
 }
 
 .rateRefreshCluster {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
     width: 100%;
+    overflow: visible;
     box-sizing: border-box;
 }
 
+/* Like amount row: toolbar is full-width; clock is absolutely positioned beyond the edge so it doesn't steal button width */
 .rateRefreshToolbar {
-    display: flex;
-    flex-direction: column;
+    position: relative;
     width: 100%;
-    align-items: stretch;
     box-sizing: border-box;
+    overflow: visible;
 }
 
 .rateRefreshToolbar .rateRefreshAction {
+    display: block;
     width: 100%;
     min-width: 0;
     min-height: 42px;
@@ -280,12 +278,12 @@ button.convertRowButton {
     box-sizing: border-box;
 }
 
-.rateRefreshClockRow {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
+.rateRefreshToolbar .rateMetaPopoverWrap {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(calc(100% + 0.4rem), -50%);
+    z-index: 2;
 }
 
 .rateRefreshButtonInner {
@@ -312,12 +310,7 @@ button.convertRowButton {
     flex-shrink: 0;
 }
 
-.rateMetaPopoverWrap {
-    position: relative;
-    flex-shrink: 0;
-}
-
-.rateMetaTriggerBtn {
+.rateRefreshMetaPopover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -455,6 +448,7 @@ button.convertRowButton {
     align-items: stretch;
     gap: 10px;
     text-align: center;
+    overflow: visible;
 }
 
 @media screen and (max-width: 570px) {

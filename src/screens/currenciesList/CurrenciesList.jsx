@@ -499,9 +499,7 @@ const CurrenciesList = () => {
                                         </span>
                                     </span>
                                 </button>
-                            </div>
-                            {rateMetaUpdatedLine ? (
-                                <div className={styles.rateRefreshClockRow}>
+                                {rateMetaUpdatedLine ? (
                                     <div className={styles.rateMetaPopoverWrap}>
                                         <button
                                             type="button"
@@ -521,8 +519,8 @@ const CurrenciesList = () => {
                                             {rateMetaUpdatedLine}
                                         </div>
                                     </div>
-                                </div>
-                            ) : null}
+                                ) : null}
+                            </div>
                         </div>
                     ) : null}
                 </Col>
