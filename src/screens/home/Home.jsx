@@ -57,6 +57,14 @@ const Home = () => {
         return hasResetPassword;
     };
 
+    const dismissAuthError = () => {
+        const isLoginError =
+            errorCode === AUTH_ERROR_CODES.INVALID_CREDENTIALS || errorCode === AUTH_ERROR_CODES.UNKNOWN;
+        setErrorCode(null);
+        setShowRegistrationModal(false);
+        setShowForgotPasswordModal(false);
+        if (isLoginError) setShowLoginModal(true);
+    };
 
     return (
         <Container>
@@ -116,23 +124,21 @@ const Home = () => {
             {
                 errorCode !== null &&
                 <Modal
-                    onClose={() => {
-                        const isLoginError = errorCode === AUTH_ERROR_CODES.INVALID_CREDENTIALS || errorCode === AUTH_ERROR_CODES.UNKNOWN;
-                        setErrorCode(null);
-                        setShowRegistrationModal(false);
-                        setShowForgotPasswordModal(false);
-                        if (isLoginError) setShowLoginModal(true);
-                    }}
+                    onClose={dismissAuthError}
                     isOpen={errorCode !== null}
                     title="Authentication error"
                     className={styles.modal}
                 >
-                    <ErrorMessage errorCode={errorCode} onPasswordResetRequest={() => {
-                        setErrorCode(null);
-                        setShowRegistrationModal(false);
-                        setShowLoginModal(false);
-                        setShowForgotPasswordModal(true);
-                    }} />
+                    <ErrorMessage
+                        errorCode={errorCode}
+                        onDismiss={dismissAuthError}
+                        onPasswordResetRequest={() => {
+                            setErrorCode(null);
+                            setShowRegistrationModal(false);
+                            setShowLoginModal(false);
+                            setShowForgotPasswordModal(true);
+                        }}
+                    />
                 </Modal>
             }
             <div className={styles.container}>

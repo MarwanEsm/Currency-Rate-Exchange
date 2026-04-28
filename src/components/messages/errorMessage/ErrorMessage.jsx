@@ -40,35 +40,52 @@ const ERROR_CONTENT = {
     },
 };
 
-const ErrorMessage = ({ errorCode = AUTH_ERROR_CODES.UNKNOWN, onPasswordResetRequest }) => {
+const ErrorIcon = () => (
+    <svg className={styles.iconSvg} width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+        <path
+            fill="currentColor"
+            d="M12 7.15a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zm-1 4.05h2v5.1h-2v-5.1z"
+        />
+    </svg>
+);
 
+/**
+ * @param {{ errorCode?: string, onPasswordResetRequest?: () => void, onDismiss?: () => void }} props
+ */
+const ErrorMessage = ({ errorCode = AUTH_ERROR_CODES.UNKNOWN, onPasswordResetRequest, onDismiss }) => {
     const isDesktop = useIsDesktop();
     const content = ERROR_CONTENT[errorCode] ?? ERROR_CONTENT[AUTH_ERROR_CODES.UNKNOWN];
+    const mainText = isDesktop ? content.desktop : content.mobile;
 
-    if (!isDesktop) {
-        return <div className={styles.container}>
-            <p>{content.mobile}</p>
-            {content.showPasswordReset && (
-                <label>Forgot your password?
-                    <button type="button" className={styles.inlineAction} onClick={() => onPasswordResetRequest?.()}>&nbsp;Reset it here</button>.
-                </label>
-            )}
-            <div>Please try again.</div>
+    return (
+        <div className={styles.wrap} role="alert" aria-live="polite">
+            <div className={styles.hero}>
+                <div className={styles.iconBadge}>
+                    <ErrorIcon />
+                </div>
+                <div className={styles.copy}>
+                    <p className={styles.lead}>{mainText}</p>
+                    {content.showPasswordReset ? (
+                        <p className={styles.recovery}>
+                            If you&apos;ve forgotten your password, use{" "}
+                            <button type="button" className={styles.linkBtn} onClick={() => onPasswordResetRequest?.()}>
+                                Forgot password
+                            </button>
+                            .
+                        </p>
+                    ) : null}
+                </div>
+            </div>
+            {typeof onDismiss === "function" ? (
+                <div className={styles.footer}>
+                    <button type="button" className={styles.retryBtn} onClick={onDismiss}>
+                        Try again
+                    </button>
+                </div>
+            ) : null}
         </div>
-
-    }
-
-    return <div className={styles.container}>
-        <p>{content.desktop}</p>
-        {content.showPasswordReset && (
-            <label>If you&apos;ve forgotten your password, use the
-                <button type="button" className={styles.inlineAction} onClick={() => onPasswordResetRequest?.()}>Forgot password</button> option.
-            </label>
-        )}
-        <div>Please try again.</div>
-    </div>
-
-
+    );
 };
 
 export default ErrorMessage;
