@@ -9,13 +9,31 @@ import Headline from "@/components/elements/headline/Headline";
 import { AuthContext } from "@/firebase/authContext";
 import { KYC_VERIFICATION_STATUS } from "@/domain/fiatToCryptoCompliance";
 import { FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS } from "@/domain/fiatToCryptoQuotePreview";
-import { ASSET_ALLOWED_TRANSFER_NETWORKS, CRYPTO_TRANSFER_NETWORK_ID } from "@/domain/fiatToCryptoTransfer";
+import { ASSET_ALLOWED_TRANSFER_NETWORKS, CRYPTO_TRANSFER_NETWORK_ID, FIAT_TO_CRYPTO_MAJOR_TARGET_ASSETS } from "@/domain/fiatToCryptoTransfer";
 import { validateFiatToCryptoIntakePayload } from "@/domain/fiatToCryptoIntake";
 import styles from "./FiatToCryptoRequestForm.module.scss";
 
 const NETWORK_LABELS = {
     [CRYPTO_TRANSFER_NETWORK_ID.BITCOIN_MAINNET]: "Bitcoin (mainnet)",
     [CRYPTO_TRANSFER_NETWORK_ID.ETHEREUM_MAINNET]: "Ethereum (mainnet)",
+    [CRYPTO_TRANSFER_NETWORK_ID.SOLANA_MAINNET]: "Solana (mainnet)",
+    [CRYPTO_TRANSFER_NETWORK_ID.LITECOIN_MAINNET]: "Litecoin (mainnet)",
+    [CRYPTO_TRANSFER_NETWORK_ID.DOGECOIN_MAINNET]: "Dogecoin (mainnet)",
+    [CRYPTO_TRANSFER_NETWORK_ID.RIPPLE_MAINNET]: "Ripple / XRPL",
+    [CRYPTO_TRANSFER_NETWORK_ID.CARDANO_MAINNET]: "Cardano (mainnet)",
+    [CRYPTO_TRANSFER_NETWORK_ID.COSMOS_FAMILY_MAINNET]: "Cosmos-family (mainnet)",
+    [CRYPTO_TRANSFER_NETWORK_ID.POLKADOT_MAINNET]: "Polkadot",
+    [CRYPTO_TRANSFER_NETWORK_ID.BITCOIN_CASH_MAINNET]: "Bitcoin Cash",
+    [CRYPTO_TRANSFER_NETWORK_ID.NEAR_MAINNET]: "NEAR",
+    [CRYPTO_TRANSFER_NETWORK_ID.FILECOIN_MAINNET]: "Filecoin",
+    [CRYPTO_TRANSFER_NETWORK_ID.HEX64_ACCOUNT_MAINNET]: "Move-style L1 (hex account)",
+    [CRYPTO_TRANSFER_NETWORK_ID.EOS_MAINNET]: "EOS",
+    [CRYPTO_TRANSFER_NETWORK_ID.TEZOS_MAINNET]: "Tezos",
+    [CRYPTO_TRANSFER_NETWORK_ID.STELLAR_MAINNET]: "Stellar",
+    [CRYPTO_TRANSFER_NETWORK_ID.ZCASH_MAINNET]: "Zcash",
+    [CRYPTO_TRANSFER_NETWORK_ID.HEDERA_MAINNET]: "Hedera",
+    [CRYPTO_TRANSFER_NETWORK_ID.STACKS_MAINNET]: "Stacks",
+    [CRYPTO_TRANSFER_NETWORK_ID.TON_MAINNET]: "TON",
 };
 
 const FiatToCryptoRequestForm = () => {
@@ -214,7 +232,7 @@ const FiatToCryptoRequestForm = () => {
                                 }}
                                 aria-label="Crypto asset for quote"
                             >
-                                {Object.keys(ASSET_ALLOWED_TRANSFER_NETWORKS).map((code) => (
+                                {FIAT_TO_CRYPTO_MAJOR_TARGET_ASSETS.map((code) => (
                                     <option key={code} value={code}>
                                         {code}
                                     </option>

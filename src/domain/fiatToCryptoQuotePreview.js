@@ -41,7 +41,7 @@ export const validateFiatToCryptoQuotePreviewInput = (fiatCurrency, fiatAmount, 
     if (!tac) {
         errors.push("`targetAssetCode` is required.");
     } else if (!Object.prototype.hasOwnProperty.call(ASSET_ALLOWED_TRANSFER_NETWORKS, tac)) {
-        errors.push(`targetAssetCode must be a supported asset (${Object.keys(ASSET_ALLOWED_TRANSFER_NETWORKS).join(", ")}).`);
+        errors.push("targetAssetCode must be a supported fiat→crypto payout asset.");
     }
 
     return errors;

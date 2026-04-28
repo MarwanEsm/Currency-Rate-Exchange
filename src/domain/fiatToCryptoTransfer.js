@@ -1,4 +1,9 @@
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
+import {
+    ASSET_PRIMARY_NETWORK,
+    CRYPTO_TRANSFER_NETWORK_ID,
+    FIAT_TO_CRYPTO_MAJOR_TARGET_ASSETS,
+} from "./fiatToCryptoSupportedAssets";
 
 /**
  * Secure crypto payout to customer destination (FCX-21, FCX-45).
@@ -13,20 +18,21 @@ import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
  *   “rollback”; compensation is operational).
  */
 
-/** Canonical network identifiers used in config, validation, and persisted `transferCanonicalNetwork`. */
-export const CRYPTO_TRANSFER_NETWORK_ID = {
-    BITCOIN_MAINNET: "bitcoin_mainnet",
-    ETHEREUM_MAINNET: "ethereum_mainnet",
-};
+export { CRYPTO_TRANSFER_NETWORK_ID, FIAT_TO_CRYPTO_MAJOR_TARGET_ASSETS } from "./fiatToCryptoSupportedAssets";
+
+for (const code of FIAT_TO_CRYPTO_MAJOR_TARGET_ASSETS) {
+    if (!Object.prototype.hasOwnProperty.call(ASSET_PRIMARY_NETWORK, code)) {
+        throw new Error(`fiatToCryptoSupportedAssets: missing ASSET_PRIMARY_NETWORK for ${code}`);
+    }
+}
 
 /**
- * Which networks are valid for each `targetAssetCode` (uppercase tickers).
- * Extend this map as new assets go live.
+ * One primary chain per ticker (matches `ASSET_PRIMARY_NETWORK`).
+ * @type {Readonly<Record<string, ReadonlyArray<string>>>}
  */
-export const ASSET_ALLOWED_TRANSFER_NETWORKS = Object.freeze({
-    BTC: [CRYPTO_TRANSFER_NETWORK_ID.BITCOIN_MAINNET],
-    ETH: [CRYPTO_TRANSFER_NETWORK_ID.ETHEREUM_MAINNET],
-});
+export const ASSET_ALLOWED_TRANSFER_NETWORKS = Object.freeze(
+    Object.fromEntries(FIAT_TO_CRYPTO_MAJOR_TARGET_ASSETS.map((code) => [code, [ASSET_PRIMARY_NETWORK[code]]])),
+);
 
 /** Payout address length bounds (aligned with order draft validation). */
 const WALLET_MIN = 8;
@@ -345,18 +351,75 @@ const isValidAddressForNetwork = (address, canonicalNetwork) => {
     const a = String(address ?? "").trim();
     if (a.length < WALLET_MIN || a.length > WALLET_MAX) return false;
 
-    if (canonicalNetwork === CRYPTO_TRANSFER_NETWORK_ID.BITCOIN_MAINNET) {
-        if (/^bc1[0-9a-z]{39,87}$/i.test(a)) return true;
-        if (/^1[a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(a)) return true;
-        if (/^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(a)) return true;
-        return false;
-    }
+    const N = CRYPTO_TRANSFER_NETWORK_ID;
 
-    if (canonicalNetwork === CRYPTO_TRANSFER_NETWORK_ID.ETHEREUM_MAINNET) {
-        return /^0x[a-fA-F0-9]{40}$/.test(a);
-    }
+    switch (canonicalNetwork) {
+        case N.BITCOIN_MAINNET:
+            if (/^bc1[0-9a-z]{39,87}$/i.test(a)) return true;
+            if (/^1[a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(a)) return true;
+            if (/^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(a)) return true;
+            return false;
 
-    return false;
+        case N.ETHEREUM_MAINNET:
+            return /^0x[a-fA-F0-9]{40}$/.test(a);
+
+        case N.SOLANA_MAINNET:
+            return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a);
+
+        case N.LITECOIN_MAINNET:
+            return /^(?:[LM][a-km-zA-HJ-NP-Z1-9]{26,33}|lt1[a-z0-9]{39,87}|ltc1[a-z0-9]{39,87})$/i.test(a);
+
+        case N.DOGECOIN_MAINNET:
+            return /^D[5-9A-HJ-NP-Za-km-z]{33}$/.test(a);
+
+        case N.RIPPLE_MAINNET:
+            return /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(a);
+
+        case N.CARDANO_MAINNET:
+            return /^addr1[a-z0-9]{50,110}$/i.test(a);
+
+        case N.COSMOS_FAMILY_MAINNET:
+            return /^[a-z]{3,14}1[a-z0-9]{38,96}$/.test(a);
+
+        case N.POLKADOT_MAINNET:
+            return /^[1-9A-HJ-NP-Za-km-z]{46,52}$/.test(a);
+
+        case N.BITCOIN_CASH_MAINNET:
+            return /^((bitcoincash:)?)?[qp][a-z0-9]{41}$/i.test(a);
+
+        case N.NEAR_MAINNET:
+            return /^([a-f0-9]{64}|[^\s.]+\.near)$/i.test(a);
+
+        case N.FILECOIN_MAINNET:
+            return /^f[134][a-z0-9]{39,}$/i.test(a);
+
+        case N.HEX64_ACCOUNT_MAINNET:
+            return /^0x[a-fA-F0-9]{64}$/.test(a);
+
+        case N.EOS_MAINNET:
+            return /^[a-z1-5.]{3,12}$/.test(a);
+
+        case N.TEZOS_MAINNET:
+            return /^tz[123][a-zA-Z0-9]{33}$/.test(a);
+
+        case N.STELLAR_MAINNET:
+            return /^G[A-Z2-7]{55}$/.test(a);
+
+        case N.ZCASH_MAINNET:
+            return /^([st][13][a-zA-Z0-9]{33,}|zs[a-zA-Z0-9]{93})$/.test(a);
+
+        case N.HEDERA_MAINNET:
+            return /^0\.0\.[0-9]{4,}$/.test(a);
+
+        case N.STACKS_MAINNET:
+            return /^S[PM][A-Z0-9]{38,60}$/.test(a);
+
+        case N.TON_MAINNET:
+            return /^[EU][Q][A-Za-z0-9_-]{46}$/.test(a);
+
+        default:
+            return false;
+    }
 };
 
 /**

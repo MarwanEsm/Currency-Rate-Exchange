@@ -34,7 +34,7 @@ describe("fiatToCryptoTransfer (FCX-21)", () => {
         });
 
         it("rejects unsupported asset", () => {
-            const r = resolveTransferNetwork("DOGE", "bitcoin_mainnet");
+            const r = resolveTransferNetwork("ZZZFAKE", "bitcoin_mainnet");
             expect(r.ok).toBe(false);
             expect(r.code).toBe(CRYPTO_TRANSFER_ERROR_CODES.UNSUPPORTED_TARGET_ASSET);
         });
