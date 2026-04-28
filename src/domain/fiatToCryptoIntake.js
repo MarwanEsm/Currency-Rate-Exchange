@@ -6,6 +6,7 @@
  */
 
 import { evaluateKycGateForOrderCreation } from "./fiatToCryptoCompliance";
+import { FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS } from "./fiatToCryptoQuotePreview";
 import { FIAT_TO_CRYPTO_ORDER_STATUS } from "./fiatToCryptoOrder";
 import { validateFiatToCryptoOrderDraft } from "./fiatToCryptoOrder";
 import {
@@ -79,6 +80,13 @@ export const validateFiatToCryptoIntakePayload = (rawBody) => {
         network: normalized.network,
     });
     errors.push(...draftErrors);
+
+    if (
+        normalized.fiatCurrency !== "" &&
+        !FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS.includes(normalized.fiatCurrency)
+    ) {
+        errors.push("fiatCurrency must be a supported fiat quote currency.");
+    }
 
     if (errors.length > 0) {
         return { ok: false, errors };

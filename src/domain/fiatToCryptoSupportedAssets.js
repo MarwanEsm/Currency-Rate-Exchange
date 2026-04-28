@@ -1,6 +1,6 @@
 /**
  * Major fiat→crypto payout targets shown in UI + validated on-chain formats (fiatToCryptoTransfer).
- * Tickers are verified against Coinbase `/v2/exchange-rates` for USD/EUR so indicative quotes resolve.
+ * Crypto tickers below are verified against Coinbase `/v2/exchange-rates` for the selected fiat base.
  */
 
 /** Canonical payout rail identifiers — match validators in fiatToCryptoTransfer.js */

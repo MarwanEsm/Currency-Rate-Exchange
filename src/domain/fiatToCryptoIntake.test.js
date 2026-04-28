@@ -34,6 +34,17 @@ describe("fiatToCryptoIntake (FCX-25)", () => {
         }
     });
 
+    it("rejects unsupported fiat currency", () => {
+        const r = validateFiatToCryptoIntakePayload({
+            ...validBody(),
+            fiatCurrency: "XXX",
+        });
+        expect(r.ok).toBe(false);
+        if (!r.ok) {
+            expect(r.errors.some((e) => /supported fiat/i.test(e))).toBe(true);
+        }
+    });
+
     it("rejects invalid payout address for network", () => {
         const r = validateFiatToCryptoIntakePayload({
             ...validBody(),

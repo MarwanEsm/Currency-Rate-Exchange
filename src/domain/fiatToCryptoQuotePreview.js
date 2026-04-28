@@ -6,8 +6,33 @@
 import { computeFiatToCryptoQuote, DEFAULT_COMMISSION_CONFIG } from "./fiatToCryptoPricing";
 import { ASSET_ALLOWED_TRANSFER_NETWORKS } from "./fiatToCryptoTransfer";
 
-/** Fiat currencies supported for quote preview (aligned with intake UI). */
-export const FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS = Object.freeze(["USD", "EUR"]);
+/**
+ * Major fiat currencies for indicative quotes (Coinbase `/v2/exchange-rates` supports these bases).
+ * Keep order UX-friendly (liquid currencies first).
+ */
+export const FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS = Object.freeze([
+    "USD",
+    "EUR",
+    "GBP",
+    "JPY",
+    "CHF",
+    "CAD",
+    "AUD",
+    "CNY",
+    "HKD",
+    "SGD",
+    "NZD",
+    "SEK",
+    "NOK",
+    "DKK",
+    "PLN",
+    "MXN",
+    "BRL",
+    "INR",
+    "KRW",
+    "TRY",
+    "ZAR",
+]);
 
 /**
  * @param {unknown} fiatCurrency
@@ -24,7 +49,7 @@ export const validateFiatToCryptoQuotePreviewInput = (fiatCurrency, fiatAmount, 
     if (!fc) {
         errors.push("`fiatCurrency` is required.");
     } else if (!FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS.includes(fc)) {
-        errors.push(`fiatCurrency must be one of: ${FIAT_TO_CRYPTO_QUOTE_PREVIEW_FIATS.join(", ")}.`);
+        errors.push("fiatCurrency must be a supported fiat quote currency.");
     }
 
     const fa = typeof fiatAmount === "string" ? fiatAmount.trim() : String(fiatAmount ?? "").trim();

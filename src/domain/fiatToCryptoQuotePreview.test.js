@@ -6,12 +6,13 @@ import {
 
 describe("fiatToCryptoQuotePreview", () => {
     describe("validateFiatToCryptoQuotePreviewInput", () => {
-        it("accepts USD / EUR and supported assets", () => {
+        it("accepts major fiats and supported assets", () => {
             expect(validateFiatToCryptoQuotePreviewInput("USD", "100.00", "BTC")).toEqual([]);
+            expect(validateFiatToCryptoQuotePreviewInput("GBP", "50.00", "ETH")).toEqual([]);
         });
 
         it("rejects bad fiat and amount", () => {
-            expect(validateFiatToCryptoQuotePreviewInput("GBP", "10", "BTC").length).toBeGreaterThan(0);
+            expect(validateFiatToCryptoQuotePreviewInput("XXX", "10", "BTC").length).toBeGreaterThan(0);
             expect(validateFiatToCryptoQuotePreviewInput("USD", "0", "BTC").length).toBeGreaterThan(0);
             expect(validateFiatToCryptoQuotePreviewInput("USD", "-1", "BTC").length).toBeGreaterThan(0);
         });
